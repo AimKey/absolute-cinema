@@ -32,8 +32,8 @@ jobs: # Defines the jobs in the workflow.
       - name: Publish # Publishes the project's build artifacts.
         run: dotnet publish ./Absolute-cinema.sln --configuration Release --no-build --output "${{env.azure_webApp_packagePath}}"
 
-      - name: Development
-        uses: actions/webapps-deploy@v2
+      - name: Deploy to azure webapp
+        uses: azure/webapps-deploy@v2
         with:
           app-name: ${{env.azure_webApp_name}}
           package: "${{env.azure_webApp_packagePath}}"
