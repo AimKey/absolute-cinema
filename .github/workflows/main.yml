@@ -1,0 +1,30 @@
+name: PublishForCICD # Name of the GitHub Actions workflow.
+
+on: # Events that trigger the workflow.
+  workflow_dispatch: # Allows manual triggering of the workflow.
+  push: # Triggers the workflow on a push event.
+    branches: # Specifies which branches will trigger the workflow.
+      - main # The 'main' branch.you can change branch as you need
+
+
+jobs: # Defines the jobs in the workflow.
+  publish: # The 'publish' job.
+    runs-on: ubuntu-latest # The type of runner that the job will run on.
+
+    steps: # Steps for the 'publish' job.
+      - name: Checkout code # Checks out the repository code.
+        uses: actions/checkout@v3
+
+      - name: Setup .NET # Sets up the .NET environment.
+        uses: actions/setup-dotnet@v3
+        with: 
+          dotnet-version: '8.0.x' # The .NET version to use.
+
+      - name: Restore dependencies # Restores the NuGet packages.
+        run: dotnet restore ./Absolute-cinema.sln
+
+      - name: Build # Builds the project.
+        run: dotnet build ./Absolute-cinema.sln --configuration Release --no-restore
+
+      - name: Publish # Publishes the project's build artifacts.
+        run: dotnet publish ./Absolute-cinema.sln --configuration Release --no-build
