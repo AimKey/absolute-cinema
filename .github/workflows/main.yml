@@ -37,4 +37,4 @@ jobs: # Defines the jobs in the workflow.
         with:
           app-name: ${{env.azure_webApp_name}}
           package: "${{env.azure_webApp_packagePath}}"
-          publish-profile: ''
+          publish-profile: ${{secrets.AZURE_PUBLISH_PROFILE}}
