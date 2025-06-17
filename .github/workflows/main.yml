@@ -26,6 +26,9 @@ jobs: # Defines the jobs in the workflow.
       - name: Restore dependencies # Restores the NuGet packages.
         run: dotnet restore ./Absolute-cinema.sln
 
+      - name: Setup node_modules # Setup the node_modules (including tailwind)
+        run: npm install
+
       - name: Build # Builds the project.
         run: dotnet build ./Absolute-cinema.sln --configuration Release --no-restore
 
