@@ -1,0 +1,33 @@
+﻿using BusinessObjects.Models.BaseModels;
+using System.ComponentModel.DataAnnotations;
+
+namespace BusinessObjects.Models;
+
+public class User : IBaseModel
+{
+    // Primary Key
+    [Key]
+    public Guid Id { get; set; }
+
+    // Normal Properties
+    public string Username { get; set; }
+    public string Password { get; set; }
+    public string Role { get; set; }
+
+    // Foreign Key
+    public Guid UserDetailId { get; set; }
+
+    // Navigation Properties
+    public UserDetail UserDetail { get; set; }
+
+    // Navigation Collections
+    public IEnumerable<Booking> Bookings { get; set; }
+
+    // Audit Properties
+    public DateTime CreatedAt { get; set; }
+    public Guid CreatedBy { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    public Guid UpdatedBy { get; set; }
+    public DateTime RemovedAt { get; set; }
+    public Guid RemovedBy { get; set; }
+}
