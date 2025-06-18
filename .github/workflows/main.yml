@@ -26,6 +26,15 @@ jobs: # Defines the jobs in the workflow.
       - name: Restore dependencies # Restores the NuGet packages.
         run: dotnet restore ./Absolute-cinema.sln
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          
+      - name: Setup node_modules # Setup the node_modules (including tailwind)
+        run: npm install
+        working-directory: ./Absolute-cinema
+
       - name: Build # Builds the project.
         run: dotnet build ./Absolute-cinema.sln --configuration Release --no-restore
 
