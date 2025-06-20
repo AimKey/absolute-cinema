@@ -14,8 +14,8 @@ public class MovieActor : IBaseModel
     public Guid ActorId { get; set; }
 
     // Navigation Properties
-    public Movie Movie { get; set; }
-    public Actor Actor { get; set; }
+    public virtual Movie Movie { get; set; }
+    public virtual Actor Actor { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

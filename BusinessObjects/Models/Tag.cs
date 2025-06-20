@@ -10,6 +10,7 @@ public class Tag : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [StringLength(100, ErrorMessage = "Tag name cannot exceed 100 characters.")]
     public string Name { get; set; }
 
     // Foreign Key
@@ -17,7 +18,7 @@ public class Tag : IBaseModel
     // Navigation Properties
 
     // Navigation Collections
-    public IEnumerable<MovieTag> MovieTags { get; set; }
+    public virtual IEnumerable<MovieTag> MovieTags { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

@@ -10,11 +10,18 @@ public class Movie : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [StringLength(200, ErrorMessage = "Title cannot exceed 200 characters.")]
     public string Title { get; set; }
+
+    [StringLength(200, ErrorMessage = "Original title cannot exceed 200 characters.")]
     public string OriginalTitle { get; set; }
+
+    [StringLength(1000, ErrorMessage = "Description cannot exceed 1000 characters.")]
     public string Description { get; set; }
     public int Duration { get; set; }
     public DateTime ReleaseDate { get; set; }
+
+    [StringLength(100, ErrorMessage = "Country name cannot exceed 100 characters.")]
     public string Country { get; set; }
     public string PosterURL { get; set; }
     public string BackgroundURL { get; set; }
@@ -28,11 +35,11 @@ public class Movie : IBaseModel
     // Navigation Properties
 
     // Navigation Collections
-    public IEnumerable<MovieTag> MovieTags { get; set; }
-    public IEnumerable<MovieActor> MovieActors { get; set; }
-    public IEnumerable<MovieDirector> MovieDirectors { get; set; }
-    public IEnumerable<Review> Reviews { get; set; }
-    public IEnumerable<Showtime> Showtimes { get; set; }
+    public virtual IEnumerable<MovieTag> MovieTags { get; set; }
+    public virtual IEnumerable<MovieActor> MovieActors { get; set; }
+    public virtual IEnumerable<MovieDirector> MovieDirectors { get; set; }
+    public virtual IEnumerable<Review> Reviews { get; set; }
+    public virtual IEnumerable<Showtime> Showtimes { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

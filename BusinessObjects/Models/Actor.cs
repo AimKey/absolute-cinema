@@ -10,19 +10,20 @@ public class Actor : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [StringLength(100, ErrorMessage = "Name cannot be longer than 100 characters.")]
     public string Name { get; set; }
     public string AvatarURL { get; set; }
     public DateTime Dob { get; set; }
     public string Gender { get; set; }
+    [StringLength(1000, ErrorMessage = "Description cannot be longer than 1000 characters.")]
     public string Description { get; set; }
 
     // Foreign Key
 
-
     // Navigation Properties
 
     // Navigation Collections
-    public IEnumerable<MovieActor> MovieActors { get; set; }
+    public virtual IEnumerable<MovieActor> MovieActors { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

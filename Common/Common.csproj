@@ -2,15 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
-    <RootNamespace>Absolute_cinema.Domain</RootNamespace>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
   </PropertyGroup>
-
-  <ItemGroup>
-    <Folder Include="Entities\" />
-    <Folder Include="Interfaces\" />
-    <Folder Include="Specifications\" />
-  </ItemGroup>
 
 </Project>

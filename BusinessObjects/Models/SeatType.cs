@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models.BaseModels;
+using System.ComponentModel.DataAnnotations;
 
 namespace BusinessObjects.Models;
 
@@ -8,6 +9,7 @@ public class SeatType : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [StringLength(100, ErrorMessage = "Seat name cannot exceed 100 characters.")]
     public string Name { get; set; }                                // e.g., Standard, Premium, VIP
     public decimal PriceMutiplier { get; set; }                      // e.g., "1.0" for Standard, "1.5" for Premium, "2.0" for VIP          
     
@@ -16,7 +18,7 @@ public class SeatType : IBaseModel
     // Navigation Properties
 
     // Navigation Collections
-    public IEnumerable<Seat> Seats { get; set; } 
+    public virtual IEnumerable<Seat> Seats { get; set; } 
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

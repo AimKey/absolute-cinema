@@ -15,11 +15,11 @@ public class Ticket : IBaseModel
 
     // Foreign Key
     public Guid BookingId { get; set; }            
-    public Guid ShowtimeSeatId { get; set; }
+    // public Guid ShowtimeSeatId { get; set; }  // No need bc ShowtimeSeat already has a TicketId
 
     // Navigation Properties
-    public Booking Booking { get; set; }
-    public ShowtimeSeat ShowtimeSeat { get; set; }
+    public virtual Booking Booking { get; set; }
+    public virtual ShowtimeSeat ShowtimeSeat { get; set; }
 
     // Navigation Collections
 

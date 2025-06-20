@@ -11,13 +11,15 @@ public class Review : IBaseModel
 
     // Normal Properties
     public int Rating { get; set; }
+
+    [StringLength(1000, ErrorMessage = "Content cannot exceed 1000 characters.")]
     public string Content { get; set; }
 
     // Foreign Key
     public Guid MovieId { get; set; }
 
     // Navigation Properties
-    public Movie Movie { get; set; } 
+    public virtual Movie Movie { get; set; } 
 
     // Navigation Collections
 

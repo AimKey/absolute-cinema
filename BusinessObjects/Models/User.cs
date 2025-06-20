@@ -10,7 +10,10 @@ public class User : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [Required]
+    [StringLength(100)]
     public string Username { get; set; }
+    [Required]
     public string Password { get; set; }
     public string Role { get; set; }
 
@@ -18,10 +21,10 @@ public class User : IBaseModel
     public Guid UserDetailId { get; set; }
 
     // Navigation Properties
-    public UserDetail UserDetail { get; set; }
+    public virtual UserDetail UserDetail { get; set; }
 
     // Navigation Collections
-    public IEnumerable<Booking> Bookings { get; set; }
+    public virtual IEnumerable<Booking> Bookings { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

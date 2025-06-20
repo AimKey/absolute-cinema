@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using Absolute_cinema.Models;
+using Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Absolute_cinema.Controllers

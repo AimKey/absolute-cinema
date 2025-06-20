@@ -19,11 +19,11 @@ public class Showtime : IBaseModel
     public Guid MovieId { get; set; }
 
     // Navigation Properties
-    public Room Room { get; set; }
-    public Movie Movie { get; set; }
+    public virtual Room Room { get; set; }
+    public virtual Movie Movie { get; set; }
 
     // Navigation Collections
-    public IEnumerable<ShowtimeSeat> ShowtimeSeats { get; set; }
+    public virtual IEnumerable<ShowtimeSeat> ShowtimeSeats { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models.BaseModels;
+using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
 using System.ComponentModel.DataAnnotations;
 
 namespace BusinessObjects.Models;
@@ -7,20 +8,24 @@ public class UserDetail : IBaseModel
 {
     // Primary Key
     [Key]
+    [ValidateNever]
     public Guid Id { get; set; }
 
     // Normal properties
+    [StringLength(100, ErrorMessage = "Full Name cannot exceed 100 characters.")]
     public string FullName { get; set; }
     public string AvatarURL { get; set; }
     public string Gender { get; set; }
+
+    [Phone(ErrorMessage = "Invalid phone number format.")]
     public string Phone { get; set; }
-    public DateTime Dob { get; set; }
+    public DateOnly Dob { get; set; }
 
     // Foreign Key
     public Guid UserId { get; set; }
 
     // Navigation properties
-    public User User { get; set; }
+    public virtual User User { get; set; }
 
     // Navigation Collections
 

@@ -3,6 +3,7 @@ using BusinessObjects.Models.BaseModels;
 
 namespace BusinessObjects.Models;
 
+// Composite key defined in the DbContext configuration
 public class ShowtimeSeat : IBaseModel
 {
     // Primary Key
@@ -16,9 +17,9 @@ public class ShowtimeSeat : IBaseModel
     public Guid TicketId { get; set; }
 
     // Navigation Properties
-    public Showtime Showtime { get; set; }
-    public Seat Seat { get; set; }
-    public Ticket Ticket { get; set; }
+    public virtual Showtime Showtime { get; set; }
+    public virtual Seat Seat { get; set; }
+    public virtual Ticket Ticket { get; set; }
 
     // Navigation Collections
 

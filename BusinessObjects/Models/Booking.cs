@@ -7,7 +7,7 @@ public class Booking : IBaseModel
 {
     // Primary Key
     [Key]
-    public int Id { get; set; }
+    public Guid Id { get; set; }
 
     // Normal Properties
     public DateTime BookingDate { get; set; }
@@ -19,11 +19,11 @@ public class Booking : IBaseModel
     public Guid PaymentId { get; set; }
 
     // Navigation Properties
-    public User User { get; set; }
-    public Payment Payment { get; set; }
+    public virtual User User { get; set; }
+    public virtual Payment Payment { get; set; }
 
     // Navigation Collections
-    public IEnumerable<Ticket> Tickets { get; set; }
+    public virtual IEnumerable<Ticket> Tickets { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

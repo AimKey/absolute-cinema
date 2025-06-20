@@ -14,8 +14,8 @@ public class MovieTag : IBaseModel
     public Guid TagId { get; set; }
 
     // Navigation Properties
-    public Movie Movie { get; set; }
-    public Tag Tag { get; set; }
+    public virtual Movie Movie { get; set; }
+    public virtual Tag Tag { get; set; }
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }

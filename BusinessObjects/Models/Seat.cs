@@ -10,8 +10,11 @@ public class Seat : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    [StringLength(50, ErrorMessage = "Seat row name cannot exceed 50 characters.")]
     public string SeatRow { get; set; }                             // e.g., A, B, C, etc.
     public int SeatNumber { get; set; }                             // e.g., 1, 2, 3, etc.
+
+    [StringLength(200, ErrorMessage = "Seat description cannot exceed 200 characters.")]
     public string Description { get; set; }                        
 
     // Foreign Key
@@ -19,11 +22,11 @@ public class Seat : IBaseModel
     public Guid RoomId { get; set; }             
 
     // Navigation Properties
-    public SeatType SeatType { get; set; }  
-    public Room Room { get; set; }
+    public virtual SeatType SeatType { get; set; }  
+    public virtual Room Room { get; set; }
 
     // Navigation Collections
-    public IEnumerable<ShowtimeSeat> ShowtimeSeats { get; set; } 
+    public virtual IEnumerable<ShowtimeSeat> ShowtimeSeats { get; set; } 
 
     // Audit Properties
     public DateTime CreatedAt { get; set; }
