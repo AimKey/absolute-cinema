@@ -1,7 +1,8 @@
 using BusinessObjects.Models;
 using Repositories;
+using Services.Interfaces;
 
-namespace Services;
+namespace Services.Implementations;
 
 public class UserService : IUserService
 {

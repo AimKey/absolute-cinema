@@ -4,6 +4,7 @@ using Absolute_cinema.Models.ViewModels;
 using Common.Constants;
 using Microsoft.AspNetCore.Mvc;
 using Services;
+using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers
 {

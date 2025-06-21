@@ -3,7 +3,7 @@ using DataAccessObjects;
 
 namespace Repositories;
 
-public class ShowtimeSeatRepository : GenericRepository<Showtime>, IShowtimeSeatRepository
+public class ShowtimeSeatRepository : GenericRepository<ShowtimeSeat>, IShowtimeSeatRepository
 {
     private readonly AbsoluteCinemaContext _context;
 
