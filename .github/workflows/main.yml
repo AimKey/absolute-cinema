@@ -31,6 +31,7 @@ jobs: # Defines the jobs in the workflow.
         uses: actions/setup-node@v3
         with:
           node-version: 18
+          cache: 'npm'
           
       - name: Setup node_modules # Setup the node_modules (including tailwind)
         run: npm install
