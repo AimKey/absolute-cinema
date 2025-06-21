@@ -19,7 +19,7 @@ public class UserDetail : IBaseModel
 
     [Phone(ErrorMessage = "Invalid phone number format.")]
     public string Phone { get; set; }
-    public DateOnly Dob { get; set; }
+    public DateOnly? Dob { get; set; }
 
     // Foreign Key
     public Guid UserId { get; set; }
@@ -30,10 +30,10 @@ public class UserDetail : IBaseModel
     // Navigation Collections
 
     // Audit properties
-    public DateTime CreatedAt { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public Guid UpdatedBy { get; set; }
-    public DateTime RemovedAt { get; set; }
-    public Guid RemovedBy { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public Guid? CreatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public Guid? UpdatedBy { get; set; }
+    public DateTime? RemovedAt { get; set; }
+    public Guid? RemovedBy { get; set; }
 }

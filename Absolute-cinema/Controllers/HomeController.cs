@@ -1,22 +1,35 @@
 using System.Diagnostics;
 using Absolute_cinema.Models;
+using Absolute_cinema.Models.ViewModels;
 using Common.Constants;
 using Microsoft.AspNetCore.Mvc;
+using Services;
+using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers
 {
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
+        private readonly IUserService _userService;
 
-        public HomeController(ILogger<HomeController> logger)
+        public HomeController(ILogger<HomeController> logger, IUserService userService)
         {
             _logger = logger;
+            _userService = userService;
         }
 
         public IActionResult Index()
         {
-            return View();
+            var firstUser = _userService.GetAll().FirstOrDefault();
+            var userVM = new TestUserVM
+            {
+                Username = firstUser.Username,
+                Role = firstUser.Role,
+                Password = firstUser.Password,
+                UserDetail = firstUser.UserDetail,
+            };
+            return View(userVM);
         }
 
         public IActionResult Privacy()
