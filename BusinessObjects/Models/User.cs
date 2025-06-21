@@ -13,12 +13,13 @@ public class User : IBaseModel
     [Required]
     [StringLength(100)]
     public string Username { get; set; }
+    // [Required]
+    // [StringLength(100)]   
+    // [EmailAddress]
+    // public string Email { get; set; }
     [Required]
     public string Password { get; set; }
     public string Role { get; set; }
-
-    // Foreign Key
-    public Guid UserDetailId { get; set; }
 
     // Navigation Properties
     public virtual UserDetail UserDetail { get; set; }
@@ -27,10 +28,10 @@ public class User : IBaseModel
     public virtual IEnumerable<Booking> Bookings { get; set; }
 
     // Audit Properties
-    public DateTime CreatedAt { get; set; }
-    public Guid CreatedBy { get; set; }
-    public DateTime UpdatedAt { get; set; }
-    public Guid UpdatedBy { get; set; }
-    public DateTime RemovedAt { get; set; }
-    public Guid RemovedBy { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public Guid? CreatedBy { get; set; }
+    public DateTime? UpdatedAt { get; set; }
+    public Guid? UpdatedBy { get; set; }
+    public DateTime? RemovedAt { get; set; }
+    public Guid? RemovedBy { get; set; }
 }

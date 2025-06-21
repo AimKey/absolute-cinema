@@ -7,6 +7,13 @@ namespace DataAccessObjects
 {
     public class AbsoluteCinemaContext : DbContext
     {
+        public AbsoluteCinemaContext(DbContextOptions options) : base(options)
+        {
+        }
+
+        public AbsoluteCinemaContext()
+        {
+        }
         private string GetConnectionString()
         {
             IConfiguration configuration = new ConfigurationBuilder()
@@ -18,7 +25,9 @@ namespace DataAccessObjects
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(GetConnectionString());
+            optionsBuilder
+                .UseLazyLoadingProxies() // Allow lazy loading like spring boot 
+                .UseSqlServer(GetConnectionString());
         }
 
         // DbSet properties for each model
