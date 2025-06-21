@@ -32,9 +32,10 @@ jobs: # Defines the jobs in the workflow.
         with:
           node-version: 18
           cache: 'npm'
+          cache-dependency-path: ./Absolute-cinema/package-lock.json
           
       - name: Setup node_modules # Setup the node_modules (including tailwind)
-        run: npm install
+        run: npm ci # This command is used in automated environment. Read more here: https://stackoverflow.com/questions/52499617/what-is-the-difference-between-npm-install-and-npm-ci
         working-directory: ./Absolute-cinema
 
       - name: Build # Builds the project.
