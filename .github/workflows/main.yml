@@ -13,6 +13,7 @@ env:
 jobs: # Defines the jobs in the workflow.
   publish: # The 'publish' job.
     runs-on: ubuntu-latest # The type of runner that the job will run on.
+    environment: production # The name of this env
 
     steps: # Steps for the 'publish' job.
       - name: Checkout code # Checks out the repository code.
