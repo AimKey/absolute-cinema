@@ -19,6 +19,12 @@ namespace DataAccessObjects.Configurations
                 .WithOne(b => b.User)
                 .HasForeignKey(b => b.UserId)
                 .IsRequired(false); // Optional relationship
+
+            // User - Reviews
+            builder.HasMany(u => u.Reviews)
+                .WithOne(b => b.User)
+                .HasForeignKey(b => b.UserId) 
+                .IsRequired(false);
         }
     }
 }

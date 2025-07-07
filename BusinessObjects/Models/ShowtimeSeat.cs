@@ -9,11 +9,12 @@ public class ShowtimeSeat : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    //public bool IsBooked { get; set; }
 
     // Foreign Key
     public Guid ShowtimeId { get; set; }
     public Guid SeatId { get; set; }
-    public Guid TicketId { get; set; }
+    public Guid? TicketId { get; set; }
 
     // Navigation Properties
     public virtual Showtime Showtime { get; set; }

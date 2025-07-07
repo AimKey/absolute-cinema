@@ -13,6 +13,7 @@ public class Showtime : IBaseModel
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public decimal BasePrice { get; set; }
+    public bool Status { get; set; } = true;
 
     // Foreign Key
     public Guid RoomId { get; set; }
