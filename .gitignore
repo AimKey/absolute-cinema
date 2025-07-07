@@ -58,3 +58,6 @@ nunit-*.xml
 
 # Node modules
 node_modules/
+
+# Publish folder
+publish
