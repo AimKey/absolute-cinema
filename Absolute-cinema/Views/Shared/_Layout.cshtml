@@ -1,51 +1,347 @@
 ﻿<!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Absolute_cinema</title>
+    <title>@ViewData["Title"] - Absolute Cinema</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    @* Tailwind run in this style *@
-    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="~/css/Layout/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Absolute_cinema.styles.css" asp-append-version="true" />
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    animation: {
+                        'pulse-slow': 'pulse 2s infinite',
+                        'bounce-slow': 'bounce 2s infinite',
+                        'spin-slow': 'spin 2s linear infinite',
+                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                        'float': 'float 3s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'slide-in': 'slideIn 0.3s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'scale-in': 'scaleIn 0.3s ease-out',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 5px rgba(239, 68, 68, 0.5)' },
+                            '100%': { boxShadow: '0 0 20px rgba(239, 68, 68, 0.8)' }
+                        },
+                        slideIn: {
+                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(10px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' }
+                        },
+                        scaleIn: {
+                            '0%': { transform: 'scale(0.9)', opacity: '0' },
+                            '100%': { transform: 'scale(1)', opacity: '1' }
+                        }
+                    },
+                    backdropBlur: {
+                        xs: '2px',
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(239, 68, 68, 0.5)',
+                        'glow-lg': '0 0 30px rgba(239, 68, 68, 0.6)',
+                        'inner-glow': 'inset 0 0 10px rgba(239, 68, 68, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
 </head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">Absolute_cinema</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+<body class="bg-gray-900 text-white">
+    <!-- Header Navigation -->
+    <header class="fixed w-full top-0 z-50 transition-all duration-500 ease-in-out" id="navbar">
+        <nav class="container mx-auto px-4 py-4">
+            <div class="flex items-center justify-between">
+                <!-- Logo -->
+                <div class="flex items-center space-x-2 group cursor-pointer">
+                    <i class="fas fa-film text-red-500 text-2xl animate-float group-hover:animate-spin-slow transition-all duration-300"></i>
+                    <a class="text-2xl font-bold text-white no-underline hover:bg-gradient-to-r hover:from-red-500 hover:to-orange-500 hover:bg-clip-text hover:text-transparent transition-all duration-300 transform hover:scale-105"
+                       asp-area="" asp-controller="Home" asp-action="Index">
+                        Absolute Cinema
+                    </a>
+                </div>
+
+                <!-- Desktop Navigation -->
+                <div class="hidden md:flex items-center space-x-8">
+                    <a asp-area="" asp-controller="Home" asp-action="Index"
+                       class="nav-link-hover text-white hover:text-red-500 transition-all duration-300 no-underline py-2">
+                        <span>Trang chủ</span>
+                    </a>
+                    <a asp-area="" asp-controller="Movies" asp-action="Index"
+                       class="nav-link-hover text-white hover:text-red-500 transition-all duration-300 no-underline py-2">
+                        <span>Phim lẻ</span>
+                    </a>
+                    <a asp-area="" asp-controller="Movie" asp-action="Index"
+                       class="nav-link-hover text-white hover:text-red-500 transition-all duration-300 no-underline py-2">
+                        <span>Phim bộ</span>
+                    </a>
+                    <a asp-area="" asp-controller="Movie" asp-action="Index"
+                       class="nav-link-hover text-white hover:text-red-500 transition-all duration-300 no-underline py-2">
+                        <span>Phim chiếu rạp</span>
+                    </a>
+                    <div class="relative group">
+                        <button class="nav-link-hover text-white hover:text-red-500 transition-all duration-300 py-2">
+                            <span>Thể loại</span>
+                            <i class="fas fa-chevron-down ml-1 text-xs transform group-hover:rotate-180 transition-transform duration-300"></i>
+                        </button>
+                        <div class="dropdown-menu absolute top-full left-0 mt-2 w-64 bg-gray-800/95 backdrop-blur-md border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 animate-slide-in">
+                            <div class="grid grid-cols-2 gap-2 p-4">
+                                <a asp-area="" asp-controller="Genre" asp-action="Action"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-fist-raised mr-2 group-hover:animate-bounce"></i>Hành động
+                                </a>
+                                <a asp-area="" asp-controller="Genre" asp-action="Horror"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-ghost mr-2 group-hover:animate-bounce"></i>Kinh dị
+                                </a>
+                                <a asp-area="" asp-controller="Genre" asp-action="Comedy"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-laugh mr-2 group-hover:animate-bounce"></i>Hài hước
+                                </a>
+                                <a asp-area="" asp-controller="Genre" asp-action="Romance"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-heart mr-2 group-hover:animate-bounce"></i>Tình cảm
+                                </a>
+                                <a asp-area="" asp-controller="Genre" asp-action="SciFi"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-rocket mr-2 group-hover:animate-bounce"></i>Khoa học
+                                </a>
+                                <a asp-area="" asp-controller="Genre" asp-action="Adventure"
+                                   class="dropdown-item text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300 group">
+                                    <i class="fas fa-map mr-2 group-hover:animate-bounce"></i>Phiêu lưu
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Search Bar & User Actions -->
+                <div class="hidden md:flex items-center space-x-4">
+                    <!-- Search Form -->
+                    <form asp-area="" asp-controller="Search" asp-action="Index" method="get">
+                        <div class="relative group">
+                            <input type="text" name="query" placeholder="Tìm kiếm phim..."
+                                   class="search-input bg-gray-800 text-white px-4 py-2 rounded-full w-64 focus:outline-none focus:ring-2 focus:ring-red-500 transition-all duration-300">
+                            <button type="submit" class="search-btn absolute right-3 top-2 text-gray-400 hover:text-red-500 transition-all duration-300">
+                                <i class="fas fa-search"></i>
+                            </button>
+                        </div>
+                    </form>
+
+                    <!-- User Authentication Area -->
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <!-- User Menu for Authenticated Users -->
+                        <div class="relative group">
+                            <button class="flex items-center space-x-2 text-white hover:text-red-500 transition-all duration-300 hover:scale-105">
+                                <i class="fas fa-user-circle text-xl animate-pulse-slow"></i>
+                                <span>@User.Identity.Name</span>
+                                <i class="fas fa-chevron-down text-xs transform group-hover:rotate-180 transition-transform duration-300"></i>
+                            </button>
+                            <div class="user-menu absolute top-full right-0 mt-2 w-48 bg-gray-800/95 backdrop-blur-md border border-gray-700 rounded-lg shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 animate-slide-in">
+                                <div class="p-2">
+                                    <a asp-area="" asp-controller="Account" asp-action="Profile"
+                                       class="dropdown-item flex items-center space-x-2 text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300">
+                                        <i class="fas fa-user"></i><span>Hồ sơ</span>
+                                    </a>
+                                    <a asp-area="" asp-controller="Account" asp-action="Settings"
+                                       class="dropdown-item flex items-center space-x-2 text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300">
+                                        <i class="fas fa-cog"></i><span>Cài đặt</span>
+                                    </a>
+                                    <a asp-area="" asp-controller="Movie" asp-action="Favorites"
+                                       class="dropdown-item flex items-center space-x-2 text-gray-300 hover:text-white text-sm no-underline p-2 rounded transition-all duration-300">
+                                        <i class="fas fa-heart animate-pulse"></i><span>Yêu thích</span>
+                                    </a>
+                                    <hr class="border-gray-600 my-2">
+                                    <a asp-area="" asp-controller="Account" asp-action="Logout"
+                                       class="dropdown-item flex items-center space-x-2 text-red-400 hover:text-red-300 text-sm no-underline p-2 rounded transition-all duration-300">
+                                        <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <!-- Login/Register Buttons for Non-Authenticated Users -->
+                        <div class="flex items-center space-x-3">
+                            <a asp-area="" asp-controller="Account" asp-action="Login"
+                               class="text-white hover:text-red-500 transition-all duration-300 no-underline hover:scale-105">
+                                <i class="fas fa-sign-in-alt mr-1"></i>Đăng nhập
+                            </a>
+                            <a asp-area="" asp-controller="Account" asp-action="Register"
+                               class="login-btn bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-4 py-2 rounded-full font-semibold transition-all duration-300 no-underline hover:scale-105 hover:shadow-glow-lg relative overflow-hidden group">
+                                <span class="shimmer absolute inset-0 bg-gradient-to-r from-white/20 to-white/10 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-500"></span>
+                                <span class="relative"><i class="fas fa-user-plus mr-2"></i>Đăng ký</span>
+                            </a>
+                        </div>
+                    }
+                </div>
+
+            </div>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main role="main" class="pt-20">
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-black py-12 mt-16">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <div class="animate-fade-in">
+                    <div class="flex items-center space-x-2 mb-4 group cursor-pointer">
+                        <i class="fas fa-film text-red-500 text-2xl animate-float group-hover:animate-spin-slow"></i>
+                        <h3 class="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Absolute Cinema</h3>
+                    </div>
+                    <p class="text-gray-400 mb-4">
+                        Trang web xem phim trực tuyến hàng đầu với chất lượng cao và cập nhật liên tục.
+                    </p>
+                    <div class="flex space-x-4">
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-500 transition-all duration-300">
+                            <i class="fab fa-facebook text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-blue-400 transition-all duration-300">
+                            <i class="fab fa-twitter text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-pink-500 transition-all duration-300">
+                            <i class="fab fa-instagram text-xl"></i>
+                        </a>
+                        <a href="#" class="social-icon text-gray-400 hover:text-red-500 transition-all duration-300">
+                            <i class="fab fa-youtube text-xl"></i>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="animate-slide-up">
+                    <h4 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Thể Loại</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>
+                            <a asp-area="" asp-controller="Genre" asp-action="Action"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Hành Động
+                            </a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                        <li>
+                            <a asp-area="" asp-controller="Genre" asp-action="Romance"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Tình Cảm
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Genre" asp-action="Horror"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Kinh Dị
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Genre" asp-action="Animation"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Hoạt Hình
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="animate-slide-up" style="animation-delay: 0.1s;">
+                    <h4 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Quốc Gia</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>
+                            <a asp-area="" asp-controller="Country" asp-action="Vietnam"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Việt Nam
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Country" asp-action="Korea"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Hàn Quốc
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Country" asp-action="China"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Trung Quốc
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Country" asp-action="USA"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Phim Âu Mỹ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+
+                <div class="animate-slide-up" style="animation-delay: 0.2s;">
+                    <h4 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Hỗ Trợ</h4>
+                    <ul class="space-y-2 text-gray-400">
+                        <li>
+                            <a asp-area="" asp-controller="Home" asp-action="Contact"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Liên Hệ
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Home" asp-action="Terms"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Điều Khoản
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>Chính Sách
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-area="" asp-controller="Home" asp-action="DMCA"
+                               class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                                <i class="fas fa-chevron-right mr-2 text-xs group-hover:animate-bounce"></i>DMCA
+                            </a>
                         </li>
                     </ul>
                 </div>
             </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - Absolute_cinema - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+            <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
+                <p class="animate-pulse-slow">
+                    &copy; 2025 - <span class="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent font-semibold">Absolute Cinema</span> -
+                    <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                       class="hover:text-red-500 no-underline transition-all duration-300 hover:scale-105">
+                        Chính sách bảo mật
+                    </a>
+                </p>
+            </div>
         </div>
     </footer>
+
+    <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    <script src="~/js/Layout/layout.js" asp-append-version="true"></script>
+
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>
