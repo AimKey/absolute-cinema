@@ -1,208 +1,330 @@
 ﻿
-using Absolute_cinema.Models.ViewModels;
-using Microsoft.AspNetCore.Mvc;
-
 namespace Absolute_cinema.Controllers.Movies;
 
-    public class MoviesController : Controller
+using Microsoft.AspNetCore.Mvc;
+using BusinessObjects.Models;
+using Absolute_cinema.Models.ViewModels;
+using Services.Interfaces;
+using System.Collections.Generic;
+
+public class MoviesController : Controller
+{
+    // Dependency injection for services
+    private readonly IMovieService _movieService;
+    private readonly ITagService _tagService;
+
+    // Constructor to inject services
+    public MoviesController(IMovieService movieService, ITagService tagService)
     {
-        public IActionResult Index(string search = "", string[] tags = null, string country = "", string quality = "", int page = 1)
-        {
-            // Mock data - trong thực tế sẽ lấy từ database
-            var movies = GetMockMovies();
-
-            // Apply filters
-            if (!string.IsNullOrEmpty(search))
-            {
-                movies = movies.Where(m => m.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                                         m.OriginalTitle.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
-            }
-
-        //if (tags != null && tags.Any())
-        //{
-        //    movies = movies.Where(m => tags.Any(tag => m.MovieTags.Contains(tag))).ToList();
-        //}
-
-        if (!string.IsNullOrEmpty(country))
-            {
-                movies = movies.Where(m => m.Country == country).ToList();
-            }
-
-            if (!string.IsNullOrEmpty(quality))
-            {
-                movies = movies.Where(m => m.Quality == quality).ToList();
-            }
-
-            // Pagination
-            int pageSize = 12;
-            var totalMovies = movies.Count();
-            var totalPages = (int)Math.Ceiling((double)totalMovies / pageSize);
-
-            movies = movies.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            ViewBag.CurrentPage = page;
-            ViewBag.TotalPages = totalPages;
-            ViewBag.Search = search;
-            ViewBag.SelectedTags = tags ?? new string[0];
-            ViewBag.Country = country;
-            ViewBag.Quality = quality;
-            ViewBag.AllTags = GetAllTags();
-
-            return View(movies);
-        }
-
-        private List<MovieVM> GetMockMovies()
-        {
-            var tags = GetAllTags();
-
-            return new List<MovieVM>
-            {
-                new MovieVM
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Avengers: Endgame",
-                    OriginalTitle = "Avengers: Endgame",
-                    Description = "Sau những sự kiện tàn khốc của Infinity War, vũ trụ đang trong tình trạng hỗn loạn...",
-                    Duration = 181,
-                    ReleaseDate = new DateTime(2019, 4, 26),
-                    Country = "Mỹ",
-                    PosterURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    BackgroundURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    TrailerURL = "https://youtube.com/watch?v=example",
-                    ImdbRating = 8.4m,
-                    AgeRestriction = 13,
-                    Status = "Active",
-                    Language = "Tiếng Anh",
-                    Quality = "4K",
-                    ViewCount = 2500000,
-                    IsFeatured = true,
-                    IsNewRelease = false,
-                    Price = 50000,
-                    IsFree = false,
-                    MovieTags = new List<MovieTagVM>
-                    {
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Hành động") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Khoa học viễn tưởng") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Phiêu lưu") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Siêu anh hùng") }
-                    }
-                },
-                new MovieVM
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Parasite",
-                    OriginalTitle = "기생충",
-                    Description = "Một gia đình nghèo khó lên kế hoạch xâm nhập vào cuộc sống của một gia đình giàu có...",
-                    Duration = 132,
-                    ReleaseDate = new DateTime(2019, 5, 30),
-                    Country = "Hàn Quốc",
-                    PosterURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    BackgroundURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    TrailerURL = "https://youtube.com/watch?v=example",
-                    ImdbRating = 8.6m,
-                    AgeRestriction = 16,
-                    Status = "Active",
-                    Language = "Tiếng Hàn",
-                    Quality = "HD",
-                    ViewCount = 1800000,
-                    IsFeatured = true,
-                    IsNewRelease = false,
-                    Price = 40000,
-                    IsFree = false,
-                    MovieTags = new List<MovieTagVM>
-                    {
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Tâm lý") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Chính kịch") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Kinh dị") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Hài đen") }
-                    }
-                },
-                new MovieVM
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "Spirited Away",
-                    OriginalTitle = "千と千尋の神隠し",
-                    Description = "Chihiro, một cô bé 10 tuổi, phải làm việc trong thế giới thần linh để cứu cha mẹ...",
-                    Duration = 125,
-                    ReleaseDate = new DateTime(2001, 7, 20),
-                    Country = "Nhật Bản",
-                    PosterURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    BackgroundURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    TrailerURL = "https://youtube.com/watch?v=example",
-                    ImdbRating = 9.2m,
-                    AgeRestriction = 0,
-                    Status = "Active",
-                    Language = "Tiếng Nhật",
-                    Quality = "HD",
-                    ViewCount = 3200000,
-                    IsFeatured = true,
-                    IsNewRelease = false,
-                    Price = 0,
-                    IsFree = true,
-                    MovieTags = new List<MovieTagVM>
-                    {
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Hoạt hình") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Gia đình") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Phiêu lưu") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Kỳ ảo") }
-                    }
-                },
-                new MovieVM
-                {
-                    Id = Guid.NewGuid(),
-                    Title = "The Dark Knight",
-                    OriginalTitle = "The Dark Knight",
-                    Description = "Batman phải đối mặt với Joker, một tên tội phạm tâm thần nguy hiểm...",
-                    Duration = 152,
-                    ReleaseDate = new DateTime(2008, 7, 18),
-                    Country = "Mỹ",
-                    PosterURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    BackgroundURL = "https://static.nutscdn.com/vimg/300-0/10b33f7b9386bc265a085073c7aca6d5.jpg",
-                    TrailerURL = "https://youtube.com/watch?v=example",
-                    ImdbRating = 9.0m,
-                    AgeRestriction = 13,
-                    Status = "Active",
-                    Language = "Tiếng Anh",
-                    Quality = "4K",
-                    ViewCount = 4200000,
-                    IsFeatured = true,
-                    IsNewRelease = false,
-                    Price = 45000,
-                    IsFree = false,
-                    MovieTags = new List<MovieTagVM>
-                    {
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Hành động") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Tội phạm") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Chính kịch") },
-                        new MovieTagVM { Tag = tags.First(t => t.Name == "Siêu anh hùng") }
-                    }
-                }
-            };
-        }
-
-        private List<TagVM> GetAllTags()
-        {
-            return new List<TagVM>
-            {
-                new TagVM { Id = Guid.NewGuid(), Name = "Hành động", Color = "#ef4444" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Tâm lý", Color = "#8b5cf6" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Hoạt hình", Color = "#06b6d4" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Kinh dị", Color = "#dc2626" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Tình cảm", Color = "#ec4899" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Hài hước", Color = "#f59e0b" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Khoa học viễn tưởng", Color = "#10b981" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Phiêu lưu", Color = "#f97316" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Chính kịch", Color = "#6b7280" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Tội phạm", Color = "#374151" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Gia đình", Color = "#84cc16" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Kỳ ảo", Color = "#a855f7" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Siêu anh hùng", Color = "#3b82f6" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Hài đen", Color = "#1f2937" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Lịch sử", Color = "#92400e" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Chiến tranh", Color = "#7c2d12" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Thể thao", Color = "#059669" },
-                new TagVM { Id = Guid.NewGuid(), Name = "Âm nhạc", Color = "#db2777" }
-            };
-        }
+        _movieService = movieService;
+        _tagService = tagService;
     }
+
+
+    // Index action to display the list of movies with filters and sorting
+    public IActionResult Index(
+            string search = "",
+            string[]? tags = null,
+            string country = "",
+            string quality = "",
+            string year = "",
+            string rating = "",
+            string price = "",
+            string featured = "",
+            string newRelease = "",
+            string sort = "newest",
+            int page = 1)
+    {
+
+        // Get all movies from the service and map to ViewModel
+        var movies = MapToListMovieVM(_movieService.GetAll().ToList());
+        
+        // Apply filters
+        if (!string.IsNullOrEmpty(search))
+        {
+            movies = movies.Where(m =>
+                m.Title.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                m.OriginalTitle.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                m.Description.Contains(search, StringComparison.OrdinalIgnoreCase)).ToList();
+        }
+
+        // Apply tag filters
+        if (tags != null && tags.Any())
+        {
+            movies = movies.Where(m => tags.Any(tag => m.MovieTags.Any(mt => tags.Contains(mt.Tag.Name)))).ToList();
+        }
+
+        // Apply other filters
+        if (!string.IsNullOrEmpty(country))
+        {
+            movies = movies.Where(m => m.Country == country).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(quality))
+        {
+            movies = movies.Where(m => m.Quality == quality).ToList();
+        }
+
+        if (!string.IsNullOrEmpty(year))
+        {
+            switch (year)
+            {
+                case "2024":
+                case "2023":
+                case "2022":
+                case "2021":
+                case "2020":
+                    movies = movies.Where(m => m.ReleaseDate.Year.ToString() == year).ToList();
+                    break;
+                case "2010s":
+                    movies = movies.Where(m => m.ReleaseDate.Year >= 2010 && m.ReleaseDate.Year <= 2019).ToList();
+                    break;
+                case "2000s":
+                    movies = movies.Where(m => m.ReleaseDate.Year >= 2000 && m.ReleaseDate.Year <= 2009).ToList();
+                    break;
+                case "older":
+                    movies = movies.Where(m => m.ReleaseDate.Year < 2000).ToList();
+                    break;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(rating))
+        {
+            switch (rating)
+            {
+                case "9+":
+                    movies = movies.Where(m => m.ImdbRating >= 9.0m).ToList();
+                    break;
+                case "8+":
+                    movies = movies.Where(m => m.ImdbRating >= 8.0m).ToList();
+                    break;
+                case "7+":
+                    movies = movies.Where(m => m.ImdbRating >= 7.0m).ToList();
+                    break;
+                case "6+":
+                    movies = movies.Where(m => m.ImdbRating >= 6.0m).ToList();
+                    break;
+            }
+        }
+
+        if (!string.IsNullOrEmpty(price))
+        {
+            switch (price)
+            {
+                case "free":
+                    movies = movies.Where(m => m.IsFree).ToList();
+                    break;
+                case "paid":
+                    movies = movies.Where(m => !m.IsFree).ToList();
+                    break;
+            }
+        }
+
+        if (featured == "true")
+        {
+            movies = movies.Where(m => m.IsFeatured).ToList();
+        }
+
+        if (newRelease == "true")
+        {
+            movies = movies.Where(m => m.IsNewRelease).ToList();
+        }
+
+        // Apply sorting
+        switch (sort)
+        {
+            case "rating":
+                movies = movies.OrderByDescending(m => m.ImdbRating).ToList();
+                break;
+            case "popular":
+                movies = movies.OrderByDescending(m => m.ViewCount).ToList();
+                break;
+            case "title":
+                movies = movies.OrderBy(m => m.Title).ToList();
+                break;
+            case "year":
+                movies = movies.OrderByDescending(m => m.ReleaseDate).ToList();
+                break;
+            case "newest":
+            default:
+                movies = movies.OrderByDescending(m => m.CreatedAt).ToList();
+                break;
+        }
+
+        // Pagination
+        int pageSize = 12;
+        var totalMovies = movies.Count();
+        var totalPages = (int)Math.Ceiling((double)totalMovies / pageSize);
+
+        movies = movies.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+
+        // Set ViewBag properties
+        ViewBag.CurrentPage = page;
+        ViewBag.TotalPages = totalPages;
+        ViewBag.Search = search;
+        ViewBag.SelectedTags = tags ?? new string[0];
+        ViewBag.Country = country;
+        ViewBag.Quality = quality;
+        ViewBag.Year = year;
+        ViewBag.Rating = rating;
+        ViewBag.Price = price;
+        ViewBag.Featured = featured;
+        ViewBag.NewRelease = newRelease;
+        ViewBag.Sort = sort;
+        ViewBag.AllTags = GetAllTags();
+
+        // Return the view with the filtered and sorted movies
+        return View(movies);
+    }
+
+
+    // Details action to show movie details
+    public IActionResult Details(Guid id)
+    {
+        // Tìm phim theo ID - trong thực tế sẽ query từ database
+        var movie = MapToMovieVM(_movieService.GetById(id));
+
+        if (movie == null)
+        {
+            return NotFound();
+        }
+
+        // Lấy phim liên quan (cùng thể loại)
+        var relatedMovies = _movieService.GetAll()
+            .Where(m => m.Id != id && m.MovieTags.Any(mt => movie.MovieTags.Any(movieTag => movieTag.Tag.Name == mt.Tag.Name)))
+            .Take(6)
+            .ToList();
+
+        ViewBag.RelatedMovies = MapToListMovieVM(relatedMovies);
+
+        return View(movie);
+    }
+
+    // all below is mock data and mapping functions 
+    private List<TagVM> GetAllTags()
+    {
+        List<Tag> tags = _tagService.GetAll().ToList();
+        return MaptoTagVM(tags);
+    }
+
+    private List<TagVM> MaptoTagVM (List<Tag> tags)
+    {
+        return tags.Select(t => new TagVM
+        {
+            Id = t.Id,
+            Name = t.Name,
+        }).ToList();
+    }
+
+    private MovieVM MapToMovieVM(Movie m)
+    {
+        return new MovieVM
+        {
+            Id = m.Id,
+            Title = m.Title,
+            OriginalTitle = m.OriginalTitle,
+            Description = m.Description,
+            Duration = m.Duration,
+            ReleaseDate = m.ReleaseDate,
+            Country = m.Country,
+            PosterURL = m.PosterURL,
+            BackgroundURL = m.BackgroundURL,
+            TrailerURL = m.TrailerURL,
+            ImdbRating = m.ImdbRating,
+            AgeRestriction = m.AgeRestriction,
+            Status = m.Status,
+            Language = "ENG",
+            Quality = "HD",
+            ViewCount = 1000,
+            IsFeatured = true,
+            IsNewRelease = true,
+            Price = 5000,
+            IsFree = true,
+            CreatedAt = DateTime.Now,
+            MovieActors = MapToMovieActorVM(m.MovieActors?.ToList() ?? new List<MovieActor>()),
+            MovieDirectors = MapToMovieDirectorVM(m.MovieDirectors?.ToList() ?? new List<MovieDirector>()),
+            MovieTags = MapToMovieTagVM(m.MovieTags?.ToList() ?? new List<MovieTag>())
+        };
+    } 
+
+    private List<MovieVM> MapToListMovieVM(List<Movie> movies)
+    {
+        return movies.Select(m => new MovieVM
+        {
+            Id = m.Id,
+            Title = m.Title,
+            OriginalTitle = m.OriginalTitle,
+            Description = m.Description,
+            Duration = m.Duration,
+            ReleaseDate = m.ReleaseDate,
+            Country = m.Country,
+            PosterURL = m.PosterURL,
+            BackgroundURL = m.BackgroundURL,
+            TrailerURL = m.TrailerURL,
+            ImdbRating = m.ImdbRating,
+            AgeRestriction = m.AgeRestriction,
+            Status = m.Status,
+            Language = "ENG",
+            Quality = "HD",
+            ViewCount = 1000,
+            IsFeatured = true,
+            IsNewRelease =true,
+            Price = 5000,
+            IsFree = true,
+            CreatedAt = DateTime.Now,
+            MovieTags = MapToMovieTagVM(m.MovieTags?.ToList() ?? new List<MovieTag>())
+        }).ToList();
+    }
+
+    private List<MovieTagVM> MapToMovieTagVM(List<MovieTag> movieTags)
+    {
+        return movieTags.Select(mt => new MovieTagVM
+        {
+            Id = mt.Id,
+            MovieId = mt.MovieId,
+            TagId = mt.TagId,
+            Tag = new TagVM
+            {
+                Id = mt.Tag.Id,
+                Name = mt.Tag.Name,
+                Color = "#ef4444"
+            }
+        }).ToList();
+    }
+
+    private List<MovieActorVM> MapToMovieActorVM(List<MovieActor> movieActors)
+    {
+        return movieActors.Select(ma => new MovieActorVM
+        {
+            Id = ma.Id,
+            MovieId = ma.MovieId,
+            ActorId = ma.ActorId,
+            Actor = new ActorVM
+            {
+                Id = ma.Actor.Id,
+                Name = ma.Actor.Name,
+                AvatarURL = ma.Actor.AvatarURL
+            }
+        }).ToList();
+    }
+
+    private List<MovieDirectorVM> MapToMovieDirectorVM(List<MovieDirector> movieDirectors)
+    {
+        return movieDirectors.Select(md => new MovieDirectorVM
+        {
+            Id = md.Id,
+            MovieId = md.MovieId,
+            DirectorId = md.DirectorId,
+            Director = new DirectorVM
+            {
+                Id = md.Director.Id,
+                Name = md.Director.Name,
+                AvatarURL = md.Director.AvatarURL
+            }
+        }).ToList();
+    }
+
+
+}
+
 

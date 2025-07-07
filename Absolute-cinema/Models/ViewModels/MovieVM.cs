@@ -22,7 +22,10 @@ public class MovieVM
     public bool IsFeatured { get; set; }
     public bool IsNewRelease { get; set; }
     public List<MovieTagVM> MovieTags;
+    public List<MovieActorVM> MovieActors;
+    public List<MovieDirectorVM> MovieDirectors;
     public decimal Price { get; set; }
     public bool IsFree { get; set; }
+    public DateTime CreatedAt { get; set; }
 
 }

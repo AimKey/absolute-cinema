@@ -7,5 +7,5 @@ public class TagVM
     public Guid Id { get; set; }
     public string Name { get; set; }
     public string Color { get; set; }
-    public virtual IEnumerable<MovieTagVM> MovieTags { get; set; }
+    public virtual List<MovieTagVM> MovieTags { get; set; }
 }

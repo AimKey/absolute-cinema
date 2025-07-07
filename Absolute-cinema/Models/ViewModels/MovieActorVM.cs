@@ -1,11 +1,11 @@
 ﻿namespace Absolute_cinema.Models.ViewModels;
 
-public class MovieTagVM
+public class MovieActorVM
 {
     public Guid Id { get; set; }
     public Guid MovieId { get; set; }
-    public Guid TagId { get; set; }
+    public Guid ActorId { get; set; }
 
     public virtual MovieVM Movie { get; set; }
-    public virtual TagVM Tag { get; set; }
+    public virtual ActorVM Actor { get; set; }
 }
