@@ -30,6 +30,7 @@ namespace DataAccessObjects
                 .UseSqlServer(GetConnectionString());
         }
 
+
         // DbSet properties for each model
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Booking> Bookings { get; set; }
@@ -63,6 +64,5 @@ namespace DataAccessObjects
             // modelBuilder.ApplyConfiguration(new SeatConfiguration());
             // modelBuilder.ApplyConfiguration(new RoomConfiguration());
         }
-
     }
 }

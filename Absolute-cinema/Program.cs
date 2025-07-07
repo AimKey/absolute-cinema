@@ -3,6 +3,8 @@ using Repositories;
 using Services;
 using Services.Interfaces;
 using Services.Implementations;
+using Common.Helper;
+using Services.Helpers;
 
 namespace Absolute_cinema
 {
@@ -24,6 +26,7 @@ namespace Absolute_cinema
             
             // Allow page to access the session directly
             builder.Services.AddHttpContextAccessor(); 
+
             // Add session
             builder.Services.AddSession(options =>
             {
@@ -33,6 +36,13 @@ namespace Absolute_cinema
             });
             
             var app = builder.Build();
+
+            // Seed data
+            using (var scope = app.Services.CreateScope())
+            {
+                var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+                initializer.Seed();
+            }
 
             // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
@@ -87,6 +97,11 @@ namespace Absolute_cinema
             
             // Review Services
             builder.Services.AddScoped<IReviewService, ReviewService>();
+
+            // Password services
+            builder.Services.AddScoped<IHashPasswordService, HashPasswordService>();
+            // Db init services
+            builder.Services.AddScoped<DbInitializer>();
         }
         
         private static void SetupRepos(WebApplicationBuilder builder)
