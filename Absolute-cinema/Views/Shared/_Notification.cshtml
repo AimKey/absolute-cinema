@@ -1,0 +1,64 @@
+@using Common
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if (TempData["msg"] != null)
+{
+    <script>
+        console.log("Notification script loaded with message: @TempData["msg"]");
+        console.log("Message type: @TempData[StatusConstants.MessageType]?.ToString().ToLower()");
+        document.addEventListener('DOMContentLoaded', function () {
+            switch ('@TempData[StatusConstants.MessageType]?.ToString().ToLower()') {
+                case '@StatusConstants.Success':
+                    Swal.fire({
+                        title: 'Success',
+                        text: '@TempData["msg"]',
+                        icon: 'success',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'btn btn-success'
+                        },
+                        buttonsStyling: false
+                    });
+                    break;
+                case '@StatusConstants.Error':
+                    Swal.fire({
+                        title: 'Error',
+                        text: '@TempData["msg"]',
+                        icon: 'error',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'btn btn-danger'
+                        },
+                        buttonsStyling: false
+                    });
+                    break;
+                case '@StatusConstants.Warning':
+                    Swal.fire({
+                        title: 'Warning',
+                        text: '@TempData["msg"]',
+                        icon: 'warning',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'btn btn-warning'
+                        },
+                        buttonsStyling: false
+                    });
+                    break;
+                case '@StatusConstants.Info':
+                default:
+                    Swal.fire({
+                        title: 'Info',
+                        text: '@TempData["msg"]',
+                        icon: 'info',
+                        confirmButtonText: 'OK',
+                        customClass: {
+                            confirmButton: 'btn btn-info'
+                        },
+                        buttonsStyling: false
+                    });
+                    break;
+            }
+        });
+    </script>
+}
+

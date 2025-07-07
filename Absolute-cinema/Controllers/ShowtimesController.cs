@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
 using DataAccessObjects;
 using Services.Interfaces;
+using Common.ViewModels.ShowtimeVMs;
+using Common.Constants;
 
 namespace Absolute_cinema.Controllers
 {
@@ -25,10 +27,10 @@ namespace Absolute_cinema.Controllers
         }
 
         // GET: Showtimes
-        public async Task<IActionResult> Index()
+        public async Task<IActionResult> Index(ViewAllShowtimeVM vm)
         {
-            var list = _showtimeService.GetAll();
-            return View(list);
+            var vms = _showtimeService.GetAllVM(vm);
+            return View(vms);
         }
 
         // GET: Showtimes/Details/5
@@ -141,7 +143,8 @@ namespace Absolute_cinema.Controllers
             if (showtime != null)
             {
                 _showtimeService.Delete(showtime);
-            } else
+            }
+            else
             {
                 return NotFound();
             }
@@ -150,7 +153,7 @@ namespace Absolute_cinema.Controllers
 
         private bool ShowtimeExists(Guid id)
         {
-            return _showtimeService.GetAll().Any(e => e.Id == id);
+            return _showtimeService.GetById(id) != null;
         }
 
         private void SetupSelectListForMovieAndRoom()

@@ -1,84 +1,99 @@
 ﻿@model BusinessObjects.Models.Showtime
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Create Showtime";
+    Layout = "Admin/_AdminLayout";
 }
 
-<h1>Create</h1>
-
-<h4>Showtime</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="StartTime" class="control-label"></label>
-                <input asp-for="StartTime" class="form-control" />
-                <span asp-validation-for="StartTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="EndTime" class="control-label"></label>
-                <input asp-for="EndTime" class="form-control" />
-                <span asp-validation-for="EndTime" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="BasePrice" class="control-label"></label>
-                <input asp-for="BasePrice" class="form-control" />
-                <span asp-validation-for="BasePrice" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="Status" /> @Html.DisplayNameFor(model => model.Status)
-                </label>
-            </div>
-            <div class="form-group">
-                <label asp-for="RoomId" class="control-label"></label>
-                <select asp-for="RoomId" class ="form-control" asp-items="ViewBag.RoomId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="MovieId" class="control-label"></label>
-                <select asp-for="MovieId" class ="form-control" asp-items="ViewBag.MovieId"></select>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedAt" class="control-label"></label>
-                <input asp-for="CreatedAt" class="form-control" />
-                <span asp-validation-for="CreatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="CreatedBy" class="control-label"></label>
-                <input asp-for="CreatedBy" class="form-control" />
-                <span asp-validation-for="CreatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedAt" class="control-label"></label>
-                <input asp-for="UpdatedAt" class="form-control" />
-                <span asp-validation-for="UpdatedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="UpdatedBy" class="control-label"></label>
-                <input asp-for="UpdatedBy" class="form-control" />
-                <span asp-validation-for="UpdatedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RemovedAt" class="control-label"></label>
-                <input asp-for="RemovedAt" class="form-control" />
-                <span asp-validation-for="RemovedAt" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="RemovedBy" class="control-label"></label>
-                <input asp-for="RemovedBy" class="form-control" />
-                <span asp-validation-for="RemovedBy" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<div class="min-h-screen bg-gray-900 text-gray-100">
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white mb-2 flex items-center">
+                <svg class="w-8 h-8 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                Create Showtime
+            </h1>
+            <p class="text-gray-400">Add a new movie showtime to the schedule</p>
+        </div>
+        <!-- Form Card -->
+        <div class="bg-gray-800 rounded-2xl shadow-2xl border border-gray-700 max-w-2xl mx-auto p-10">
+            <form asp-action="Create">
+                <div asp-validation-summary="ModelOnly" class="text-red-400 mb-4"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label asp-for="StartTime" class="block text-sm font-semibold text-gray-300 mb-1">Start Time</label>
+                        <input asp-for="StartTime" type="datetime-local" class="form-input w-full rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        <span asp-validation-for="StartTime" class="text-red-400 text-xs"></span>
+                    </div>
+                    <div>
+                        <label asp-for="EndTime" class="block text-sm font-semibold text-gray-300 mb-1">End Time</label>
+                        <input asp-for="EndTime" type="datetime-local" class="form-input w-full rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        <span asp-validation-for="EndTime" class="text-red-400 text-xs"></span>
+                    </div>
+                    <div>
+                        <label asp-for="BasePrice" class="block text-sm font-semibold text-gray-300 mb-1">Base Price</label>
+                        <input asp-for="BasePrice" class="form-input w-full rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" />
+                        <span asp-validation-for="BasePrice" class="text-red-400 text-xs"></span>
+                    </div>
+                    <div class="flex items-center mt-6 md:mt-0">
+                        <input class="form-checkbox h-5 w-5 text-blue-600 bg-gray-900 border-gray-700 focus:ring-blue-500" asp-for="Status" />
+                        <label asp-for="Status" class="ml-2 text-sm text-gray-300">Active</label>
+                    </div>
+                    <div>
+                        <label asp-for="RoomId" class="block text-sm font-semibold text-gray-300 mb-1">Room</label>
+                        <select asp-for="RoomId" class="form-select w-full rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" asp-items="ViewBag.RoomId"></select>
+                    </div>
+                    <div>
+                        <label asp-for="MovieId" class="block text-sm font-semibold text-gray-300 mb-1">Movie</label>
+                        <select asp-for="MovieId" class="form-select w-full rounded-lg bg-gray-900 border border-gray-700 text-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition" asp-items="ViewBag.MovieId"></select>
+                    </div>
+                </div>
+                <!-- Collapsible Metadata Section -->
+                <details class="mt-8 mb-6 bg-gray-900 rounded-lg border border-gray-700 p-4">
+                    <summary class="cursor-pointer text-gray-400 font-semibold mb-2">Show advanced fields</summary>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
+                        <div>
+                            <label asp-for="CreatedAt" class="block text-sm font-semibold text-gray-300 mb-1">Created At</label>
+                            <input asp-for="CreatedAt" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="CreatedAt" class="text-red-400 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="CreatedBy" class="block text-sm font-semibold text-gray-300 mb-1">Created By</label>
+                            <input asp-for="CreatedBy" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="CreatedBy" class="text-red-400 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="UpdatedAt" class="block text-sm font-semibold text-gray-300 mb-1">Updated At</label>
+                            <input asp-for="UpdatedAt" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="UpdatedAt" class="text-red-400 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="UpdatedBy" class="block text-sm font-semibold text-gray-300 mb-1">Updated By</label>
+                            <input asp-for="UpdatedBy" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="UpdatedBy" class="text-red-400 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="RemovedAt" class="block text-sm font-semibold text-gray-300 mb-1">Removed At</label>
+                            <input asp-for="RemovedAt" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="RemovedAt" class="text-red-400 text-xs"></span>
+                        </div>
+                        <div>
+                            <label asp-for="RemovedBy" class="block text-sm font-semibold text-gray-300 mb-1">Removed By</label>
+                            <input asp-for="RemovedBy" class="form-input w-full rounded-lg bg-gray-800 border border-gray-700 text-white" />
+                            <span asp-validation-for="RemovedBy" class="text-red-400 text-xs"></span>
+                        </div>
+                    </div>
+                </details>
+                <div class="flex justify-between items-center mt-8">
+                    <button type="submit" class="inline-flex items-center px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl text-lg">
+                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                        Create Showtime
+                    </button>
+                    <a asp-action="Index" class="text-gray-400 hover:text-white underline ml-4 text-base">Back to List</a>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

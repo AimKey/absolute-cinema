@@ -1,72 +1,21 @@
-﻿<!DOCTYPE html>
-<html lang="vi">
+﻿
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - Absolute Cinema</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width" />
+    <title>Admin management</title>
+
+    <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="~/css/Layout/layout.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/Absolute_cinema.styles.css" asp-append-version="true" />
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    animation: {
-                        'pulse-slow': 'pulse 2s infinite',
-                        'bounce-slow': 'bounce 2s infinite',
-                        'spin-slow': 'spin 2s linear infinite',
-                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
-                        'float': 'float 3s ease-in-out infinite',
-                        'glow': 'glow 2s ease-in-out infinite alternate',
-                        'slide-in': 'slideIn 0.3s ease-out',
-                        'slide-up': 'slideUp 0.3s ease-out',
-                        'fade-in': 'fadeIn 0.5s ease-out',
-                        'scale-in': 'scaleIn 0.3s ease-out',
-                    },
-                    keyframes: {
-                        float: {
-                            '0%, 100%': { transform: 'translateY(0px)' },
-                            '50%': { transform: 'translateY(-10px)' }
-                        },
-                        glow: {
-                            '0%': { boxShadow: '0 0 5px rgba(239, 68, 68, 0.5)' },
-                            '100%': { boxShadow: '0 0 20px rgba(239, 68, 68, 0.8)' }
-                        },
-                        slideIn: {
-                            '0%': { transform: 'translateY(-10px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        slideUp: {
-                            '0%': { transform: 'translateY(10px)', opacity: '0' },
-                            '100%': { transform: 'translateY(0)', opacity: '1' }
-                        },
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' }
-                        },
-                        scaleIn: {
-                            '0%': { transform: 'scale(0.9)', opacity: '0' },
-                            '100%': { transform: 'scale(1)', opacity: '1' }
-                        }
-                    },
-                    backdropBlur: {
-                        xs: '2px',
-                    },
-                    boxShadow: {
-                        'glow': '0 0 20px rgba(239, 68, 68, 0.5)',
-                        'glow-lg': '0 0 30px rgba(239, 68, 68, 0.6)',
-                        'inner-glow': 'inset 0 0 10px rgba(239, 68, 68, 0.3)',
-                    }
-                }
-            }
-        }
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="bg-gray-900 text-white">
-    <!-- Header Navigation -->
+<body class ="bg-gray-900 text-white">
+    @* Header *@
     <header class="fixed w-full top-0 z-50 transition-all duration-500 ease-in-out" id="navbar">
         <nav class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
@@ -207,7 +156,7 @@
 
     <!-- Footer -->
     <partial name="_Footer" />
-    
+
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
