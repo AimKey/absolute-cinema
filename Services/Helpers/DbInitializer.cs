@@ -242,44 +242,46 @@ namespace Common.Helper
                 Console.WriteLine("Users seeded.");
             }
 
-            // Seed user details
-            var userDetails = new List<UserDetail>
+            if (!_context.UserDetails.Any())
             {
-                new UserDetail
+                // Seed user details
+                var userDetails = new List<UserDetail>
                 {
-                    Id = Guid.NewGuid(),
-                    FullName = "Admin",
-                    Phone = "1234567890",
-                    Dob = new DateOnly(1990, 1, 1),
-                    Gender = GenderConstants.MALE,
-                    CreatedAt = DateTime.Now,
-                    UserId = users[0].Id
-                },
-                new UserDetail
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "User 1",
-                    Phone = "1234567890",
-                    Dob = new DateOnly(1990, 1, 1),
-                    Gender = GenderConstants.MALE,
-                    CreatedAt = DateTime.Now,
-                    UserId = users[1].Id
-                },
-                new UserDetail
-                {
-                    Id = Guid.NewGuid(),
-                    FullName = "User 2",
-                    Phone = "1234567890",
-                    Dob = new DateOnly(1990, 1, 1),
-                    Gender = GenderConstants.MALE,
-                    CreatedAt = DateTime.Now,
-                    UserId = users[2].Id
-                }
-            };
-
-            _context.UserDetails.AddRange(userDetails);
-            _context.SaveChanges();
-            Console.WriteLine("User details seeded.");
+                    new UserDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "Admin",
+                        Phone = "1234567890",
+                        Dob = new DateOnly(1990, 1, 1),
+                        Gender = GenderConstants.MALE,
+                        CreatedAt = DateTime.Now,
+                        UserId = users[0].Id
+                    },
+                    new UserDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "User 1",
+                        Phone = "1234567890",
+                        Dob = new DateOnly(1990, 1, 1),
+                        Gender = GenderConstants.MALE,
+                        CreatedAt = DateTime.Now,
+                        UserId = users[1].Id
+                    },
+                    new UserDetail
+                    {
+                        Id = Guid.NewGuid(),
+                        FullName = "User 2",
+                        Phone = "1234567890",
+                        Dob = new DateOnly(1990, 1, 1),
+                        Gender = GenderConstants.MALE,
+                        CreatedAt = DateTime.Now,
+                        UserId = users[2].Id
+                    }
+                };
+                _context.UserDetails.AddRange(userDetails);
+                _context.SaveChanges();
+                Console.WriteLine("User details seeded.");
+            }
         }
 
         private void SeedRooms()
