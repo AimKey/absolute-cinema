@@ -10,4 +10,4 @@ public interface IRoomService
     void Update(Room room);
     void Delete(Guid id);
     void Delete(Room room);
-} 
+}

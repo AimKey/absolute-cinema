@@ -1,64 +1,43 @@
 @using Common
-
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @if (TempData["msg"] != null)
 {
     <script>
-        console.log("Notification script loaded with message: @TempData["msg"]");
-        console.log("Message type: @TempData[StatusConstants.MessageType]?.ToString().ToLower()");
         document.addEventListener('DOMContentLoaded', function () {
-            switch ('@TempData[StatusConstants.MessageType]?.ToString().ToLower()') {
+            const message = '@TempData["msg"]';
+            const type = '@TempData[StatusConstants.MessageType]?.ToString().ToLower()';
+            let title = 'Info';
+            let icon = 'info';
+            let buttonClass = 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg';
+
+            switch (type) {
                 case '@StatusConstants.Success':
-                    Swal.fire({
-                        title: 'Success',
-                        text: '@TempData["msg"]',
-                        icon: 'success',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'btn btn-success'
-                        },
-                        buttonsStyling: false
-                    });
+                    title = 'Success';
+                    icon = 'success';
+                    buttonClass = 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg';
                     break;
                 case '@StatusConstants.Error':
-                    Swal.fire({
-                        title: 'Error',
-                        text: '@TempData["msg"]',
-                        icon: 'error',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'btn btn-danger'
-                        },
-                        buttonsStyling: false
-                    });
+                    title = 'Error';
+                    icon = 'error';
+                    buttonClass = 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg';
                     break;
                 case '@StatusConstants.Warning':
-                    Swal.fire({
-                        title: 'Warning',
-                        text: '@TempData["msg"]',
-                        icon: 'warning',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'btn btn-warning'
-                        },
-                        buttonsStyling: false
-                    });
-                    break;
-                case '@StatusConstants.Info':
-                default:
-                    Swal.fire({
-                        title: 'Info',
-                        text: '@TempData["msg"]',
-                        icon: 'info',
-                        confirmButtonText: 'OK',
-                        customClass: {
-                            confirmButton: 'btn btn-info'
-                        },
-                        buttonsStyling: false
-                    });
+                    title = 'Warning';
+                    icon = 'warning';
+                    buttonClass = 'bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg';
                     break;
             }
+
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: icon,
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: buttonClass
+                },
+                buttonsStyling: false
+            });
         });
     </script>
 }
-

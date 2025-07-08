@@ -13,15 +13,16 @@
     <div class="container mx-auto px-6 py-8">
         <!-- Header Section -->
         <div class="mb-8">
-            <h1 class="text-3xl font-bold text-white mb-2">Showtime Management</h1>
+            <h1 class="mb-2 text-3xl font-bold text-white">Showtime Management</h1>
             <p class="text-gray-400">Manage movie showtimes, schedules, and pricing</p>
         </div>
 
         <!-- Action Bar -->
-        <div class="mb-6 flex justify-between items-center">
+        <div class="mb-6 flex items-center justify-between">
             <div class="flex items-center space-x-4">
-                <a asp-action="Create" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200 shadow-lg hover:shadow-xl">
-                    <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <a asp-action="Create"
+                   class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white shadow-lg transition-colors duration-200 hover:bg-blue-700 hover:shadow-xl">
+                    <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                     </svg>
                     Create New Showtime
@@ -33,50 +34,75 @@
         </div>
 
         @* Search section *@
-        <form asp-action="Index" method="get" class="mb-6 flex items-center space-x-4">
+        <form asp-action="Index" method="get" class="mb-6 flex items-center space-x-4" id="searchForm">
+            @* Room name *@
             <input type="text" name="RoomName" value="@Model.RoomName" placeholder="Search by Room"
-            class="px-3 py-2 rounded-lg bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                   class="placeholder-gray-400 rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
 
+            @* Movie name *@
             <input type="text" name="MovieName" value="@Model.MovieName" placeholder="Search by Movie"
-            class="px-3 py-2 rounded-lg bg-gray-700 text-gray-200 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500" />
+                   class="placeholder-gray-400 rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
 
-            <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-colors duration-200">
+            @* PageNumber *@
+            <input type="hidden" name="PageNumber" value="@Model.PageNumber" />
+
+            @* Date Range *@
+            <div class="flex items-center space-x-2">
+                <label for="FromDate" class="text-sm text-gray-300">From</label>
+                <input type="datetime-local" name="FromDate" value="@(Model.FromDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")"
+                       class="placeholder-gray-400 rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                <label for="ToDate" class="text-sm text-gray-300">To</label>
+                <input type="datetime-local" name="ToDate" value="@(Model.ToDate?.ToString("yyyy-MM-ddTHH:mm") ?? "")" class="placeholder-gray-400 rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+            </div>
+
+            @* Order By *@
+            <div class="flex items-center space-x-2">
+                <label for="OrderByDesc" class="text-sm text-gray-300">Sort Descending</label>
+                <input type="checkbox" @(Model.OrderByDesc ? "checked" : "")
+                       class="form-checkbox h-5 w-5 rounded border-gray-500 bg-gray-700 text-blue-600 transition duration-200 focus:ring-blue-500"
+                       id="checkboxPlaceholder" />
+                <input type="hidden" name="OrderByDesc" value="@Model.OrderByDesc" />
+            </div>
+
+
+            <button type="submit"
+                    class="cursor-pointer rounded-lg bg-blue-600 px-4 py-2 text-white transition-colors duration-200 hover:bg-blue-700">
                 Search
             </button>
         </form>
 
 
         <!-- Table Container -->
-        <div class="bg-gray-800 rounded-xl shadow-2xl overflow-hidden border border-gray-700">
+        <div class="overflow-hidden rounded-xl border border-gray-700 bg-gray-800 shadow-2xl">
             <div class="overflow-hidden">
                 <table class="w-full table-fixed">
                     <thead class="bg-gray-750 bg-opacity-50">
                         <tr class="border-b border-gray-700">
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-6">
+                            <th class="w-6 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 #
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-20">
+                            <th class="w-20 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 Start Time
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-20">
+                            <th class="w-20 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 End Time
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-16">
+                            <th class="w-16 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 Base Price
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-12">
+                            <th class="w-8 px-3 py-4 text-center text-sm font-medium text-gray-300">
                                 Status
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-16">
+                            <th class="w-16 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 Room
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-16">
+                            <th class="w-16 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 Movie
                             </th>
-                            <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-24">
+                            <th class="w-24 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                 Created Date
                             </th>
-                            <th class="px-3 py-4 text-center text-sm font-medium text-gray-300 w-16">
+                            <th class="w-16 px-3 py-4 text-center text-sm font-medium text-gray-300">
                                 Actions
                             </th>
                         </tr>
@@ -84,60 +110,73 @@
                     <tbody class="divide-y divide-gray-700">
                         @foreach (var item in Model.Showtimes)
                         {
-                            <tr class="hover:bg-gray-750 hover:bg-opacity-50 transition-colors duration-200">
-                                <th class="px-3 py-4 text-left text-sm font-medium text-gray-300 w-6">
+                            <tr class="transition-colors duration-200 hover:bg-gray-750 hover:bg-opacity-50">
+                                <th class="w-6 px-3 py-4 text-left text-sm font-medium text-gray-300">
                                     @startIndex
                                 </th>
-                                <td class="px-3 py-4 text-sm font-medium text-white ">
+                                <td class="px-3 py-4 text-sm font-medium text-white">
                                     @Html.DisplayFor(modelItem => item.StartTime)
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-300 ">
+                                <td class="px-3 py-4 text-sm text-gray-300">
                                     @Html.DisplayFor(modelItem => item.EndTime)
                                 </td>
-                                <td class="px-3 py-4 text-sm font-semibold text-green-400 ">
+                                <td class="px-3 py-4 text-sm font-semibold text-green-400">
                                     @item.BasePrice.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"))
                                 </td>
-                                <td class="px-3 py-4">
-                                    @{
-                                        var statusSymbol = "";
-                                        var statusColor = "";
-                                        var statusTitle = "";
-                                        if (item.Status)
-                                        {
-                                            statusSymbol = "●";
-                                            statusColor = "text-green-400";
-                                            statusTitle = "Active";
-                                        }
-                                        else
-                                        {
-                                            statusSymbol = "●";
-                                            statusColor = "text-red-400";
-                                            statusTitle = "Cancelled";
-                                        }
+                                @{
+                                    // If current time is matching with the showtime, display it
+                                    var isThisShowtimeInProgress = item.StartTime <= DateTime.Now && DateTime.Now <= item.EndTime ?
+                                    true : false;
+
+                                    var statusSymbol = "";
+                                    var statusColor = "";
+                                    var statusTitle = "";
+                                    if (isThisShowtimeInProgress)
+                                    {
+                                        statusSymbol = "●";
+                                        statusColor = "text-yellow-400";
+                                        statusTitle = "On going";
                                     }
+                                    else if (item.Status)
+                                    {
+                                        statusSymbol = "●";
+                                        statusColor = "text-green-400";
+                                        statusTitle = "Active";
+                                    }
+                                    else if (!item.Status)
+                                    {
+                                        statusSymbol = "●";
+                                        statusColor = "text-gray-400";
+                                        statusTitle = "Finished";
+                                    }
+                                }
+                                <td class="px-3 py-4 text-center" title="@statusTitle">
                                     <span class="@statusColor text-lg" title="@statusTitle">@statusSymbol</span>
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-300 ">
+                                <td class="px-3 py-4 text-sm text-gray-300">
                                     @Html.DisplayFor(modelItem => item.Room.Name)
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-300 ">
+                                <td class="px-3 py-4 text-sm text-gray-300">
                                     @Html.DisplayFor(modelItem => item.Movie.Title)
                                 </td>
-                                <td class="px-3 py-4 text-sm text-gray-400 ">
+                                <td class="px-3 py-4 text-sm text-gray-400">
                                     @Html.DisplayFor(modelItem => item.CreatedAt)
                                 </td>
                                 <td class="px-3 py-4 text-center">
                                     <div class="flex justify-center space-x-3">
                                         <a asp-action="Edit" asp-route-id="@item.Id"
-                                        class="inline-flex items-center px-3 py-2 text-xs font-medium text-yellow-400 bg-yellow-900 bg-opacity-20 hover:bg-opacity-30 hover:opacity-75 rounded transition-opacity duration-200" title="Edit">
+                                           class="bg-opacity-20 inline-flex items-center rounded bg-yellow-900 px-3 py-2 text-xs font-medium text-yellow-400 transition-opacity duration-200 hover:bg-opacity-30 hover:opacity-75"
+                                           title="Edit">
                                             <i class="fas fa-edit text-lg"></i>
                                         </a>
                                         <a asp-action="Details" asp-route-id="@item.Id"
-                                        class="inline-flex items-center px-3 py-2 text-xs font-medium text-blue-400 bg-blue-900 bg-opacity-20 hover:bg-opacity-30 hover:opacity-75 rounded transition-opacity duration-200" title="View Details">
+                                           class="bg-opacity-20 inline-flex items-center rounded bg-blue-900 px-3 py-2 text-xs font-medium text-blue-400 transition-opacity duration-200 hover:bg-opacity-30 hover:opacity-75"
+                                           title="View Details">
                                             <i class="fas fa-eye text-lg"></i>
                                         </a>
                                         <a asp-action="Delete" asp-route-id="@item.Id"
-                                        class="inline-flex items-center px-3 py-2 text-xs font-medium text-red-400 bg-red-900 bg-opacity-20 hover:bg-opacity-30 hover:opacity-75 rounded transition-opacity duration-200" title="Delete">
+                                           class="bg-opacity-20 inline-flex items-center rounded bg-red-900 px-3 py-2 text-xs font-medium text-red-400 transition-opacity duration-200 hover:bg-opacity-30 hover:opacity-75"
+                                           title="Delete">
                                             <i class="fas fa-trash text-lg"></i>
                                         </a>
                                     </div>
@@ -153,14 +192,12 @@
         @* Pagination *@
         @if (Model.TotalPage > 1)
         {
-            <div class="flex justify-center mt-6 space-x-2">
+            <div class="mt-6 flex justify-center space-x-2">
                 @for (int i = 1; i <= Model.TotalPage; i++)
                 {
-                    <a asp-action="Index"
-                       asp-route-RoomName="@Model.RoomName"
-                       asp-route-MovieName="@Model.MovieName"
-                       asp-route-pageNumber="@i"
-                       class="px-3 py-1 rounded-lg @(i == Model.PageNumber ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600")">
+                    <a asp-action="Index" asp-route-RoomName="@Model.RoomName" asp-route-MovieName="@Model.MovieName"
+                       asp-route-PageNumber="@i" asp-route-OrderByDesc="@Model.OrderByDesc" data-page-data="@i"
+                       class="paginationItem rounded-lg px-3 py-1 @(i == Model.PageNumber ? "bg-blue-600 text-white" : "bg-gray-700 text-gray-300 hover:bg-gray-600")">
                         @i
                     </a>
                 }
@@ -172,15 +209,17 @@
         <!-- Empty State (if no data) -->
         @if (!Model.Showtimes.Any())
         {
-            <div class="text-center py-12">
+            <div class="py-12 text-center">
                 <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1l-.867 12.142A2 2 0 0118.138 21H5.862a2 2 0 01-1.995-1.858L3 5H2a1 1 0 110-2h4zM7 8a1 1 0 012 0v8a1 1 0 11-2 0V8zM13 8a1 1 0 112 0v8a1 1 0 11-2 0V8z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                          d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1l-.867 12.142A2 2 0 0118.138 21H5.862a2 2 0 01-1.995-1.858L3 5H2a1 1 0 110-2h4zM7 8a1 1 0 012 0v8a1 1 0 11-2 0V8zM13 8a1 1 0 112 0v8a1 1 0 11-2 0V8z" />
                 </svg>
                 <h3 class="mt-2 text-sm font-medium text-gray-300">No showtimes found</h3>
                 <p class="mt-1 text-sm text-gray-500">Get started by creating a new showtime.</p>
                 <div class="mt-6">
-                    <a asp-action="Create" class="inline-flex items-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors duration-200">
-                        <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <a asp-action="Create"
+                       class="inline-flex items-center rounded-lg bg-blue-600 px-4 py-2 font-medium text-white transition-colors duration-200 hover:bg-blue-700">
+                        <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path>
                         </svg>
                         Create New Showtime
@@ -190,3 +229,33 @@
         }
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Add event listener for all of the pagination links
+            let paginationLinks = document.querySelectorAll('.paginationItem');
+            // Submit the form when the OrderByDesc checkbox changes
+            let orderBy = document.querySelector('#checkboxPlaceholder');
+            let realOrderBy = document.querySelector('input[name="OrderByDesc"]');
+            let searchForm = document.getElementById('searchForm');
+
+            paginationLinks.forEach(function (link) {
+                link.addEventListener('click', function (event) {
+                    event.preventDefault();
+                    let PageNumber = this.getAttribute('data-page-data');
+                    let form = document.getElementById('searchForm');
+                    form.querySelector('input[name="PageNumber"]').value = PageNumber;
+                    realOrderBy.value = orderBy.checked ? "true" : "false";
+                    form.submit()
+                });
+            });
+
+            orderBy.addEventListener('change', function () {
+                realOrderBy.value = orderBy.checked ? "true" : "false";
+                searchForm.submit();
+            });
+
+        });
+    </script>
+}

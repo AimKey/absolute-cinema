@@ -10,6 +10,8 @@ using DataAccessObjects;
 using Services.Interfaces;
 using Common.ViewModels.ShowtimeVMs;
 using Common.Constants;
+using Common;
+using Common.DTOs.ShowtimeDTOs;
 
 namespace Absolute_cinema.Controllers
 {
@@ -27,14 +29,14 @@ namespace Absolute_cinema.Controllers
         }
 
         // GET: Showtimes
-        public async Task<IActionResult> Index(ViewAllShowtimeVM vm)
+        public IActionResult Index(ViewAllShowtimeVM vm)
         {
             var vms = _showtimeService.GetAllVM(vm);
             return View(vms);
         }
 
         // GET: Showtimes/Details/5
-        public async Task<IActionResult> Details(Guid? id)
+        public IActionResult Details(Guid? id)
         {
             if (id == null)
             {
@@ -52,26 +54,42 @@ namespace Absolute_cinema.Controllers
         // GET: Showtimes/Create
         public IActionResult Create()
         {
-            SetupSelectListForMovieAndRoom();
+            var movies = _movieService.GetAll();
+            var rooms = _roomService.GetAll();
+            ViewData["MovieId"] = new SelectList(movies, "Id", "Title");
+            ViewData["RoomId"] = new SelectList(rooms, "Id", "Name");
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Id,StartTime,EndTime,BasePrice,Status,RoomId,MovieId,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Showtime showtime)
+        public IActionResult Create(CreateShowtimeDTO showtimeDTO)
         {
+            string msg = "Something went wrong, Please try again later";
+            string msgType = "error";
             if (ModelState.IsValid)
             {
-                showtime.Id = Guid.NewGuid();
-                _showtimeService.Add(showtime);
-                return RedirectToAction(nameof(Index));
+                try
+                {
+                    showtimeDTO.Id = Guid.NewGuid();
+                    _showtimeService.AddShowtimeDTO(showtimeDTO);
+                    TempData[StatusConstants.Message] = "New showtime added";
+                    TempData[StatusConstants.MessageType] = StatusConstants.Success;
+                    return RedirectToAction(nameof(Index));
+                }
+                catch (Exception e)
+                {
+                    msg = $"An error has occured: {e.Message}";
+                }
             }
             SetupSelectListForMovieAndRoom();
-            return View(showtime);
+            TempData[StatusConstants.Message] = msg;
+            TempData[StatusConstants.MessageType] = msgType;
+            return View(showtimeDTO);
         }
 
         // GET: Showtimes/Edit/5
-        public async Task<IActionResult> Edit(Guid? id)
+        public IActionResult Edit(Guid? id)
         {
             if (id == null)
             {
@@ -89,7 +107,7 @@ namespace Absolute_cinema.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Id,StartTime,EndTime,BasePrice,Status,RoomId,MovieId,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Showtime showtime)
+        public IActionResult Edit(Guid id, [Bind("Id,StartTime,EndTime,BasePrice,Status,RoomId,MovieId,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Showtime showtime)
         {
             if (id != showtime.Id)
             {
@@ -120,7 +138,7 @@ namespace Absolute_cinema.Controllers
         }
 
         // GET: Showtimes/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
+        public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
@@ -137,7 +155,7 @@ namespace Absolute_cinema.Controllers
         // POST: Showtimes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        public IActionResult DeleteConfirmed(Guid id)
         {
             var showtime = _showtimeService.GetById(id);
             if (showtime != null)
@@ -162,6 +180,13 @@ namespace Absolute_cinema.Controllers
             var rooms = _roomService.GetAll();
             ViewData["MovieId"] = new SelectList(movies, "Id", "Title");
             ViewData["RoomId"] = new SelectList(rooms, "Id", "Name");
+        }
+
+        public IActionResult GetCurrentShowtimeOfRoomInADay(Guid roomId, DateTime date)
+        {
+            List<PreviewRoomShowtimeVM> showtimes = _showtimeService
+                                    .GetCurrentShowtimeOfRoomInADay(roomId, date);
+            return PartialView("Showtime/PreviewRoomShowtimeInADay", showtimes);
         }
     }
 }
