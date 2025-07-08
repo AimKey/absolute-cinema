@@ -72,14 +72,14 @@ namespace Absolute_cinema.Controllers
                 try
                 {
                     showtimeDTO.Id = Guid.NewGuid();
-                    _showtimeService.AddShowtimeDTO(showtimeDTO);
+                    _showtimeService.AddShowtime(showtimeDTO);
                     TempData[StatusConstants.Message] = "New showtime added";
                     TempData[StatusConstants.MessageType] = StatusConstants.Success;
                     return RedirectToAction(nameof(Index));
                 }
                 catch (Exception e)
                 {
-                    msg = $"An error has occured: {e.Message}";
+                    msg = $"Error: {e.Message}";
                 }
             }
             SetupSelectListForMovieAndRoom();
@@ -101,15 +101,29 @@ namespace Absolute_cinema.Controllers
             {
                 return NotFound();
             }
+
+            // Map showtime to CreateShowtimeDTO
+            UpdateShowtimeDTO dto = new UpdateShowtimeDTO
+            {
+                Id = showtime.Id,
+                StartTime = showtime.StartTime,
+                EndTime = showtime.EndTime,
+                BasePrice = showtime.BasePrice,
+                Status = showtime.Status,
+                RoomId = showtime.RoomId,
+                MovieId = showtime.MovieId
+            };
             SetupSelectListForMovieAndRoom();
-            return View(showtime);
+            return View(dto);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Edit(Guid id, [Bind("Id,StartTime,EndTime,BasePrice,Status,RoomId,MovieId,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Showtime showtime)
+        public IActionResult Edit(Guid id, UpdateShowtimeDTO dto)
         {
-            if (id != showtime.Id)
+            var msg = "Something went wrong, Please try again later";
+            var msgType = StatusConstants.Error;
+            if (id != dto.Id)
             {
                 return NotFound();
             }
@@ -118,11 +132,14 @@ namespace Absolute_cinema.Controllers
             {
                 try
                 {
-                    _showtimeService.Update(showtime);
+                    _showtimeService.UpdateShowtime(id, dto);
+                    TempData[StatusConstants.Message] = $"Update completed";
+                    TempData[StatusConstants.MessageType] = StatusConstants.Success;
+                    return RedirectToAction(nameof(Index));
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ShowtimeExists(showtime.Id))
+                    if (!ShowtimeExists(dto.Id))
                     {
                         return NotFound();
                     }
@@ -131,10 +148,15 @@ namespace Absolute_cinema.Controllers
                         throw;
                     }
                 }
-                return RedirectToAction(nameof(Index));
+                catch (Exception e)
+                {
+                    msg = $"Error: {e.Message}";
+                }
             }
+            TempData[StatusConstants.Message] = msg;
+            TempData[StatusConstants.MessageType] = msgType;
             SetupSelectListForMovieAndRoom();
-            return View(showtime);
+            return View(dto);
         }
 
         // GET: Showtimes/Delete/5
@@ -187,6 +209,26 @@ namespace Absolute_cinema.Controllers
             List<PreviewRoomShowtimeVM> showtimes = _showtimeService
                                     .GetCurrentShowtimeOfRoomInADay(roomId, date);
             return PartialView("Showtime/PreviewRoomShowtimeInADay", showtimes);
+        }
+
+        public IActionResult IsShowtimeAvailableToEdit(Guid showtimeId)
+        {
+            bool status = true;
+            var msg = "";
+            try
+            {
+                _showtimeService.IsShowtimeEditable(showtimeId);
+            }
+            catch (Exception e)
+            {
+                status = false;
+                msg = e.Message;
+            }
+            return Json(new
+            {
+                status = status,
+                message = msg
+            });
         }
     }
 }

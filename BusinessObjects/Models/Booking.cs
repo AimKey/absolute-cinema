@@ -16,7 +16,6 @@ public class Booking : IBaseModel
 
     // Foreign Key
     public Guid UserId { get; set; }
-    public Guid PaymentId { get; set; }
 
     // Navigation Properties
     public virtual User User { get; set; }

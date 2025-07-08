@@ -119,18 +119,18 @@ public class ShowtimeService : IShowtimeService
         return vms;
     }
 
-    public void AddShowtimeDTO(CreateShowtimeDTO createShowtimeDTO)
+    public void AddShowtime(CreateShowtimeDTO createShowtimeDTO)
     {
         var showtimes = _showtimeRepository.Get(s =>
             s.RoomId == createShowtimeDTO.RoomId &&
             s.StartTime < createShowtimeDTO.EndTime &&
             createShowtimeDTO.StartTime < s.EndTime
-        ); 
-        
+        );
+
         if (showtimes.Any())
         {
             throw new Exception($"Time: {createShowtimeDTO.StartTime.ToString("hh:mm tt")}" +
-            $" - {createShowtimeDTO.EndTime.ToString("hh: mm tt")} is already booked by other showtime");
+            $" - {createShowtimeDTO.EndTime.ToString("hh: mm tt")} is conflicted with other showtime");
         }
 
         // Map to normal dto
@@ -146,5 +146,59 @@ public class ShowtimeService : IShowtimeService
             Status = createShowtimeDTO.Status,
         };
         Add(s);
+    }
+
+    public void UpdateShowtime(Guid oldId, UpdateShowtimeDTO updateShowtimeDTO)
+    {
+        var showtimes = _showtimeRepository.Get(s =>
+            s.Id != oldId &&
+            s.RoomId == updateShowtimeDTO.RoomId &&
+            s.StartTime < updateShowtimeDTO.EndTime &&
+            updateShowtimeDTO.StartTime < s.EndTime
+        );
+
+        if (showtimes.Any())
+        {
+            throw new Exception($"Time: {updateShowtimeDTO.StartTime.ToString("hh:mm tt")}" +
+            $" - {updateShowtimeDTO.EndTime.ToString("hh: mm tt")} is already booked by other showtime");
+        }
+
+        // Check if this showtime is already booked by any user (Will be checked by front end)
+        foreach (var sh in showtimes)
+        {
+            var isBooked = sh.ShowtimeSeats.Any(ss => ss.Ticket != null);
+            if (isBooked)
+            {
+                throw new Exception($"This showtime is already booked by other user, unable to edit");
+            }
+        }
+
+        // Update
+        var existingShowtime = _showtimeRepository.GetByID(oldId);
+        existingShowtime.StartTime = updateShowtimeDTO.StartTime;
+        existingShowtime.EndTime = updateShowtimeDTO.EndTime;
+        existingShowtime.BasePrice = updateShowtimeDTO.BasePrice;
+        existingShowtime.Status = updateShowtimeDTO.Status;
+        existingShowtime.RoomId = updateShowtimeDTO.RoomId;
+        existingShowtime.MovieId = updateShowtimeDTO.MovieId;
+        existingShowtime.UpdatedAt = DateTime.Now;
+
+        _showtimeRepository.Update(existingShowtime);
+    }
+
+    public bool IsShowtimeEditable(Guid showtimeId)
+    {
+        var st = GetById(showtimeId);
+        if (st == null)
+        {
+            throw new Exception("Showtime not found");
+        }
+        // Check if the showtime is already booked by any user
+        var isBooked = st.ShowtimeSeats.Any(ss => ss.Ticket != null);
+        if (isBooked)
+        {
+            throw new Exception("This showtime is already booked by other user, unable to edit");
+        }
+        return true;
     }
 }

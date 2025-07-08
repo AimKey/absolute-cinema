@@ -21,8 +21,7 @@ public class ShowtimeSeat : IBaseModel
     public virtual Seat Seat { get; set; }
     public virtual Ticket Ticket { get; set; }
 
-    // Navigation Collections
-
+    // Navigation Collection
 
     // Audit Properties
     public DateTime? CreatedAt { get; set; }

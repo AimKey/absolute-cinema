@@ -10,9 +10,11 @@ public interface IShowtimeService
     IEnumerable<Showtime> GetAll();
     Showtime GetById(Guid id);
     void Add(Showtime showtime);
-    void AddShowtimeDTO(CreateShowtimeDTO createShowtimeDTO);
+    void AddShowtime(CreateShowtimeDTO createShowtimeDTO);
+    void UpdateShowtime(Guid oldShowtimeId, UpdateShowtimeDTO updateShowtimeDTO);
     void Update(Showtime showtime);
     void Delete(Guid id);
     void Delete(Showtime showtime);
     List<PreviewRoomShowtimeVM> GetCurrentShowtimeOfRoomInADay(Guid roomId, DateTime date);
+    bool IsShowtimeEditable(Guid showtimeId);
 }
