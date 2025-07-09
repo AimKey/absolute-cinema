@@ -4,6 +4,7 @@ using Common.DTOs.ShowtimeDTOs;
 using Common.ViewModels.ShowtimeVMs;
 using Repositories;
 using Services.Interfaces;
+using System.Security.Cryptography;
 
 namespace Services.Implementations;
 
@@ -91,6 +92,16 @@ public class ShowtimeService : IShowtimeService
 
     public void Delete(Showtime showtime)
     {
+        // Check if this showtime is on-going, don't allow edit
+        if (showtime.StartTime <= DateTime.Now && DateTime.Now <= showtime.EndTime)
+        {
+            throw new Exception("This showtime is on-going, cannot modify");
+        }
+
+        // Check if showtime is booked by user, if so prevent deletion
+        var isBooked = showtime.ShowtimeSeats.Any(ss => ss.Ticket != null);
+        if (isBooked) throw new Exception("This showtime is already booked by other user, cannot delete");
+
         _showtimeRepository.Delete(showtime);
         _showtimeRepository.Save();
     }
@@ -150,6 +161,13 @@ public class ShowtimeService : IShowtimeService
 
     public void UpdateShowtime(Guid oldId, UpdateShowtimeDTO updateShowtimeDTO)
     {
+        var oldShowtime = GetById(oldId);
+        // Check if this showtime is on-going, don't allow edit
+        if (oldShowtime.StartTime <= DateTime.Now && DateTime.Now <= oldShowtime.EndTime)
+        {
+            throw new Exception("This showtime is on-going, cannot modify");
+        }
+
         var showtimes = _showtimeRepository.Get(s =>
             s.Id != oldId &&
             s.RoomId == updateShowtimeDTO.RoomId &&
@@ -172,7 +190,7 @@ public class ShowtimeService : IShowtimeService
                 throw new Exception($"This showtime is already booked by other user, unable to edit");
             }
         }
-
+        
         // Update
         var existingShowtime = _showtimeRepository.GetByID(oldId);
         existingShowtime.StartTime = updateShowtimeDTO.StartTime;
@@ -197,12 +215,12 @@ public class ShowtimeService : IShowtimeService
         var isBooked = st.ShowtimeSeats.Any(ss => ss.Ticket != null);
         if (isBooked)
         {
-            throw new Exception("This showtime is already booked by other user, unable to edit");
+            throw new Exception("This showtime is already booked by other user, cannot modfiy");
         }
         // Check if showtime is in progress
         if (st.StartTime <= DateTime.Now && st.EndTime >= DateTime.Now)
         {
-            throw new Exception("This showtime is in progress, unable to edit");
+            throw new Exception("This showtime is in progress, cannot modify");
         }
         return true;
     }

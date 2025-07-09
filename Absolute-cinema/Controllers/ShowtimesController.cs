@@ -174,12 +174,6 @@ namespace Absolute_cinema.Controllers
             {
                 return NotFound();
             }
-            if (!showtime.Status)
-            {
-                TempData["msg"] = "This showtime is not available for edit";
-                TempData["msgType"] = StatusConstants.Info;
-                return RedirectToAction(nameof(Index));
-            }
             return View(showtime);
         }
 
@@ -188,15 +182,29 @@ namespace Absolute_cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var showtime = _showtimeService.GetById(id);
-            if (showtime != null)
+            var msg = "";
+            var msgType = StatusConstants.Error;  
+            try
             {
-                _showtimeService.Delete(showtime);
+                var showtime = _showtimeService.GetById(id);
+                if (showtime != null)
+                {
+                    _showtimeService.Delete(showtime);
+                    TempData["msg"] = "Showtime deleted successfully";
+                    TempData["msgType"] = StatusConstants.Success;
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
-            else
+            catch (Exception e)
             {
-                return NotFound();
+                msg = $"Error: {e.Message}";
             }
+            TempData[StatusConstants.Message] = msg;
+            TempData[StatusConstants.MessageType] = msgType;
             return RedirectToAction(nameof(Index));
         }
 

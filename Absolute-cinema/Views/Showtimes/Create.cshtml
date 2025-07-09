@@ -21,15 +21,15 @@
 
         @* Button to toggle back the preview *@
         <button id="openPreview"
-                class="cursor-pointer rounded bg-blue-600 px-3 py-2 text-white transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-blue-700">
+                class="cursor-pointer rounded bg-blue-600 px-3 py-2 text-white transition-transform duration-300 ease-in-out hover:bg-blue-700">
             Preview room showtime
         </button>
 
         <!-- Form Card -->
-        <div class="flex items-center justify-center gap-16">
+        <div class="flex justify-center gap-16">
             @* Floating room display container *@
-            <div id="showtimePreviewContainer" class="flex hidden items-center justify-center rounded-2xl shadow-2xl">
-                <div class="h-96 w-full max-w-xl min-w-sm overflow-auto rounded-lg bg-gray-800 p-4 text-gray-100 shadow-lg">
+            <div id="showtimePreviewContainer" class="flex hidden justify-center rounded-2xl">
+                <div class="h-96 w-full max-w-xl min-w-sm overflow-auto rounded-lg border border-gray-700 bg-gray-800 p-4 text-gray-100 shadow-lg">
                     <div id="showtimePreviewContent">
                         <!-- Partial view will be loaded here -->
                         <h2 class="text-xl text-white">Please choose a room and date time first</h2>
@@ -88,7 +88,7 @@
                         <label asp-for="BasePrice" class="mb-1 block text-sm font-semibold text-gray-300">
                             Base price
                         </label>
-                        <input asp-for="BasePrice" type="number" step="0.01" min="0"
+                        <input asp-for="BasePrice" type="number" min="0"
                                class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                         <span asp-validation-for="BasePrice" class="text-xs text-red-400"></span>
                     </div>
@@ -102,7 +102,7 @@
                 </div>
                 <div class="mt-8 flex items-center justify-between">
                     <button type="submit"
-                            class="inline-flex cursor-pointer items-center rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-xl">
+                            class="inline-flex cursor-pointer items-center rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 hover:bg-blue-700 hover:shadow-xl">
                         <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
                             </path>
