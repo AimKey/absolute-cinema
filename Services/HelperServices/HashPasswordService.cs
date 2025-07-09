@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using PasswordVerificationResult = Microsoft.AspNetCore.Identity.PasswordVerificationResult;
 
-namespace Services.Helpers
+namespace Services.HelperServices
 {
     public class HashPasswordService : IHashPasswordService
     {

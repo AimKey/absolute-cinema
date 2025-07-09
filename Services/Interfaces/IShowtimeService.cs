@@ -17,4 +17,5 @@ public interface IShowtimeService
     void Delete(Showtime showtime);
     List<PreviewRoomShowtimeVM> GetCurrentShowtimeOfRoomInADay(Guid roomId, DateTime date);
     bool IsShowtimeEditable(Guid showtimeId);
+    void ExpireOutdatedShowtimes();
 }

@@ -160,7 +160,7 @@ public class ShowtimeService : IShowtimeService
         if (showtimes.Any())
         {
             throw new Exception($"Time: {updateShowtimeDTO.StartTime.ToString("hh:mm tt")}" +
-            $" - {updateShowtimeDTO.EndTime.ToString("hh: mm tt")} is already booked by other showtime");
+            $" - {updateShowtimeDTO.EndTime.ToString("hh: mm tt")} is already booked by other showtime in the room, please choose another one");
         }
 
         // Check if this showtime is already booked by any user (Will be checked by front end)
@@ -183,7 +183,7 @@ public class ShowtimeService : IShowtimeService
         existingShowtime.MovieId = updateShowtimeDTO.MovieId;
         existingShowtime.UpdatedAt = DateTime.Now;
 
-        _showtimeRepository.Update(existingShowtime);
+        Update(existingShowtime);
     }
 
     public bool IsShowtimeEditable(Guid showtimeId)
@@ -199,6 +199,22 @@ public class ShowtimeService : IShowtimeService
         {
             throw new Exception("This showtime is already booked by other user, unable to edit");
         }
+        // Check if showtime is in progress
+        if (st.StartTime <= DateTime.Now && st.EndTime >= DateTime.Now)
+        {
+            throw new Exception("This showtime is in progress, unable to edit");
+        }
         return true;
+    }
+
+    public void ExpireOutdatedShowtimes()
+    {
+        var outdatedShowtimes = _showtimeRepository.Get(st => st.EndTime < DateTime.Now && st.Status == true);
+        foreach (var showtime in outdatedShowtimes)
+        {
+            showtime.Status = false;
+        }
+        // Batch update
+        _showtimeRepository.Save();
     }
 }

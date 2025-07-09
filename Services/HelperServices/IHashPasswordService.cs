@@ -1,4 +1,4 @@
-﻿namespace Services.Helpers
+﻿namespace Services.HelperServices
 {
     public interface IHashPasswordService
     {

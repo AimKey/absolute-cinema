@@ -2,14 +2,13 @@
 using Common.Constants;
 using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
-using Services.Helpers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Common.Helper
+namespace Services.HelperServices
 {
     public class DbInitializer
     {
@@ -525,7 +524,7 @@ namespace Common.Helper
                 // Create multiple showtimes for each movie
                 for (int j = 0; j < 3; j++)
                 {
-                    var showtime = startDate.AddDays(j).AddHours(10 + (j * 4)); // 10 AM, 2 PM, 6 PM
+                    var showtime = startDate.AddDays(j).AddHours(10 + j * 4); // 10 AM, 2 PM, 6 PM
                     showtimes.Add(new Showtime
                     {
                         Id = Guid.NewGuid(),
@@ -533,7 +532,7 @@ namespace Common.Helper
                         RoomId = room.Id,
                         StartTime = showtime,
                         EndTime = showtime.AddMinutes(movie.Duration),
-                        BasePrice = basePrice + (j * 2), // Different prices for different times
+                        BasePrice = basePrice + j * 2, // Different prices for different times
                         Status = true,
                         CreatedAt = DateTime.Now
                     });

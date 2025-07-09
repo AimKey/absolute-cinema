@@ -21,7 +21,7 @@
 
         @* Button to toggle back the preview *@
         <button id="openPreview"
-            class="cursor-pointer rounded bg-blue-600 px-3 py-2 text-white transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-blue-700">
+                class="cursor-pointer rounded bg-blue-600 px-3 py-2 text-white transition-transform duration-300 ease-in-out hover:scale-105 hover:bg-blue-700">
             Preview room showtime
         </button>
 
@@ -44,15 +44,15 @@
                     <div>
                         <label asp-for="RoomId" class="mb-1 block text-sm font-semibold text-gray-300">Room</label>
                         <select asp-for="RoomId" id="roomSelect"
-                            class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                            asp-items="ViewBag.RoomId"></select>
+                                class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                asp-items="ViewBag.RoomId"></select>
                     </div>
 
                     <div>
                         <label asp-for="MovieId" class="mb-1 block text-sm font-semibold text-gray-300">Movie</label>
                         <select asp-for="MovieId"
-                            class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                            asp-items="ViewBag.MovieId"></select>
+                                class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                asp-items="ViewBag.MovieId"></select>
                     </div>
 
                     <div class="md:col-span-2">
@@ -60,18 +60,18 @@
                             Start Time
                         </label>
                         <input asp-for="StartTime" type="datetime-local" id="startTimeSelect"
-                            class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
                         <span asp-validation-for="StartTime" class="text-xs text-red-400"></span>
                     </div>
 
                     <div class="md:col-span-2">
                         <label for="showtimeDuration" class="mb-1 block text-sm font-semibold text-gray-300">
-                            Enter showtime duration (Minutes)
+                            Enter movie duration
                         </label>
                         <input type="number" min="1" value="15" placeholder="Ex: 30 (minutes)" id="showtimeDuration"
-                            class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
-                            required />
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                               required />
                     </div>
 
                     <div class="md:col-span-2">
@@ -79,7 +79,8 @@
                             End time
                         </label>
                         <input asp-for="EndTime" id="EndTime" type="datetime-local"
-                            class="placeholder-gray-400 pointer-events-none w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 opacity-50 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                               class="placeholder-gray-400 pointer-events-none w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 opacity-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")" />
                         <span asp-validation-for="EndTime" class="text-xs text-red-400"></span>
                     </div>
 
@@ -88,20 +89,20 @@
                             Base price
                         </label>
                         <input asp-for="BasePrice" type="number" step="0.01" min="0"
-                            class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
                         <span asp-validation-for="BasePrice" class="text-xs text-red-400"></span>
                     </div>
 
                     <div>
                         <label asp-for="Status" class="mb-1 block text-sm font-semibold text-gray-300">Active</label>
                         <input asp-for="Status" type="checkbox"
-                            class="form-checkbox h-6 w-6 rounded border-gray-600 text-blue-600 focus:ring-blue-500" checked />
+                               class="form-checkbox h-6 w-6 rounded border-gray-600 text-blue-600 focus:ring-blue-500" checked />
                     </div>
 
                 </div>
                 <div class="mt-8 flex items-center justify-between">
                     <button type="submit"
-                        class="inline-flex cursor-pointer items-center rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-xl">
+                            class="inline-flex cursor-pointer items-center rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 hover:scale-105 hover:bg-blue-700 hover:shadow-xl">
                         <svg class="mr-2 h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4">
                             </path>
