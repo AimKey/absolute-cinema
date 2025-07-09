@@ -61,3 +61,7 @@ node_modules/
 
 # Publish folder
 publish
+
+# Tailwind generated css
+style.css
+site.output.css

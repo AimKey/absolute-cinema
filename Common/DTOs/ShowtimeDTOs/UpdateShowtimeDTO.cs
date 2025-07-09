@@ -9,6 +9,7 @@ public class UpdateShowtimeDTO
 {
     [ValidateNever]
     public Guid Id { get; set; }
+    [Required]
     public DateTime StartTime { get; set; }
     [Required(ErrorMessage = "Please enter duration for this showtime")]
     public DateTime EndTime { get; set; }
