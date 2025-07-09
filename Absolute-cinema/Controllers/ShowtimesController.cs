@@ -88,7 +88,6 @@ namespace Absolute_cinema.Controllers
             return View(showtimeDTO);
         }
 
-        // GET: Showtimes/Edit/5
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -101,7 +100,12 @@ namespace Absolute_cinema.Controllers
             {
                 return NotFound();
             }
-
+            if (!showtime.Status)
+            {
+                TempData["msg"] = "This showtime is not available for edit";
+                TempData["msgType"] = StatusConstants.Info;
+                return RedirectToAction(nameof(Index));
+            }
             // Map showtime to CreateShowtimeDTO
             UpdateShowtimeDTO dto = new UpdateShowtimeDTO
             {
@@ -113,6 +117,8 @@ namespace Absolute_cinema.Controllers
                 RoomId = showtime.RoomId,
                 MovieId = showtime.MovieId
             };
+            // Setup view bag to calculate the duration beforehand
+            ViewData["duration"] = (int)(showtime.EndTime - showtime.StartTime).TotalMinutes;
             SetupSelectListForMovieAndRoom();
             return View(dto);
         }
@@ -141,11 +147,7 @@ namespace Absolute_cinema.Controllers
                 {
                     if (!ShowtimeExists(dto.Id))
                     {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
+                        msg = "Showtime not found";
                     }
                 }
                 catch (Exception e)
@@ -155,6 +157,7 @@ namespace Absolute_cinema.Controllers
             }
             TempData[StatusConstants.Message] = msg;
             TempData[StatusConstants.MessageType] = msgType;
+            ViewData["duration"] = (int)(dto.EndTime - dto.StartTime).TotalMinutes;
             SetupSelectListForMovieAndRoom();
             return View(dto);
         }
@@ -179,15 +182,29 @@ namespace Absolute_cinema.Controllers
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
-            var showtime = _showtimeService.GetById(id);
-            if (showtime != null)
+            var msg = "";
+            var msgType = StatusConstants.Error;  
+            try
             {
-                _showtimeService.Delete(showtime);
+                var showtime = _showtimeService.GetById(id);
+                if (showtime != null)
+                {
+                    _showtimeService.Delete(showtime);
+                    TempData["msg"] = "Showtime deleted successfully";
+                    TempData["msgType"] = StatusConstants.Success;
+                    return RedirectToAction(nameof(Index));
+                }
+                else
+                {
+                    return NotFound();
+                }
             }
-            else
+            catch (Exception e)
             {
-                return NotFound();
+                msg = $"Error: {e.Message}";
             }
+            TempData[StatusConstants.Message] = msg;
+            TempData[StatusConstants.MessageType] = msgType;
             return RedirectToAction(nameof(Index));
         }
 

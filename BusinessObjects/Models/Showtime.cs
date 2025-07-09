@@ -13,6 +13,8 @@ public class Showtime : IBaseModel
     public DateTime StartTime { get; set; }
     public DateTime EndTime { get; set; }
     public decimal BasePrice { get; set; }
+    // This property is used to format the BasePrice for display purposes (It will not be stored in the database)
+    public string BasePriceFormatted => BasePrice.ToString("C0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN"));
     public bool Status { get; set; } = true;
 
     // Foreign Key
