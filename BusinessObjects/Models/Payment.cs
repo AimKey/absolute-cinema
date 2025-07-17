@@ -25,8 +25,8 @@ public class Payment
     [StringLength(5, ErrorMessage = "Currency code must be exactly 3 characters long.")]
     public string Currency { get; set; }                    // e.g., USD, VND, etc.
 
-    // Foreign Key
-    public Guid BookingId { get; set; }               
+    // Foreign key
+    public Guid BookingId { get; set; }
 
     // Navigation Properties
     public virtual Booking Booking { get; set; }

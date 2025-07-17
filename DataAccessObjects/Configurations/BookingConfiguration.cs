@@ -18,11 +18,13 @@ namespace DataAccessObjects.Configurations
             builder.HasMany(b => b.Tickets)
                 .WithOne(t => t.Booking)
                 .HasForeignKey(t => t.BookingId);
-            
+
             // Booking - payment
+            // This one must be optional, because a booking can exist without a payment (Even though it is just for 15 minutes)
             builder.HasOne(b => b.Payment)
                 .WithOne(p => p.Booking)
-                .HasForeignKey<Booking>(b => b.PaymentId);
+                .HasForeignKey<Payment>(p => p.BookingId)
+                .IsRequired(false);
         }
     }
 }

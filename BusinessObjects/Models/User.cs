@@ -13,10 +13,9 @@ public class User : IBaseModel
     [Required]
     [StringLength(100)]
     public string Username { get; set; }
-    // [Required]
-    // [StringLength(100)]   
-    // [EmailAddress]
-    // public string Email { get; set; }
+    [Required]
+    [EmailAddress]
+    public string Email { get; set; }
     [Required]
     public string Password { get; set; }
     public string Role { get; set; }
@@ -26,6 +25,7 @@ public class User : IBaseModel
 
     // Navigation Collections
     public virtual IEnumerable<Booking> Bookings { get; set; }
+    public virtual IEnumerable<Review> Reviews { get; set; }
 
     // Audit Properties
     public DateTime? CreatedAt { get; set; }

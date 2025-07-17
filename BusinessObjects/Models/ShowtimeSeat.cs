@@ -9,19 +9,19 @@ public class ShowtimeSeat : IBaseModel
     public Guid Id { get; set; }
 
     // Normal Properties
+    //public bool IsBooked { get; set; }
 
     // Foreign Key
     public Guid ShowtimeId { get; set; }
     public Guid SeatId { get; set; }
-    public Guid TicketId { get; set; }
+    public Guid? TicketId { get; set; }
 
     // Navigation Properties
     public virtual Showtime Showtime { get; set; }
     public virtual Seat Seat { get; set; }
     public virtual Ticket Ticket { get; set; }
 
-    // Navigation Collections
-
+    // Navigation Collection
 
     // Audit Properties
     public DateTime? CreatedAt { get; set; }

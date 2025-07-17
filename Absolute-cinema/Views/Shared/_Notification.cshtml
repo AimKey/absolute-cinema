@@ -1,0 +1,43 @@
+@using Common
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if (TempData["msg"] != null)
+{
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = '@TempData["msg"]';
+            const type = '@TempData[StatusConstants.MessageType]?.ToString().ToLower()';
+            let title = 'Info';
+            let icon = 'info';
+            let buttonClass = 'bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg';
+
+            switch (type) {
+                case '@StatusConstants.Success':
+                    title = 'Success';
+                    icon = 'success';
+                    buttonClass = 'bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg';
+                    break;
+                case '@StatusConstants.Error':
+                    title = 'Error';
+                    icon = 'error';
+                    buttonClass = 'bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg';
+                    break;
+                case '@StatusConstants.Warning':
+                    title = 'Warning';
+                    icon = 'warning';
+                    buttonClass = 'bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg';
+                    break;
+            }
+
+            Swal.fire({
+                title: title,
+                text: message,
+                icon: icon,
+                confirmButtonText: 'OK',
+                customClass: {
+                    confirmButton: buttonClass
+                },
+                buttonsStyling: false
+            });
+        });
+    </script>
+}
