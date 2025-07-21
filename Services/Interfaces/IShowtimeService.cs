@@ -21,4 +21,4 @@ public interface IShowtimeService
     List<Showtime> GetAllShowtimesOfAMovieInDate(Guid movieId, DateTime date);
     List<Showtime> GetAllShowtimesOfAMovieFromThisTime(Guid movieId, DateTime fromTime);
     void ExpireOutdatedShowtimes();
-}
+} 

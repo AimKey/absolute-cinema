@@ -17,7 +17,7 @@ namespace DataAccessObjects
         private string GetConnectionString()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Absolute-cinema"))
                 .AddJsonFile("appsettings.json")
                 .Build();
             return configuration.GetConnectionString("DefaultConnection");
@@ -65,5 +65,6 @@ namespace DataAccessObjects
             // modelBuilder.ApplyConfiguration(new SeatConfiguration());
             // modelBuilder.ApplyConfiguration(new RoomConfiguration());
         }
+
     }
 }

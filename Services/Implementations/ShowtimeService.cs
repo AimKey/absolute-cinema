@@ -69,7 +69,7 @@ public class ShowtimeService : IShowtimeService
         else
         {
             list = list.OrderBy(st => st.StartTime).ToList();
-        }
+    }
 
         // Pagination
         var totalItems = list.Count();
@@ -279,4 +279,4 @@ public class ShowtimeService : IShowtimeService
             m.StartTime >= fromTime).ToList();
         return list;
     }
-}
+} 

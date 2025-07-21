@@ -13,12 +13,17 @@ public class User : IBaseModel
     [Required]
     [StringLength(100)]
     public string Username { get; set; }
+    
     [Required]
+    [StringLength(100)]   
     [EmailAddress]
     public string Email { get; set; }
+    
     [Required]
     public string Password { get; set; }
     public string Role { get; set; }
+    public bool IsVerify { get; set; } = false;
+    public bool IsActive { get; set; } = true;
 
     // Navigation Properties
     public virtual UserDetail UserDetail { get; set; }

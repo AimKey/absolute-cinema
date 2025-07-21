@@ -1,0 +1,323 @@
+@model Absolute_cinema.Models.ViewModels.VerifyOtpViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Xác Thực OTP - Absolute Cinema</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="~/css/auth.css" rel="stylesheet" />
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .otp-form {
+            max-width: 500px;
+            margin: 0 auto;
+            padding: 40px;
+        }
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .form-title {
+            color: #333;
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        .form-subtitle {
+            color: #666;
+            font-size: 1rem;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #333;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+        }
+        .otp-input {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            font-family: 'Courier New', monospace;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+        .btn-primary {
+            width: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+        .countdown {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+            font-weight: 600;
+            color: #dc3545;
+        }
+        .resend-link {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .resend-link a {
+            color: #667eea;
+            text-decoration: none;
+        }
+        .btn-link {
+            background: none;
+            border: none;
+            color: #667eea;
+            cursor: pointer;
+            font-size: 16px;
+            text-decoration: none;
+            transition: color 0.3s ease;
+        }
+        .btn-link:hover {
+            color: #764ba2;
+        }
+        .btn-link:disabled {
+            color: #ccc;
+            cursor: not-allowed;
+        }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+        }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .text-danger {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 5px;
+        }
+        .email-info {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <div class="auth-info">
+                <div class="auth-info-content">
+                    <div class="cinema-logo">🎬 ABSOLUTE CINEMA</div>
+                    <div class="cinema-tagline">Nhập mã OTP để xác thực danh tính</div>
+                    
+                    <ul class="cinema-features">
+                        <li>📧 Mã OTP đã được gửi đến email</li>
+                        <li>⏰ Có hiệu lực trong 1 phút</li>
+                        <li>🔢 Gồm 6 chữ số</li>
+                        <li>🔒 Bảo mật cao</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="auth-form">
+                <div class="otp-form">
+                    <div class="form-header">
+                        <h1 class="form-title">Xác Thực OTP</h1>
+                        <p class="form-subtitle">Nhập mã OTP 6 số đã được gửi đến email</p>
+                    </div>
+
+                    <div class="email-info">
+                        <i class="fas fa-envelope"></i>
+                        <strong>@Model.Email</strong>
+                    </div>
+
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success">
+                            @TempData["SuccessMessage"]
+                        </div>
+                    }
+
+                    @if (ViewData.ModelState.Any(x => x.Value.Errors.Count > 0))
+                    {
+                        <div class="alert alert-danger">
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <div>@error.ErrorMessage</div>
+                            }
+                        </div>
+                    }
+
+                    <form asp-action="VerifyOtp" method="post">
+                        <input asp-for="Email" type="hidden" />
+                        
+                        <div class="form-group">
+                            <label asp-for="Otp" class="form-label">
+                                <i class="fas fa-key"></i> Mã OTP
+                            </label>
+                            <input asp-for="Otp" type="text" class="form-control otp-input" placeholder="000000" maxlength="6" autofocus />
+                            <span asp-validation-for="Otp" class="text-danger"></span>
+                        </div>
+
+                        <div class="countdown" id="countdown">
+                            <i class="fas fa-clock"></i> Thời gian còn lại: <span id="timer">01:00</span>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-check"></i> Xác Thực
+                        </button>
+                    </form>
+
+                    <div class="resend-link">
+                        <button type="button" id="resendBtn" class="btn-link" onclick="resendOtp()">
+                            <i class="fas fa-redo"></i> Gửi lại mã OTP
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Countdown timer
+        let timeLeft = 60; // 1 minute
+        const timerElement = document.getElementById('timer');
+        const form = document.querySelector('form');
+        const submitBtn = document.querySelector('.btn-primary');
+        const resendBtn = document.getElementById('resendBtn');
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            timerElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 0) {
+                submitBtn.disabled = true;
+                submitBtn.textContent = 'Mã OTP đã hết hạn';
+                submitBtn.style.background = '#ccc';
+                return;
+            }
+            
+            timeLeft--;
+            setTimeout(updateTimer, 1000);
+        }
+
+        // Auto format OTP input
+        const otpInput = document.querySelector('.otp-input');
+        otpInput.addEventListener('input', function(e) {
+            // Only allow numbers
+            this.value = this.value.replace(/\D/g, '').substring(0, 6);
+        });
+
+        // Resend OTP function
+        function resendOtp() {
+            const email = '@Model.Email';
+            const originalText = resendBtn.innerHTML;
+            
+            // Disable button and show loading
+            resendBtn.disabled = true;
+            resendBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Đang gửi...';
+            
+            // Send AJAX request
+            fetch('/Account/SendOtpAgain', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                },
+                body: 'email=' + encodeURIComponent(email)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Show success message
+                    showAlert('success', data.message);
+                    
+                    // Reset timer
+                    timeLeft = 60;
+                    submitBtn.disabled = false;
+                    submitBtn.textContent = 'Xác Thực';
+                    submitBtn.style.background = 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)';
+                    
+                    // Clear OTP input
+                    otpInput.value = '';
+                    otpInput.focus();
+                } else {
+                    showAlert('danger', data.message);
+                }
+            })
+            .catch(error => {
+                showAlert('danger', 'Có lỗi xảy ra. Vui lòng thử lại.');
+            })
+            .finally(() => {
+                // Re-enable button
+                setTimeout(() => {
+                    resendBtn.disabled = false;
+                    resendBtn.innerHTML = originalText;
+                }, 2000);
+            });
+        }
+
+        // Show alert message
+        function showAlert(type, message) {
+            // Remove existing alerts
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) {
+                existingAlert.remove();
+            }
+            
+            // Create new alert
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            // Insert before form
+            const form = document.querySelector('form');
+            form.parentNode.insertBefore(alert, form);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                alert.remove();
+            }, 5000);
+        }
+
+        // Start countdown
+        updateTimer();
+    </script>
+</body>
+</html>

@@ -21,15 +21,7 @@ namespace Absolute_cinema.Controllers
 
         public IActionResult Index()
         {
-            var firstUser = _userService.GetAll().FirstOrDefault();
-            var userVM = new TestUserVM
-            {
-                Username = firstUser.Username,
-                Role = firstUser.Role,
-                Password = firstUser.Password,
-                UserDetail = firstUser.UserDetail,
-            };
-            return View(userVM);
+            return View();
         }
 
         public IActionResult Privacy()

@@ -26,7 +26,7 @@ public class Payment
     public string Currency { get; set; }                    // e.g., USD, VND, etc.
 
     // Foreign key
-    public Guid BookingId { get; set; }
+    public Guid BookingId { get; set; }               
 
     // Navigation Properties
     public virtual Booking Booking { get; set; }

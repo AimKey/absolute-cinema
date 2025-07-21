@@ -4,6 +4,7 @@ using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,13 +12,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(AbsoluteCinemaContext))]
-    partial class AbsoluteCinemaContextModelSnapshot : ModelSnapshot
+    [Migration("20250708075057_UpdateExistingUsersIsActive")]
+    partial class UpdateExistingUsersIsActive
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.11")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Proxies:ChangeTracking", false)
                 .HasAnnotation("Proxies:CheckEquality", false)
                 .HasAnnotation("Proxies:LazyLoading", true)
@@ -89,6 +92,9 @@ namespace DataAccessObjects.Migrations
                     b.Property<int>("NumberOfTickets")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PaymentId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<DateTime?>("RemovedAt")
                         .HasColumnType("datetime2");
 
@@ -108,6 +114,9 @@ namespace DataAccessObjects.Migrations
                         .HasColumnType("uniqueidentifier");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PaymentId")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -304,7 +313,7 @@ namespace DataAccessObjects.Migrations
 
                     b.HasIndex("MovieId");
 
-                    b.ToTable("MovieDirectors");
+                    b.ToTable("MovieDirector");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.MovieTag", b =>
@@ -340,8 +349,6 @@ namespace DataAccessObjects.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
-
-                    b.HasIndex("TagId");
 
                     b.ToTable("MovieTags");
                 });
@@ -382,9 +389,6 @@ namespace DataAccessObjects.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("BookingId")
-                        .IsUnique();
-
                     b.ToTable("Payments");
                 });
 
@@ -416,23 +420,15 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid?>("RemovedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<DateTime>("ReviewDate")
-                        .HasColumnType("datetime2");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
                     b.Property<Guid?>("UpdatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.HasKey("Id");
 
                     b.HasIndex("MovieId");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Reviews");
                 });
@@ -600,9 +596,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -642,7 +635,7 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid>("ShowtimeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TicketId")
+                    b.Property<Guid>("TicketId")
                         .HasColumnType("uniqueidentifier");
 
                     b.Property<DateTime?>("UpdatedAt")
@@ -658,8 +651,7 @@ namespace DataAccessObjects.Migrations
                     b.HasIndex("ShowtimeId");
 
                     b.HasIndex("TicketId")
-                        .IsUnique()
-                        .HasFilter("[TicketId] IS NOT NULL");
+                        .IsUnique();
 
                     b.ToTable("ShowtimeSeats");
                 });
@@ -749,11 +741,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid?>("CreatedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasMaxLength(100)
-                        .HasColumnType("nvarchar(100)");
-
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -842,9 +829,17 @@ namespace DataAccessObjects.Migrations
 
             modelBuilder.Entity("BusinessObjects.Models.Booking", b =>
                 {
+                    b.HasOne("BusinessObjects.Models.Payment", "Payment")
+                        .WithOne("Booking")
+                        .HasForeignKey("BusinessObjects.Models.Booking", "PaymentId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("BusinessObjects.Models.User", "User")
                         .WithMany("Bookings")
                         .HasForeignKey("UserId");
+
+                    b.Navigation("Payment");
 
                     b.Navigation("User");
                 });
@@ -897,7 +892,7 @@ namespace DataAccessObjects.Migrations
 
                     b.HasOne("BusinessObjects.Models.Tag", "Tag")
                         .WithMany("MovieTags")
-                        .HasForeignKey("TagId")
+                        .HasForeignKey("MovieId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -906,28 +901,13 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("Tag");
                 });
 
-            modelBuilder.Entity("BusinessObjects.Models.Payment", b =>
-                {
-                    b.HasOne("BusinessObjects.Models.Booking", "Booking")
-                        .WithOne("Payment")
-                        .HasForeignKey("BusinessObjects.Models.Payment", "BookingId");
-
-                    b.Navigation("Booking");
-                });
-
             modelBuilder.Entity("BusinessObjects.Models.Review", b =>
                 {
                     b.HasOne("BusinessObjects.Models.Movie", "Movie")
                         .WithMany("Reviews")
                         .HasForeignKey("MovieId");
 
-                    b.HasOne("BusinessObjects.Models.User", "User")
-                        .WithMany("Reviews")
-                        .HasForeignKey("UserId");
-
                     b.Navigation("Movie");
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.Seat", b =>
@@ -972,7 +952,9 @@ namespace DataAccessObjects.Migrations
 
                     b.HasOne("BusinessObjects.Models.Ticket", "Ticket")
                         .WithOne("ShowtimeSeat")
-                        .HasForeignKey("BusinessObjects.Models.ShowtimeSeat", "TicketId");
+                        .HasForeignKey("BusinessObjects.Models.ShowtimeSeat", "TicketId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Seat");
 
@@ -1010,8 +992,6 @@ namespace DataAccessObjects.Migrations
 
             modelBuilder.Entity("BusinessObjects.Models.Booking", b =>
                 {
-                    b.Navigation("Payment");
-
                     b.Navigation("Tickets");
                 });
 
@@ -1031,6 +1011,11 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("Reviews");
 
                     b.Navigation("Showtimes");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Models.Payment", b =>
+                {
+                    b.Navigation("Booking");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.Room", b =>
@@ -1068,8 +1053,6 @@ namespace DataAccessObjects.Migrations
             modelBuilder.Entity("BusinessObjects.Models.User", b =>
                 {
                     b.Navigation("Bookings");
-
-                    b.Navigation("Reviews");
 
                     b.Navigation("UserDetail");
                 });

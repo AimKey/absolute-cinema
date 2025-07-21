@@ -6,6 +6,7 @@ using Services.Implementations;
 using Hangfire;
 using Services.HelperServices;
 using Services.BackgroundServices.Showtimes;
+using Common.Models;
 
 namespace Absolute_cinema
 {
@@ -16,7 +17,10 @@ namespace Absolute_cinema
             var builder = WebApplication.CreateBuilder(args);
             // Add services to the container.
             builder.Services.AddControllersWithViews();
-
+            
+            // Configure EmailSettings
+            builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+            
             // Add our repos
             SetupRepos(builder);
             // Add our services
@@ -26,7 +30,7 @@ namespace Absolute_cinema
 
             // Configure the database to allow one request accessing the same context
             builder.Services.AddSqlServer<AbsoluteCinemaContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
-
+            
             // Configure Hangfire to use SQL Server storage.
             builder.Services.AddHangfire(config =>
             {
@@ -37,7 +41,7 @@ namespace Absolute_cinema
             builder.Services.AddHangfireServer();
 
             // Allow page to access the session directly
-            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddHttpContextAccessor(); 
 
             // Add session
             builder.Services.AddSession(options =>
@@ -46,7 +50,7 @@ namespace Absolute_cinema
                 options.Cookie.HttpOnly = false;
                 options.Cookie.IsEssential = true;
             });
-
+            
             var app = builder.Build();
 
             // Seed data
@@ -77,11 +81,11 @@ namespace Absolute_cinema
 
             app.MapControllerRoute(
                 name: "default",
-                pattern: "{controller=Home}/{action=Index}/{id?}");
+                pattern: "{controller=Account}/{action=Login}/{id?}");
 
             app.Run();
         }
-
+        
         private static void RunBackgroundJobs(WebApplication app)
         {
             RecurringJob.AddOrUpdate<ShowtimeBackgroundJob>(
@@ -97,10 +101,13 @@ namespace Absolute_cinema
 
         private static void SetupServices(WebApplicationBuilder builder)
         {
+            // Email Service
+            builder.Services.AddScoped<IEmailService, EmailService>();
+            
             // User Services
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserDetailService, UserDetailService>();
-
+            
             // Movie Services
             builder.Services.AddScoped<IMovieService, MovieService>();
             builder.Services.AddScoped<IActorService, ActorService>();
@@ -109,12 +116,12 @@ namespace Absolute_cinema
             builder.Services.AddScoped<IMovieActorService, MovieActorService>();
             builder.Services.AddScoped<IMovieDirectorService, MovieDirectorService>();
             builder.Services.AddScoped<IMovieTagService, MovieTagService>();
-
+            
             // Room and Seat Services
             builder.Services.AddScoped<IRoomService, RoomService>();
             builder.Services.AddScoped<ISeatService, SeatService>();
             builder.Services.AddScoped<ISeatTypeService, SeatTypeService>();
-
+            
             // Showtime Services
             builder.Services.AddScoped<IShowtimeService, ShowtimeService>();
             builder.Services.AddScoped<IShowtimeSeatService, ShowtimeSeatService>();
@@ -123,12 +130,12 @@ namespace Absolute_cinema
             builder.Services.AddTransient<SearchShowtimeByMovieNameStrategy>();
             builder.Services.AddTransient<SearchShowtimeByRoomNameAndMovieNameStrategy>();
             builder.Services.AddTransient<ShowtimeSearchContext>();
-
+            
             // Booking and Payment Services
             builder.Services.AddScoped<IBookingService, BookingService>();
             builder.Services.AddScoped<IPaymentService, PaymentService>();
             builder.Services.AddScoped<ITicketService, TicketService>();
-
+            
             // Review Services
             builder.Services.AddScoped<IReviewService, ReviewService>();
 
@@ -139,13 +146,13 @@ namespace Absolute_cinema
 
             
         }
-
+        
         private static void SetupRepos(WebApplicationBuilder builder)
         {
             // User Repositories
             builder.Services.AddScoped<IUserRepository, UserRepository>();
             builder.Services.AddScoped<IUserDetailRepository, UserDetailRepository>();
-
+            
             // Movie Repositories
             builder.Services.AddScoped<IMovieRepository, MovieRepository>();
             builder.Services.AddScoped<IActorRepository, ActorRepository>();
@@ -154,21 +161,21 @@ namespace Absolute_cinema
             builder.Services.AddScoped<IMovieActorRepository, MovieActorRepository>();
             builder.Services.AddScoped<IMovieDirectorRepository, MovieDirectorRepository>();
             builder.Services.AddScoped<IMovieTagRepository, MovieTagRepository>();
-
+            
             // Room and Seat Repositories
             builder.Services.AddScoped<IRoomRepository, RoomRepository>();
             builder.Services.AddScoped<ISeatRepository, SeatRepository>();
             builder.Services.AddScoped<ISeatTypeRepository, SeatTypeRepository>();
-
+            
             // Showtime Repositories
             builder.Services.AddScoped<IShowtimeRepository, ShowtimeRepository>();
             builder.Services.AddScoped<IShowtimeSeatRepository, ShowtimeSeatRepository>();
-
+            
             // Booking and Payment Repositories
             builder.Services.AddScoped<IBookingRepository, BookingRepository>();
             builder.Services.AddScoped<IPaymentRepository, PaymentRepository>();
             builder.Services.AddScoped<ITicketRepository, TicketRepository>();
-
+            
             // Review Repositories
             builder.Services.AddScoped<IReviewRepository, ReviewRepository>();
         }

@@ -14,16 +14,18 @@ namespace DataAccessObjects.Configurations
         public void Configure(EntityTypeBuilder<ShowtimeSeat> builder)
         {
             builder.HasKey(st => st.Id);
-
+            
             // Showtimes? - showtime
             builder.HasOne(sts => sts.Showtime)
                 .WithMany(st => st.ShowtimeSeats)
-                .HasForeignKey(sts => sts.ShowtimeId);
-
+                .HasForeignKey(sts => sts.ShowtimeId)
+                .IsRequired(false);
+            
             // Showtimes? - seat
             builder.HasOne(sts => sts.Seat)
                 .WithMany(seat => seat.ShowtimeSeats)
-                .HasForeignKey(sts => sts.SeatId);
+                .HasForeignKey(sts => sts.SeatId)
+                .IsRequired(false);
         }
     }
 }

@@ -1,76 +1,67 @@
 ﻿@{
     ViewData["Title"] = "Trang chủ";
 }
-@model Absolute_cinema.Models.ViewModels.TestUserVM
 
 <!-- Hero Section -->
 <section class="relative h-screen bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
-    <div class="absolute inset-0 hero-gradient"></div>
-    <div class="relative z-10 container mx-auto px-4 h-full flex items-center">
+    <div class="hero-gradient absolute inset-0"></div>
+    <div class="relative z-10 container mx-auto flex h-full items-center px-4">
         <div class="max-w-2xl">
-            <h1 class="text-5xl md:text-7xl font-bold mb-4">
+            <h1 class="mb-4 text-5xl font-bold md:text-7xl">
                 Chào mừng
-                @if (!string.IsNullOrEmpty(Model?.UserDetail?.FullName))
-                {
-                    <span class="text-red-500">@Model.UserDetail.FullName</span>
-                }
-                else if (!string.IsNullOrEmpty(Model?.Username))
-                {
-                    <span class="text-red-500">@Model.Username</span>
-                }
             </h1>
-            <h2 class="text-2xl md:text-3xl mb-6 text-yellow-400">
+            <h2 class="mb-6 text-2xl text-yellow-400 md:text-3xl">
                 @if (!string.IsNullOrEmpty(Model?.Role))
                 {
-                    <span>@Model.Role
-                    - </span>
-                    }
+                    <span>
+                        @Model.Role
+                        -
+                    </span>
+                }
                 PHIM HAY MỚI NHẤT 2025
             </h2>
-            <p class="text-lg mb-8 text-gray-300">
+            <p class="mb-8 text-lg text-gray-300">
                 Khám phá thế giới điện ảnh với hàng ngàn bộ phim chất lượng cao.
                 Từ phim hành động, tình cảm đến kinh dị, tất cả đều có tại đây.
             </p>
-            <div class="flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-4">
-                <button class="bg-red-600 hover:bg-red-700 px-8 py-3 rounded-full font-semibold transition-colors">
+            <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                <button class="rounded-full bg-red-600 px-8 py-3 font-semibold transition-colors hover:bg-red-700">
                     <i class="fas fa-play mr-2"></i>Xem phim ngay
                 </button>
-                <button class="border border-white hover:bg-white hover:text-black px-8 py-3 rounded-full font-semibold transition-colors">
+                <button class="rounded-full border border-white px-8 py-3 font-semibold transition-colors hover:bg-white hover:text-black">
                     <i class="fas fa-user mr-2"></i>Hồ sơ của tôi
                 </button>
             </div>
         </div>
-    </div>
 </section>
 
 <!-- User Info Section (Only show if user data exists) -->
-
 <!-- Featured Movies Section -->
-<section class="py-16 bg-gray-900">
+<section class="bg-gray-900 py-16">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8 text-center">
-            <i class="fas fa-star text-yellow-500 mr-2"></i>
+        <h2 class="mb-8 text-center text-3xl font-bold">
+            <i class="fas fa-star mr-2 text-yellow-500"></i>
             PHIM NỔI BẬT
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-6">
+        <div class="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
             @for (int i = 1; i <= 6; i++)
             {
-                <div class="movie-card bg-gray-800 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
-                    <div class="relative group">
-                        <img src="https://picsum.photos/200/300?random=@i" alt="Movie @i" class="w-full h-64 object-cover">
-                        <div class="absolute top-2 right-2 bg-red-600 text-white px-2 py-1 rounded text-sm font-semibold">HD</div>
-                        <div class="absolute top-2 left-2 bg-yellow-500 text-black px-2 py-1 rounded text-xs font-bold">
+                <div class="movie-card overflow-hidden rounded-lg bg-gray-800 shadow-lg transition-all duration-300 hover:shadow-2xl">
+                    <div class="group relative">
+                        <img src="https://picsum.photos/200/300?random=@i" alt="Movie @i" class="h-64 w-full object-cover">
+                        <div class="absolute top-2 right-2 rounded bg-red-600 px-2 py-1 text-sm font-semibold text-white">HD</div>
+                        <div class="absolute top-2 left-2 rounded bg-yellow-500 px-2 py-1 text-xs font-bold text-black">
                             <i class="fas fa-star mr-1"></i>@(8 + (i * 0.1))
                         </div>
-                        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
-                            <button class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-full transition-colors">
+                        <div class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black opacity-0 transition-opacity group-hover:opacity-100">
+                            <button class="rounded-full bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700">
                                 <i class="fas fa-play mr-2"></i>Xem ngay
                             </button>
                         </div>
                     </div>
                     <div class="p-3">
-                        <h3 class="font-semibold text-sm mb-1 truncate text-white">Phim Hay Số @i</h3>
-                        <div class="flex justify-between items-center text-xs text-gray-400">
+                        <h3 class="mb-1 truncate text-sm font-semibold text-white">Phim Hay Số @i</h3>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
                             <span>2025</span>
                             <span><i class="fas fa-eye mr-1"></i>@((i * 123))K lượt xem</span>
                         </div>
@@ -78,8 +69,8 @@
                 </div>
             }
         </div>
-        <div class="text-center mt-8">
-            <button class="bg-red-600 hover:bg-red-700 text-white px-8 py-3 rounded-full font-semibold transition-colors">
+        <div class="mt-8 text-center">
+            <button class="rounded-full bg-red-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-red-700">
                 <i class="fas fa-th mr-2"></i>Xem tất cả phim
             </button>
         </div>
@@ -87,40 +78,40 @@
 </section>
 
 <!-- Categories Section -->
-<section class="py-16 bg-gray-800">
+<section class="bg-gray-800 py-16">
     <div class="container mx-auto px-4">
-        <h2 class="text-3xl font-bold mb-8 text-center">
+        <h2 class="mb-8 text-center text-3xl font-bold">
             <i class="fas fa-film mr-2 text-red-500"></i>
             THỂ LOẠI PHIM
         </h2>
-        <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4">
-            <a href="#" class="bg-red-600 hover:bg-red-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-fist-raised text-2xl mb-2"></i>
+        <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
+            <a href="#" class="block rounded-lg bg-red-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-red-700">
+                <i class="fas fa-fist-raised mb-2 text-2xl"></i>
                 <p class="font-semibold">Hành Động</p>
                 <p class="text-xs opacity-75">1,234 phim</p>
             </a>
-            <a href="#" class="bg-pink-600 hover:bg-pink-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-heart text-2xl mb-2"></i>
+            <a href="#" class="block rounded-lg bg-pink-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-pink-700">
+                <i class="fas fa-heart mb-2 text-2xl"></i>
                 <p class="font-semibold">Tình Cảm</p>
                 <p class="text-xs opacity-75">856 phim</p>
             </a>
-            <a href="#" class="bg-purple-600 hover:bg-purple-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-ghost text-2xl mb-2"></i>
+            <a href="#" class="block rounded-lg bg-purple-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-purple-700">
+                <i class="fas fa-ghost mb-2 text-2xl"></i>
                 <p class="font-semibold">Kinh Dị</p>
                 <p class="text-xs opacity-75">567 phim</p>
             </a>
-            <a href="#" class="bg-blue-600 hover:bg-blue-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-rocket text-2xl mb-2"></i>
+            <a href="#" class="block rounded-lg bg-blue-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-blue-700">
+                <i class="fas fa-rocket mb-2 text-2xl"></i>
                 <p class="font-semibold">Khoa Học</p>
                 <p class="text-xs opacity-75">432 phim</p>
             </a>
-            <a href="#" class="bg-green-600 hover:bg-green-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-laugh text-2xl mb-2"></i>
+            <a href="#" class="block rounded-lg bg-green-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-green-700">
+                <i class="fas fa-laugh mb-2 text-2xl"></i>
                 <p class="font-semibold">Hài Hước</p>
                 <p class="text-xs opacity-75">789 phim</p>
             </a>
-            <a href="#" class="bg-yellow-600 hover:bg-yellow-700 p-6 rounded-lg text-center transition-all duration-300 hover:scale-105 block no-underline text-white">
-                <i class="fas fa-child text-2xl mb-2"></i>
+            <a href="#" class="block rounded-lg bg-yellow-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-yellow-700">
+                <i class="fas fa-child mb-2 text-2xl"></i>
                 <p class="font-semibold">Hoạt Hình</p>
                 <p class="text-xs opacity-75">345 phim</p>
             </a>
@@ -129,28 +120,28 @@
 </section>
 
 <!-- Latest Updates Section -->
-<section class="py-16 bg-gray-900">
+<section class="bg-gray-900 py-16">
     <div class="container mx-auto px-4">
-        <div class="flex justify-between items-center mb-8">
+        <div class="mb-8 flex items-center justify-between">
             <h2 class="text-3xl font-bold">
                 <i class="fas fa-clock mr-2 text-green-500"></i>
                 PHIM MỚI CẬP NHẬT
             </h2>
-            <a href="#" class="text-red-500 hover:text-red-400 font-semibold">
+            <a href="#" class="font-semibold text-red-500 hover:text-red-400">
                 Xem tất cả <i class="fas fa-arrow-right ml-1"></i>
             </a>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
             @for (int i = 1; i <= 6; i++)
             {
-                <div class="flex bg-gray-800 rounded-lg overflow-hidden hover:bg-gray-700 transition-colors">
-                    <img src="https://picsum.photos/100/140?random=@(i+10)" alt="Movie" class="w-24 h-32 object-cover">
-                    <div class="p-4 flex-1">
-                        <h3 class="font-semibold mb-2 text-white">Phim Mới Số @i</h3>
-                        <p class="text-gray-400 text-sm mb-2">2025 • Hành Động, Phiêu Lưu</p>
+                <div class="flex overflow-hidden rounded-lg bg-gray-800 transition-colors hover:bg-gray-700">
+                    <img src="https://picsum.photos/100/140?random=@(i+10)" alt="Movie" class="h-32 w-24 object-cover">
+                    <div class="flex-1 p-4">
+                        <h3 class="mb-2 font-semibold text-white">Phim Mới Số @i</h3>
+                        <p class="mb-2 text-sm text-gray-400">2025 • Hành Động, Phiêu Lưu</p>
                         <div class="flex items-center justify-between">
-                            <span class="bg-red-600 text-white px-2 py-1 rounded text-xs font-semibold">HD</span>
-                            <span class="text-yellow-400 text-sm">
+                            <span class="rounded bg-red-600 px-2 py-1 text-xs font-semibold text-white">HD</span>
+                            <span class="text-sm text-yellow-400">
                                 <i class="fas fa-star"></i> @(8.0 + (i * 0.2))
                             </span>
                         </div>
@@ -167,9 +158,9 @@
 <!-- Welcome Message for Development -->
 @if (Model != null)
 {
-    <section class="py-8 bg-gray-700">
+    <section class="bg-gray-700 py-8">
         <div class="container mx-auto px-4 text-center">
-            <div class="bg-green-600 text-white p-4 rounded-lg inline-block">
+            <div class="inline-block rounded-lg bg-green-600 p-4 text-white">
                 <i class="fas fa-check-circle mr-2"></i>
                 <strong>Kết nối database thành công!</strong>
                 Dữ liệu user đã được load từ database và hiển thị trên trang.
