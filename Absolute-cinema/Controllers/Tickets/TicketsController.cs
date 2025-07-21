@@ -1,7 +1,9 @@
 ﻿using BusinessObjects.Models;
 using Common.DTOs.TicketDTOs;
+using Hangfire;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Services.Implementations;
 using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers.Tickets
@@ -15,11 +17,13 @@ namespace Absolute_cinema.Controllers.Tickets
 
         public TicketsController(IUserService userService,
                                  ITicketService ticketService,
-                                 IShowtimeSeatService showtimeSeatService)
+                                 IShowtimeSeatService showtimeSeatService,
+                                 IBookingService bookingService)
         {
             _userService = userService;
             _ticketService = ticketService;
             _showtimeSeatService = showtimeSeatService;
+            _bookingService = bookingService;
         }
 
         public IActionResult Index()
@@ -48,13 +52,19 @@ namespace Absolute_cinema.Controllers.Tickets
                 _ticketService.CreateTicketsForUserBookingFromDto(dto, bookingId, curUser.Id);
                 // Calculate the booking for user
                 Booking booking = _bookingService.CalculateBookingForUser(bookingId, curUser.Id);
-                // TODO: Locking seat
+                // Locking seat temporary for 5 minutes. For test I will leave at 10 secs
+                string jobId = BackgroundJob.Schedule<BookingService>(
+                    service => service.CancelUnpaidBooking(bookingId),
+                    //TimeSpan.FromMinutes(5)
+                    TimeSpan.FromSeconds(10)
+                );
 
+                // Update the job Id in the booking
+                _bookingService.UpdateBookingJobCancellationId(bookingId, jobId);
 
                 // Redirect to booking controller to view the booking details
                 return RedirectToAction(
-                    "Details", "Bookings", new { bookingId = booking.Id, userId = curUser.Id });
-
+                    "Details", "Bookings", new { bookingId = booking.Id, userId = curUser.Id,  });
             }
             catch (Exception e)
             {
@@ -65,7 +75,7 @@ namespace Absolute_cinema.Controllers.Tickets
 
         private User GetCurrentUser()
         {
-            var userNameString = HttpContext.Session.GetString("UserName");
+            var userNameString = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(userNameString))
             {
                 return null; // or handle the case where the user is not logged in

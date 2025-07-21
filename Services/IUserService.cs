@@ -22,4 +22,5 @@ public interface IUserService
     Task<bool> SendOtpAsync(string email);
     bool VerifyOtp(string email, string otp);
     Task<bool> ResetPasswordAsync(string email, string otp, string newPassword);
+    bool VerifyPassword(string providedPassword, string hashedPassword);
 }

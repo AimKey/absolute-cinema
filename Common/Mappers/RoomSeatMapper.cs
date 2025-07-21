@@ -20,7 +20,8 @@ namespace Common.Mappers
                 Room = room,
                 SeatTypes = seatTypes,
                 Seats = seats,
-                TicketBasePrice = showtime.BasePrice
+                TicketBasePrice = showtime.BasePrice,
+                ShowtimeId  = showtime.Id
             };
         }
 

@@ -1,5 +1,6 @@
 using BusinessObjects.Models;
 using Common.ViewModels.BookingVMs;
+using Hangfire;
 using Repositories;
 using Services.Interfaces;
 
@@ -9,11 +10,60 @@ public class BookingService : IBookingService
 {
     private readonly IBookingRepository _bookingRepository;
     private readonly IUserService _userService;
+    private readonly IShowtimeSeatService _showTimeSeatService;
+    private readonly ITicketService _ticketService;
 
-    public BookingService(IBookingRepository bookingRepository, IUserService userService)
+    public BookingService(IBookingRepository bookingRepository, IUserService userService, IShowtimeSeatService showTimeSeatService, ITicketService ticketService)
     {
         _bookingRepository = bookingRepository;
         _userService = userService;
+        _showTimeSeatService = showTimeSeatService;
+        _ticketService = ticketService;
+    }
+
+    public void BookingFinished(Guid bookingId)
+    {
+        var booking = GetById(bookingId);
+        if (booking == null)
+        {
+            throw new ArgumentException("Booking not found", nameof(bookingId));
+        }
+        var jobId = booking.CancellationJobId;
+        if (!string.IsNullOrEmpty(jobId))
+        {
+            BackgroundJob.Delete(jobId);
+        }
+        booking.CancellationJobId = null; // Clear the job ID since booking is finished
+        Update(booking);
+    }
+
+    public void UpdateBookingJobCancellationId(Guid bookingId, string jobId)
+    {
+        var booking = GetById(bookingId);
+        if (booking == null)
+        {
+            throw new ArgumentException("Booking not found", nameof(bookingId));
+        }
+        booking.CancellationJobId = jobId;
+        Update(booking);
+    }
+
+    public void CancelUnpaidBooking(Guid bookingId)
+    {
+        var booking = GetById(bookingId);
+        var showtimeSeats = booking.Tickets.Select(t => t.ShowtimeSeat).ToList();
+        foreach (var seat in showtimeSeats)
+        {
+            _showTimeSeatService.Delete(seat.Id);
+        }
+        // Just for safe, delete the tickets as well
+        booking = GetById(bookingId);
+        foreach (var ticket in booking.Tickets)
+        {
+            _ticketService.Delete(ticket.Id);
+        }
+        // Then delete self
+        Delete(bookingId);
     }
 
 
@@ -43,7 +93,7 @@ public class BookingService : IBookingService
         return booking;
     }
 
-    public Booking GetReviewBookingVM(Guid bookingId, Guid userId)
+    public ReviewBookingVM GetReviewBookingVM(Guid bookingId, Guid userId)
     {
         var booking = GetById(bookingId);
         var user = _userService.GetById(userId);
@@ -57,7 +107,7 @@ public class BookingService : IBookingService
             Payment = booking.Payment,
             UserInfo = user
         };
-        return booking;
+        return reviewBooking;
     }
 
     public IEnumerable<Booking> GetAll()
@@ -93,4 +143,4 @@ public class BookingService : IBookingService
         _bookingRepository.Delete(booking);
         _bookingRepository.Save();
     }
-} 
+}

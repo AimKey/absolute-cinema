@@ -9,6 +9,13 @@
 }
 
 <div class="container mx-auto py-10">
+    <!-- Countdown Timer -->
+    <div class="flex justify-center mb-6">
+        <div class="bg-red-700 text-white px-6 py-3 rounded-full shadow text-xl font-bold flex items-center gap-2">
+            <span class="mr-2">Time left to complete payment:</span>
+            <span id="countdownTimer" class="font-mono">05:00</span>
+        </div>
+    </div>
     <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
         <h1 class="text-3xl font-bold text-white mb-6 text-center">Review Your Reservation</h1>
         <!-- Showtime & User Info -->
@@ -73,4 +80,34 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        // 5 minute countdown
+        let countdown = 5 * 60; // seconds
+        const timerDisplay = document.getElementById('countdownTimer');
+        let timerInterval = setInterval(function() {
+            const min = Math.floor(countdown / 60).toString().padStart(2, '0');
+            const sec = (countdown % 60).toString().padStart(2, '0');
+            timerDisplay.textContent = `${min}:${sec}`;
+            if (countdown <= 0) {
+                clearInterval(timerInterval);
+                alert('Your time to complete payment has ended. You will be redirected to the home page.');
+                window.location.href = '/';
+            }
+            countdown--;
+        }, 1000);
+
+        // Warn user if they try to close or reload the page
+        window.onbeforeunload = function (e) {
+            e = e || window.event;
+            // For modern browsers
+            if (e) {
+                e.returnValue = 'If you leave, your booking will be canceled.';
+            }
+            // For old browsers
+            return 'If you leave, your booking will be canceled.';
+        };
+    </script>
+}
 

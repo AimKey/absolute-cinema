@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(AbsoluteCinemaContext))]
-    [Migration("20250721122206_themy")]
-    partial class themy
+    [Migration("20250721203627_ModifyBookingToBeAbleToCancelJobs")]
+    partial class ModifyBookingToBeAbleToCancelJobs
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -82,6 +82,9 @@ namespace DataAccessObjects.Migrations
 
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
+
+                    b.Property<string>("CancellationJobId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
@@ -645,9 +648,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid>("ShowtimeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TicketId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -659,10 +659,6 @@ namespace DataAccessObjects.Migrations
                     b.HasIndex("SeatId");
 
                     b.HasIndex("ShowtimeId");
-
-                    b.HasIndex("TicketId")
-                        .IsUnique()
-                        .HasFilter("[TicketId] IS NOT NULL");
 
                     b.ToTable("ShowtimeSeats");
                 });
@@ -724,6 +720,9 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid?>("RemovedBy")
                         .HasColumnType("uniqueidentifier");
 
+                    b.Property<Guid>("ShowtimeSeatId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<string>("TicketCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -736,6 +735,9 @@ namespace DataAccessObjects.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
+
+                    b.HasIndex("ShowtimeSeatId")
+                        .IsUnique();
 
                     b.ToTable("Tickets");
                 });
@@ -973,15 +975,9 @@ namespace DataAccessObjects.Migrations
                         .WithMany("ShowtimeSeats")
                         .HasForeignKey("ShowtimeId");
 
-                    b.HasOne("BusinessObjects.Models.Ticket", "Ticket")
-                        .WithOne("ShowtimeSeat")
-                        .HasForeignKey("BusinessObjects.Models.ShowtimeSeat", "TicketId");
-
                     b.Navigation("Seat");
 
                     b.Navigation("Showtime");
-
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.Ticket", b =>
@@ -992,7 +988,15 @@ namespace DataAccessObjects.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("BusinessObjects.Models.ShowtimeSeat", "ShowtimeSeat")
+                        .WithOne("Ticket")
+                        .HasForeignKey("BusinessObjects.Models.Ticket", "ShowtimeSeatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Booking");
+
+                    b.Navigation("ShowtimeSeat");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.UserDetail", b =>
@@ -1058,14 +1062,14 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("ShowtimeSeats");
                 });
 
+            modelBuilder.Entity("BusinessObjects.Models.ShowtimeSeat", b =>
+                {
+                    b.Navigation("Ticket");
+                });
+
             modelBuilder.Entity("BusinessObjects.Models.Tag", b =>
                 {
                     b.Navigation("MovieTags");
-                });
-
-            modelBuilder.Entity("BusinessObjects.Models.Ticket", b =>
-                {
-                    b.Navigation("ShowtimeSeat");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.User", b =>

@@ -165,8 +165,6 @@ namespace Absolute_cinema
             builder.Services.AddScoped<IHashPasswordService, HashPasswordService>();
             // Db init services
             builder.Services.AddScoped<DbInitializer>();
-
-            
         }
         
         private static void SetupRepos(WebApplicationBuilder builder)

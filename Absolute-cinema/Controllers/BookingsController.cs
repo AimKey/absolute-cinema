@@ -38,7 +38,7 @@ namespace Absolute_cinema.Controllers
 
         private User GetCurrentUser()
         {
-            var userNameString = HttpContext.Session.GetString("UserName");
+            var userNameString = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(userNameString))
             {
                 return null; // or handle the case where the user is not logged in

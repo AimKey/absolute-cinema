@@ -29,8 +29,8 @@ else
                         var cssClass = showtime.Status
                             ? "rounded bg-yellow-500 px-4 py-2 font-semibold text-gray-900 shadow transition hover:bg-yellow-400"
                             : "pointer-events-none rounded bg-gray-500 px-4 py-2 text-gray-200 shadow";
-                        <a class="@cssClass" asp-action="Index" asp-controller="MovieRoom" 
-                        asp-route-showtimeId="@showtime.Id">
+                        <a class="@cssClass" asp-action="Index" asp-controller="MovieRoom"
+                           asp-route-showtimeId="@showtime.Id">
                             @showtime.StartTime.ToString("HH:mm") - @showtime.EndTime.ToString("HH:mm")
                         </a>
                     }

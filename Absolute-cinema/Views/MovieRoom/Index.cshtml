@@ -102,7 +102,6 @@
                 <span id="selectedTotalAmount" class="text-green-400 ml-2">0</span>
             </div>
             <form id="bookingForm" method="post" action="/Tickets/BookTicket">
-                <input type="hidden" name="ChosenSeatsJson" id="ChosenSeatsJson" />
                 <button id="proceedBookingBtn" type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-6 rounded-full shadow transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" disabled>
                     Proceed to Review Booking
                 </button>
@@ -179,15 +178,23 @@
         }
        // On form submit, collect selected seat IDs and showtimeId, and submit as JSON
        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+           // Remove any previous hidden ChosenSeats inputs
+           Array.from(this.querySelectorAll('input[name^="ChosenSeats"]')).forEach(el => el.remove());
            const selectedSeats = document.querySelectorAll('.seat-item.ring-2');
-           const chosenSeats = [];
-           selectedSeats.forEach(seat => {
-               chosenSeats.push({
-                   showtimeId: showtimeId,
-                   seatId: seat.getAttribute('data-seat-id')
-               });
+           selectedSeats.forEach((seat, idx) => {
+               // ChosenSeats[i].ShowtimeId
+               const showtimeInput = document.createElement('input');
+               showtimeInput.type = 'hidden';
+               showtimeInput.name = `ChosenSeats[${idx}].ShowtimeId`;
+               showtimeInput.value = showtimeId;
+               this.appendChild(showtimeInput);
+               // ChosenSeats[i].SeatId
+               const seatInput = document.createElement('input');
+               seatInput.type = 'hidden';
+               seatInput.name = `ChosenSeats[${idx}].SeatId`;
+               seatInput.value = seat.getAttribute('data-seat-id');
+               this.appendChild(seatInput);
            });
-           document.getElementById('ChosenSeatsJson').value = JSON.stringify(chosenSeats);
        });
     </script>
 }

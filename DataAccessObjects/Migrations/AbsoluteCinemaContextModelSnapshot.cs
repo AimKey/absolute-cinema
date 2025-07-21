@@ -80,6 +80,9 @@ namespace DataAccessObjects.Migrations
                     b.Property<DateTime>("BookingDate")
                         .HasColumnType("datetime2");
 
+                    b.Property<string>("CancellationJobId")
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("datetime2");
 
@@ -642,9 +645,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid>("ShowtimeId")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid?>("TicketId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<DateTime?>("UpdatedAt")
                         .HasColumnType("datetime2");
 
@@ -656,10 +656,6 @@ namespace DataAccessObjects.Migrations
                     b.HasIndex("SeatId");
 
                     b.HasIndex("ShowtimeId");
-
-                    b.HasIndex("TicketId")
-                        .IsUnique()
-                        .HasFilter("[TicketId] IS NOT NULL");
 
                     b.ToTable("ShowtimeSeats");
                 });
@@ -976,15 +972,9 @@ namespace DataAccessObjects.Migrations
                         .WithMany("ShowtimeSeats")
                         .HasForeignKey("ShowtimeId");
 
-                    b.HasOne("BusinessObjects.Models.Ticket", "Ticket")
-                        .WithOne("ShowtimeSeat")
-                        .HasForeignKey("BusinessObjects.Models.ShowtimeSeat", "TicketId");
-
                     b.Navigation("Seat");
 
                     b.Navigation("Showtime");
-
-                    b.Navigation("Ticket");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.Ticket", b =>

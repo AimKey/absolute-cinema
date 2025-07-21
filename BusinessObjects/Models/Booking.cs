@@ -13,6 +13,7 @@ public class Booking : IBaseModel
     public DateTime BookingDate { get; set; }
     public int NumberOfTickets { get; set; }            // calculated based on the number of ticket
     public decimal TotalPrice { get; set; }             // calculated based on the number of tickets and price per ticket
+    public string CancellationJobId { get; set; } // Use in Hangfire to cancel it's auto delete job
 
     // Foreign Key
     public Guid UserId { get; set; }

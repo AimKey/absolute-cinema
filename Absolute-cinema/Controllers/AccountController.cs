@@ -141,7 +141,7 @@ namespace Absolute_cinema.Controllers
             }
 
             var result = _userService.VerifyEmail(email, token);
-            
+
             if (result)
             {
                 TempData["SuccessMessage"] = "Xác thực email thành công! Bạn có thể đăng nhập ngay bây giờ.";
@@ -177,7 +177,7 @@ namespace Absolute_cinema.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _userService.SendOtpAsync(model.Email);
-                
+
                 if (result)
                 {
                     TempData["SuccessMessage"] = "Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra email.";
@@ -212,7 +212,7 @@ namespace Absolute_cinema.Controllers
             if (ModelState.IsValid)
             {
                 var result = _userService.VerifyOtp(model.Email, model.Otp);
-                
+
                 if (result)
                 {
                     TempData["SuccessMessage"] = "Mã OTP hợp lệ! Vui lòng nhập mật khẩu mới.";
@@ -247,7 +247,7 @@ namespace Absolute_cinema.Controllers
             if (ModelState.IsValid)
             {
                 var result = await _userService.ResetPasswordAsync(model.Email, model.Otp, model.NewPassword);
-                
+
                 if (result)
                 {
                     TempData["SuccessMessage"] = "Đặt lại mật khẩu thành công! Bạn có thể đăng nhập với mật khẩu mới.";
@@ -273,7 +273,7 @@ namespace Absolute_cinema.Controllers
             }
 
             var result = await _userService.SendOtpAsync(email);
-            
+
             if (result)
             {
                 return Json(new { success = true, message = "Mã OTP mới đã được gửi đến email của bạn." });

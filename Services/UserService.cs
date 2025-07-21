@@ -5,6 +5,7 @@ using System.Security.Cryptography;
 using System.Text;
 using Common.Constants;
 using Common.DTOs.TicketDTOs;
+using Services.HelperServices;
 
 namespace Services.Implementations;
 
@@ -13,12 +14,14 @@ public class UserService : IUserService
     private readonly IUserRepository _userRepository;
     private readonly IUserDetailRepository _userDetailRepository;
     private readonly IEmailService _emailService;
+    private readonly IHashPasswordService _hashPasswordService;
 
-    public UserService(IUserRepository userRepository, IUserDetailRepository userDetailRepository, IEmailService emailService)
+    public UserService(IUserRepository userRepository, IUserDetailRepository userDetailRepository, IEmailService emailService, IHashPasswordService hashPasswordService)
     {
         _userRepository = userRepository;
         _userDetailRepository = userDetailRepository;
         _emailService = emailService;
+        _hashPasswordService = hashPasswordService;
     }
 
     public User GetUserByUserName(string username)
@@ -92,7 +95,7 @@ public class UserService : IUserService
                 Id = Guid.NewGuid(),
                 Username = username,
                 Email = email,
-                Password = HashPassword(password),
+                Password = _hashPasswordService.HashPassword(password),
                 Role = RoleConstants.Customer,
                 IsActive = true,
                 IsVerify = false,
@@ -122,7 +125,7 @@ public class UserService : IUserService
             // Tạo verification token và gửi email
             var verificationToken = GenerateVerificationToken(email);
             var verificationLink = $"{baseUrl}/Account/VerifyEmail?token={Uri.EscapeDataString(verificationToken)}&email={Uri.EscapeDataString(email)}";
-            
+
             await _emailService.SendVerificationEmailAsync(email, fullName, verificationLink);
 
             return true;
@@ -147,7 +150,7 @@ public class UserService : IUserService
 
             user.IsVerify = true;
             user.UpdatedAt = DateTime.Now;
-            
+
             UpdateUser(user);
             return true;
         }
@@ -157,12 +160,12 @@ public class UserService : IUserService
         }
     }
 
-    private string HashPassword(string password)
-    {
-        using var sha256 = SHA256.Create();
-        var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-        return Convert.ToBase64String(hashedBytes);
-    }
+    //private string HashPassword(string password)
+    //{
+    //    using var sha256 = SHA256.Create();
+    //    var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+    //    return Convert.ToBase64String(hashedBytes);
+    //}
 
     private string GenerateVerificationToken(string email)
     {
@@ -204,7 +207,7 @@ public class UserService : IUserService
             // Generate OTP 6 số
             var random = new Random();
             var otp = random.Next(100000, 999999).ToString();
-            
+
             // Lưu OTP với thời gian hết hạn 1 phút
             var expiry = DateTime.Now.AddMinutes(1);
             _otpStorage[email] = (otp, expiry);
@@ -270,7 +273,7 @@ public class UserService : IUserService
                 return false;
 
             var (storedOtp, expiry) = _otpStorage[email];
-            
+
             // Kiểm tra hết hạn
             if (DateTime.Now > expiry)
             {
@@ -303,14 +306,14 @@ public class UserService : IUserService
                 return Task.FromResult(false);
 
             // Kiểm tra mật khẩu mới không trùng mật khẩu cũ
-            var newPasswordHash = HashPassword(newPassword);
+            var newPasswordHash = _hashPasswordService.HashPassword(newPassword);
             if (user.Password == newPasswordHash)
                 return Task.FromResult(false); // Mật khẩu mới trùng mật khẩu cũ
 
             // Cập nhật mật khẩu mới
             user.Password = newPasswordHash;
             user.UpdatedAt = DateTime.Now;
-            
+
             UpdateUser(user);
 
             // Xóa OTP sau khi sử dụng
@@ -322,5 +325,10 @@ public class UserService : IUserService
         {
             return Task.FromResult(false);
         }
+    }
+
+    public bool VerifyPassword(string providedPassword, string hashedPassword)
+    {
+        return _hashPasswordService.VerifyPassword(providedPassword, hashedPassword);
     }
 }
