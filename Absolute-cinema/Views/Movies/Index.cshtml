@@ -1,8 +1,10 @@
-﻿@model List<Absolute_cinema.Models.ViewModels.MovieVM>
+﻿@model List<Common.ViewModels.MovieVM>
 @{
     ViewData["Title"] = "Danh Sách Phim";
-    var allTags = ViewBag.AllTags as List<Absolute_cinema.Models.ViewModels.TagVM>;
-    var selectedTags = ViewBag.SelectedTags as string[];
+
+    var criteria = (Common.Filters.Movies.MovieFilterCriteria)ViewBag.Criteria;
+    var allTags = ViewBag.AllTags as List<Common.ViewModels.TagVM>;
+    var selectedTags = criteria.Tags as string[];
 }
 
 <!-- Hero Section with Search -->
@@ -16,69 +18,186 @@
         <p class="text-xl text-gray-300 mb-8 animate-slide-up">
             Khám phá hàng ngàn bộ phim chất lượng cao từ khắp nơi trên thế giới
         </p>
-        
-        <!-- Advanced Search Form -->
-        <form method="get" class="max-w-6xl mx-auto animate-scale-in" id="searchForm">
-            <div class="bg-black/30 backdrop-blur-md p-6 rounded-2xl border border-gray-700 space-y-6">
-                <!-- Search Input -->
-                <div>
-                    <input type="text" name="search" value="@ViewBag.Search" 
-                           placeholder="Tìm kiếm phim..." 
-                           class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300">
+
+        <!-- Simple Search Bar -->
+        <div class="max-w-3xl mx-auto animate-bounce">
+            <form method="get" class="flex items-center space-x-4" id="quickSearchForm">
+                <div class="flex-1 relative">
+                    <input type="text" name="search" value="@criteria.Search"
+                           placeholder="Tìm kiếm phim theo tên, mô tả..."
+                           class="w-full px-6 py-4 bg-black/30 backdrop-blur-md text-white rounded-full border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300 text-lg">
+                    <button type="submit" class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-blue-500 transition-all duration-300 hover:scale-110">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
                 </div>
-                
-                <!-- Tags Selection -->
-                <div>
-                    <label class="block text-white font-semibold mb-3">
-                        <i class="fas fa-tags mr-2"></i>Thể loại
-                    </label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-2">
+
+                <!-- Filter Toggle Button -->
+                <!-- Filter Toggle Button -->
+                <button type="button" id="filterToggle"
+                        class="bg-gray-800/50 backdrop-blur-md hover:bg-blue-500/20 text-white px-6 py-4 rounded-full border border-gray-600 hover:border-blue-500 transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                    <i class="fas fa-sliders-h"></i>
+                    <span class="hidden md:inline">Bộ lọc</span>
+                    <span class="bg-blue-500 text-white text-xs px-2 py-1 rounded-full ml-2
+                        @(selectedTags.Any() || !string.IsNullOrEmpty(criteria.Country) || !string.IsNullOrEmpty(criteria.Quality) ||
+                          !string.IsNullOrEmpty(criteria.Search) || !string.IsNullOrEmpty(criteria.Year) || !string.IsNullOrEmpty(criteria.Rating) ||
+                          !string.IsNullOrEmpty(criteria.Price) || criteria.Featured == true || criteria.NewRelease == true
+                          ? "" : "hidden")" id="filterCount">
+                        @(
+                            (string.IsNullOrEmpty(criteria.Search) ? 0 : 1) +
+                            selectedTags.Length +
+                            (string.IsNullOrEmpty(criteria.Country) ? 0 : 1) +
+                            (string.IsNullOrEmpty(criteria.Quality) ? 0 : 1) +
+                            (string.IsNullOrEmpty(criteria.Year) ? 0 : 1) +
+                            (string.IsNullOrEmpty(criteria.Rating) ? 0 : 1) +
+                            (criteria.Featured == true ? 1 : 0) +
+                            (criteria.NewRelease == true ? 1 : 0) +
+                            (string.IsNullOrEmpty(criteria.Rating) ? 0 : 1)
+                            )
+                    </span>
+
+                </button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Filter Panel (Hidden by default) -->
+<section id="filterPanel" class="fixed top-0 left-0 right-0 z-30 bg-gray-800 border-t border-gray-700 transform -translate-y-full opacity-0 invisible transition-all duration-500 ease-in-out overflow-hidden shadow-2xl">
+    <div class="container mx-auto px-4 py-8">
+        <form method="get" id="advancedSearchForm">
+            <!-- Preserve search term -->
+            <input type="hidden" name="search" value="@criteria.Search">
+            <div class="space-y-8">
+                <!-- Filter Header -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-filter text-blue-500 mr-3"></i>
+                        Bộ Lọc Nâng Cao
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <button type="button" id="clearFilters" class="text-gray-400 hover:text-blue-400 transition-colors duration-300">
+                            <i class="fas fa-times mr-2"></i>Xóa tất cả
+                        </button>
+                        <button type="button" id="closeFilter" class="text-gray-400 hover:text-white transition-colors duration-300">
+                            <i class="fas fa-chevron-up text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tags/Genres Filter -->
+                <div class="filter-section">
+                    <h4 class="text-lg font-semibold text-white mb-4 flex items-center">
+                        <i class="fas fa-tags text-blue-500 mr-2"></i>
+                        Thể Loại
+                        <span class="text-sm text-gray-400 ml-2">(Chọn nhiều)</span>
+                    </h4>
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-3">
                         @foreach (var tag in allTags)
                         {
-                            <label class="tag-checkbox flex items-center space-x-2 bg-gray-800/50 hover:bg-gray-700/50 p-3 rounded-lg cursor-pointer transition-all duration-300 hover:scale-105 @(selectedTags.Contains(tag.Name) ? "ring-2 ring-red-500 bg-red-500/20" : "")">
-                                <input type="checkbox" name="tags" value="@tag.Name" 
-                                       @(selectedTags.Contains(tag.Name) ? "checked" : "")
+                            <label class="tag-checkbox group flex items-center space-x-3 bg-gray-700/50 hover:bg-gray-600/50 p-4 rounded-xl cursor-pointer transition-all duration-300 hover:scale-105 @(selectedTags.Contains(tag.Name) ? "ring-2 bg-opacity-20" : "")"
+                                   style="@(selectedTags.Contains(tag.Name) ? $"ring-color: {tag.Color}; background-color: {tag.Color}20;" : "")">
+                                <input type="checkbox" name="tags" value="@tag.Name"
+                                @(selectedTags.Contains(tag.Name) ? "checked" : "")
                                        class="hidden tag-input">
-                                <div class="tag-indicator w-4 h-4 rounded-full border-2 border-gray-400 flex items-center justify-center transition-all duration-300"
+                                <div class="tag-indicator w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all duration-300 group-hover:scale-110"
                                      style="border-color: @tag.Color">
                                     <i class="fas fa-check text-xs text-white opacity-0 transition-opacity duration-300"></i>
                                 </div>
-                                <span class="text-sm text-gray-300 font-medium">@tag.Name</span>
+                                <div class="flex-1">
+                                    <span class="text-white font-medium group-hover:text-gray-100">@tag.Name</span>
+                                </div>
                             </label>
                         }
                     </div>
                 </div>
-                
-                <!-- Other Filters -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+
+                <!-- Other Filters Row -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     <!-- Country Filter -->
-                    <div>
-                        <select name="country" class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300">
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-globe text-green-500 mr-2"></i>
+                            Quốc Gia
+                        </h4>
+                        <select name="country" class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300">
                             <option value="">Tất cả quốc gia</option>
-                            <option value="Mỹ">Mỹ</option>
-                            <option value="Hàn Quốc">Hàn Quốc</option>
-                            <option value="Nhật Bản">Nhật Bản</option>
-                            <option value="Trung Quốc">Trung Quốc</option>
-                            <option value="Việt Nam">Việt Nam</option>
+                            <option value="Mỹ" selected="@(criteria.Country == "Mỹ")">🇺🇸 Mỹ</option>
+                            <option value="Hàn Quốc" selected="@(criteria.Country == "Hàn Quốc")">🇰🇷 Hàn Quốc</option>
+                            <option value="Nhật Bản" selected="@(criteria.Country == "Nhật Bản")">🇯🇵 Nhật Bản</option>
+                            <option value="Trung Quốc" selected="@(criteria.Country == "Trung Quốc")">🇨🇳 Trung Quốc</option>
+                            <option value="Việt Nam" selected="@(criteria.Country == "Việt Nam")">🇻🇳 Việt Nam</option>
+                            <option value="Thái Lan" selected="@(criteria.Country == "Thái Lan")">🇹🇭 Thái Lan</option>
+                            <option value="Ấn Độ" selected="@(criteria.Country == "Ấn Độ")">🇮🇳 Ấn Độ</option>
                         </select>
                     </div>
-                    
-                    <!-- Quality Filter -->
-                    <div>
-                        <select name="quality" class="w-full px-4 py-3 bg-gray-800 text-white rounded-lg border border-gray-600 focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300">
-                            <option value="">Tất cả chất lượng</option>
-                            <option value="4K">4K Ultra HD</option>
-                            <option value="HD">HD</option>
-                            <option value="CAM">CAM</option>
+
+                    <!-- Year Filter -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-calendar text-yellow-500 mr-2"></i>
+                            Năm Phát Hành
+                        </h4>
+                        <select name="year" class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-300">
+                            <option value="">Tất cả năm</option>
+                            <option value="2024" selected="@(criteria.Year == "2024")">2024</option>
+                            <option value="2023" selected="@(criteria.Year == "2023")">2023</option>
+                            <option value="2022" selected="@(criteria.Year == "2022")">2022</option>
+                            <option value="2021" selected="@(criteria.Year == "2021")">2021</option>
+                            <option value="2020" selected="@(criteria.Year == "2020")">2020</option>
+                            <option value="2010s" selected="@(criteria.Year == "2010s")">2010-2019</option>
+                            <option value="2000s" selected="@(criteria.Year == "2000s")">2000-2009</option>
+                            <option value="older" selected="@(criteria.Year == "older")">Trước 2000</option>
                         </select>
                     </div>
-                    
-                    <!-- Search Button -->
-                    <div>
-                        <button type="submit" class="w-full bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-glow-lg">
-                            <i class="fas fa-search mr-2"></i>Tìm kiếm
-                        </button>
+
+                    <!-- Rating Filter -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-star text-yellow-400 mr-2"></i>
+                            Đánh Giá
+                        </h4>
+                        <select name="rating" class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-400 focus:ring-2 focus:ring-yellow-400/20 transition-all duration-300">
+                            <option value="">Tất cả đánh giá</option>
+                            <option value="9+" selected="@(criteria.Rating == "9+")">⭐ 9.0+ Xuất sắc</option>
+                            <option value="8+" selected="@(criteria.Rating == "8+")">⭐ 8.0+ Rất tốt</option>
+                            <option value="7+" selected="@(criteria.Rating == "7+")">⭐ 7.0+ Tốt</option>
+                            <option value="6+" selected="@(criteria.Rating == "6+")">⭐ 6.0+ Khá</option>
+                        </select>
                     </div>
+                </div>
+
+                <!-- Additional Filters -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Special Filters -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-fire text-orange-500 mr-2"></i>
+                            Đặc Biệt
+                        </h4>
+                        <div class="space-y-2">
+                            <label class="flex items-center space-x-3 text-gray-300 hover:text-white cursor-pointer">
+                                <input type="checkbox" name="featured" value="true" @(criteria.Featured == true ? "checked" : "") class="text-blue-500 focus:ring-blue-500 rounded">
+                                <span>🔥 Phim nổi bật</span>
+                            </label>
+                            <label class="flex items-center space-x-3 text-gray-300 hover:text-white cursor-pointer">
+                                <input type="checkbox" name="newRelease" value="true" @(criteria.NewRelease == true ? "checked" : "") class="text-blue-500 focus:ring-blue-500 rounded">
+                                <span>🆕 Mới phát hành</span>
+                            </label>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-center space-x-4 pt-6 border-t border-gray-700">
+                    <button type="submit" class="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-search"></i>
+                        <span>Áp Dụng Bộ Lọc</span>
+                    </button>
+                    <button type="button" id="resetFilters" class="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                        <i class="fas fa-undo"></i>
+                        <span>Đặt Lại</span>
+                    </button>
                 </div>
             </div>
         </form>
@@ -86,80 +205,154 @@
 </section>
 
 <!-- Active Filters Display -->
-@if (!string.IsNullOrEmpty(ViewBag.Search) || selectedTags.Any() || !string.IsNullOrEmpty(ViewBag.Country) || !string.IsNullOrEmpty(ViewBag.Quality))
+@if (!string.IsNullOrEmpty(criteria.Search) || selectedTags.Any() || !string.IsNullOrEmpty(criteria.Country) || !string.IsNullOrEmpty(criteria.Quality))
 {
-    <section class="bg-gray-800 py-4">
+    <section class="bg-gray-800 py-4 border-b border-gray-700">
         <div class="container mx-auto px-4">
-            <div class="flex flex-wrap items-center gap-2">
-                <span class="text-gray-300 font-medium">
-                    <i class="fas fa-filter mr-2"></i>Bộ lọc hiện tại:
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-gray-300 font-medium flex items-center">
+                    <i class="fas fa-filter mr-2"></i>Đang lọc:
                 </span>
-                
-                @if (!string.IsNullOrEmpty(ViewBag.Search))
+                @if (!string.IsNullOrEmpty(criteria.Search))
                 {
-                    <span class="filter-tag bg-red-500/20 text-red-300 px-3 py-1 rounded-full text-sm border border-red-500/30 flex items-center">
-                        <i class="fas fa-search mr-2"></i>@ViewBag.Search
-                        <a href="@Url.Action("Index", new { tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality })" 
-                           class="ml-2 hover:text-white transition-colors duration-300">×</a>
+                    <span class="filter-tag bg-blue-500/20 text-blue-300 px-3 py-2 rounded-full text-sm border border-blue-500/30 flex items-center space-x-2 hover:bg-blue-500/30 transition-colors duration-300">
+                        <i class="fas fa-search"></i>
+                        <span>"@criteria.Search"</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300 ml-1">×</a>
                     </span>
                 }
-                
                 @foreach (var tag in selectedTags)
                 {
                     var tagColor = allTags.FirstOrDefault(t => t.Name == tag)?.Color ?? "#6b7280";
-                    <span class="filter-tag px-3 py-1 rounded-full text-sm border flex items-center text-white"
-                          style="background-color: @(tagColor)20; border-color: @(tagColor)50; color: @tagColor">
-                        <i class="fas fa-tag mr-2"></i>@tag
-                        <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags.Where(t => t != tag).ToArray(), country = ViewBag.Country, quality = ViewBag.Quality })" 
-                           class="ml-2 hover:text-white transition-colors duration-300">×</a>
+                    <span class="filter-tag px-3 py-2 rounded-full text-sm border flex items-center space-x-2 text-white hover:opacity-80 transition-opacity duration-300"
+                          style="background-color: @(tagColor)30; border-color: @(tagColor)50; color: @tagColor">
+                        <i class="fas fa-tag"></i>
+                        <span>@tag</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags.Where(t => t != tag).ToArray(), country = criteria.Country, quality = criteria.Quality, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
                     </span>
                 }
-                
-                @if (!string.IsNullOrEmpty(ViewBag.Country))
+                @if (!string.IsNullOrEmpty(criteria.Country))
                 {
-                    <span class="filter-tag bg-green-500/20 text-green-300 px-3 py-1 rounded-full text-sm border border-green-500/30 flex items-center">
-                        <i class="fas fa-globe mr-2"></i>@ViewBag.Country
-                        <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, quality = ViewBag.Quality })" 
-                           class="ml-2 hover:text-white transition-colors duration-300">×</a>
+                    <span class="filter-tag bg-green-500/20 text-green-300 px-3 py-2 rounded-full text-sm border border-green-500/30 flex items-center space-x-2 hover:bg-green-500/30 transition-colors duration-300">
+                        <i class="fas fa-globe"></i>
+                        <span>@criteria.Country</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
                     </span>
                 }
-                
-                @if (!string.IsNullOrEmpty(ViewBag.Quality))
+                @if (!string.IsNullOrEmpty(criteria.Quality))
                 {
-                    <span class="filter-tag bg-blue-500/20 text-blue-300 px-3 py-1 rounded-full text-sm border border-blue-500/30 flex items-center">
-                        <i class="fas fa-hd-video mr-2"></i>@ViewBag.Quality
-                        <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country })" 
-                           class="ml-2 hover:text-white transition-colors duration-300">×</a>
+                    <span class="filter-tag bg-purple-500/20 text-purple-300 px-3 py-2 rounded-full text-sm border border-purple-500/30 flex items-center space-x-2 hover:bg-purple-500/30 transition-colors duration-300">
+                        <i class="fas fa-hd-video"></i>
+                        <span>@criteria.Quality</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
                     </span>
                 }
-                
-                <a href="@Url.Action("Index")" class="text-gray-400 hover:text-red-400 text-sm ml-2 transition-colors duration-300">
-                    <i class="fas fa-times mr-1"></i>Xóa tất cả
+
+                @* thêm *@
+                @if (!string.IsNullOrEmpty(criteria.Year))
+                {
+                    <span class="filter-tag bg-yellow-500/20 text-yellow-300 px-3 py-2 rounded-full text-sm border border-yellow-500/30 flex items-center space-x-2 hover:bg-yellow-500/30 transition-colors duration-300">
+                        <i class="fas fa-calendar-alt"></i>
+                        <span>@criteria.Year</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                @if (!string.IsNullOrEmpty(criteria.Rating))
+                {
+                    <span class="filter-tag bg-pink-500/20 text-pink-300 px-3 py-2 rounded-full text-sm border border-pink-500/30 flex items-center space-x-2 hover:bg-pink-500/30 transition-colors duration-300">
+                        <i class="fas fa-star"></i>
+                        <span>@criteria.Rating</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, year = criteria.Year, price = criteria.Price, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                @if (!string.IsNullOrEmpty(criteria.Price))
+                {
+                    <span class="filter-tag bg-rose-500/20 text-rose-300 px-3 py-2 rounded-full text-sm border border-rose-500/30 flex items-center space-x-2 hover:bg-rose-500/30 transition-colors duration-300">
+                        <i class="fas fa-dollar-sign"></i>
+                        <span>@criteria.Price</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, year = criteria.Year, rating = criteria.Rating, feature = criteria.Featured, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                @if (criteria.Featured == true)
+                {
+                    <span class="filter-tag bg-orange-500/20 text-orange-300 px-3 py-2 rounded-full text-sm border border-orange-500/30 flex items-center space-x-2 hover:bg-orange-500/30 transition-colors duration-300">
+                        <i class="fas fa-bolt"></i>
+                        <span>Nổi bật</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, year = criteria.Year, rating = criteria.Rating, price = criteria.Price, sort = criteria.Sort, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                @if (!string.IsNullOrEmpty(criteria.Sort))
+                {
+                    <span class="filter-tag bg-cyan-500/20 text-cyan-300 px-3 py-2 rounded-full text-sm border border-cyan-500/30 flex items-center space-x-2 hover:bg-cyan-500/30 transition-colors duration-300">
+                        <i class="fas fa-sort"></i>
+                        <span>@criteria.Sort</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, year = criteria.Year, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                @if (criteria.NewRelease == true)
+                {
+                    <span class="filter-tag bg-teal-500/20 text-teal-300 px-3 py-2 rounded-full text-sm border border-teal-500/30 flex items-center space-x-2 hover:bg-teal-500/30 transition-colors duration-300">
+                        <i class="fas fa-fire-alt"></i>
+                        <span>Mới phát hành</span>
+                        <a href="@Url.Action("Index", new { search = criteria.Search, tags = selectedTags, country = criteria.Country, quality = criteria.Quality, year = criteria.Year, rating = criteria.Rating, price = criteria.Price, feature = criteria.Featured, newRelease = criteria.NewRelease })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+
+                <a href="@Url.Action("Index")" class="text-gray-400 hover:text-blue-400 text-sm transition-colors duration-300 flex items-center space-x-1 ml-2">
+                    <i class="fas fa-times"></i>
+                    <span>Xóa tất cả</span>
                 </a>
             </div>
         </div>
     </section>
 }
 
-<!-- Movies Grid -->
+<!-- Movies Grid Section -->
 <section class="py-12 bg-gray-900">
     <div class="container mx-auto px-4">
         <!-- Results Info -->
         <div class="flex justify-between items-center mb-8">
-            <h2 class="text-2xl font-bold text-white">
-                <i class="fas fa-film text-red-500 mr-2"></i>
-                Tìm thấy @Model.Count() phim
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <i class="fas fa-film text-red-500 mr-3"></i>
+                <span>Tìm thấy @Model.Count() phim</span>
+                @if (selectedTags.Any() || !string.IsNullOrEmpty(ViewBag.Search))
+                {
+                    <span class="text-gray-400 text-lg ml-2">phù hợp</span>
+                }
             </h2>
-            
-            <!-- Sort Options -->
-            <div class="flex items-center space-x-4">
-                <span class="text-gray-400">Sắp xếp:</span>
-                <select class="bg-gray-800 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-red-500 transition-all duration-300">
-                    <option>Mới nhất</option>
-                    <option>Đánh giá cao</option>
-                    <option>Xem nhiều</option>
-                    <option>Tên A-Z</option>
-                </select>
+
+            <!-- Quick Sort -->
+            <div class="flex items-center space-x-3">
+                <span class="text-gray-400 hidden md:inline">Sắp xếp nhanh:</span>
+                <div class="flex space-x-2">
+                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, sort = "newest" })"
+                       class="px-3 py-2 bg-gray-700 hover:bg-red-500 text-white rounded-lg text-sm transition-all duration-300 @(ViewBag.Sort == "newest" ? "bg-red-500" : "")">
+                        Mới nhất
+                    </a>
+                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, sort = "rating" })"
+                       class="px-3 py-2 bg-gray-700 hover:bg-red-500 text-white rounded-lg text-sm transition-all duration-300 @(ViewBag.Sort == "rating" ? "bg-red-500" : "")">
+                        Đánh giá
+                    </a>
+                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, sort = "popular" })"
+                       class="px-3 py-2 bg-gray-700 hover:bg-red-500 text-white rounded-lg text-sm transition-all duration-300 @(ViewBag.Sort == "popular" ? "bg-red-500" : "")">
+                        Phổ biến
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -169,32 +362,35 @@
             <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 gap-6">
                 @foreach (var movie in Model)
                 {
-                    <div class="movie-card group relative bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20">
+                    <a href="@Url.Action("Details", new { id = movie.Id })" class="movie-card group relative bg-gray-800 rounded-lg overflow-hidden hover:scale-105 transition-all duration-300 hover:shadow-2xl hover:shadow-red-500/20 block">
                         <!-- Movie Poster -->
                         <div class="relative aspect-[3/4] overflow-hidden">
-                            <img src="@movie.PosterURL" alt="@movie.Title" 
+                            <img src="@movie.PosterURL" alt="@movie.Title"
                                  class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
-                            
-                            <!-- Overlay -->
-                            <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+
+                            <!-- Hover Overlay -->
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/95 via-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 z-10">
                                 <!-- Play Button -->
                                 <div class="absolute inset-0 flex items-center justify-center">
-                                    <button class="bg-red-500 hover:bg-red-600 text-white w-16 h-16 rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-transform duration-300 hover:scale-110">
-                                        <i class="fas fa-play ml-1"></i>
-                                    </button>
+                                    <div class="bg-red-500 hover:bg-red-600 text-white w-16 h-16 rounded-full flex items-center justify-center transform scale-0 group-hover:scale-100 transition-all duration-300 hover:scale-110 shadow-lg z-20">
+                                        <i class="fas fa-play ml-1 text-xl"></i>
+                                    </div>
                                 </div>
-                                
+
                                 <!-- Movie Info Overlay -->
-                                <div class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                                    <div class="space-y-2">
+                                <div class="absolute bottom-0 left-0 right-0 p-4 transform translate-y-full group-hover:translate-y-0 transition-all duration-300 z-15">
+                                    <div class="space-y-3">
+                                        <!-- Movie Title -->
+                                        <h4 class="text-white font-bold text-sm line-clamp-2">@movie.Title</h4>
+
                                         <!-- Tags -->
                                         <div class="flex flex-wrap gap-1">
-                                            @foreach (var tagName in movie.MovieTags.Take(3))
+                                            @foreach (var movieTag in movie.MovieTags.Take(3))
                                             {
-                                                var tag = allTags.FirstOrDefault(t => t.MovieTags == tagName);
+                                                var tag = movieTag.Tag;
                                                 if (tag != null)
                                                 {
-                                                    <span class="px-2 py-1 rounded text-xs font-semibold text-white"
+                                                    <span class="px-2 py-1 rounded-full text-xs font-semibold text-white shadow-sm"
                                                           style="background-color: @tag.Color">
                                                         @tag.Name
                                                     </span>
@@ -202,57 +398,106 @@
                                             }
                                             @if (movie.MovieTags.Count > 3)
                                             {
-                                                <span class="bg-gray-600 px-2 py-1 rounded text-xs font-semibold text-white">
+                                                <span class="bg-gray-600 px-2 py-1 rounded-full text-xs font-semibold text-white shadow-sm">
                                                     +@(movie.MovieTags.Count - 3)
                                                 </span>
                                             }
                                         </div>
-                                        
-                                        <p class="text-white text-xs line-clamp-2">@movie.Description</p>
-                                        <div class="flex items-center justify-between text-xs text-gray-300">
-                                            <span><i class="fas fa-clock mr-1"></i>@movie.Duration phút</span>
-                                            <span><i class="fas fa-eye mr-1"></i>@movie.ViewCount.ToString("N0")</span>
+
+                                        <!-- Description -->
+                                        <p class="text-gray-200 text-xs leading-relaxed line-clamp-3">@movie.Description</p>
+
+                                        <!-- Movie Details -->
+                                        <div class="grid grid-cols-2 gap-2 text-xs text-gray-300">
+                                            <div class="flex items-center">
+                                                <i class="fas fa-clock mr-1 text-yellow-400"></i>
+                                                <span>@movie.Duration phút</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-star mr-1 text-yellow-400"></i>
+                                                <span>@movie.ImdbRating</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-eye mr-1 text-blue-400"></i>
+                                                <span>@movie.ViewCount.ToString("N0")</span>
+                                            </div>
+                                            <div class="flex items-center">
+                                                <i class="fas fa-calendar mr-1 text-green-400"></i>
+                                                <span>@movie.ReleaseDate.Year</span>
+                                            </div>
+                                        </div>
+
+                                        <!-- Click to view details -->
+                                        <div class="text-center pt-2">
+                                            <span class="text-red-400 text-xs font-semibold">
+                                                <i class="fas fa-mouse-pointer mr-1"></i>Nhấn để xem chi tiết
+                                            </span>
                                         </div>
                                     </div>
                                 </div>
                             </div>
-                            
+
                             <!-- Top Badges -->
-                            <div class="absolute top-2 left-2 space-y-1">
+                            <div class="absolute top-2 left-2 space-y-1 z-20">
                                 @if (movie.IsFeatured)
                                 {
-                                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold">
+                                    <span class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-2 py-1 rounded-full text-xs font-bold shadow-lg">
                                         <i class="fas fa-star mr-1"></i>HOT
                                     </span>
                                 }
                                 @if (movie.IsNewRelease)
                                 {
-                                    <span class="bg-gradient-to-r from-green-400 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                    <span class="bg-gradient-to-r from-green-400 to-blue-500 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
                                         NEW
                                     </span>
                                 }
+                                @if (movie.IsFree)
+                                {
+                                    <span class="bg-gradient-to-r from-green-500 to-green-600 text-white px-2 py-1 rounded-full text-xs font-bold shadow-lg">
+                                        FREE
+                                    </span>
+                                }
                             </div>
-                            
-                            <!-- Rating -->
-                            <div class="absolute top-2 right-2">
-                                <div class="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center space-x-1">
+
+                            <!-- Rating Badge -->
+                            <div class="absolute top-2 right-2 z-20">
+                                <div class="bg-black/70 backdrop-blur-sm px-2 py-1 rounded-full flex items-center space-x-1 shadow-lg">
                                     <i class="fas fa-star text-yellow-400 text-xs"></i>
                                     <span class="text-white text-xs font-semibold">@movie.ImdbRating</span>
                                 </div>
                             </div>
+
+                            <!-- Quality Badge -->
+                            <div class="absolute bottom-2 right-2 z-20">
+                                <span class="bg-red-500/90 text-white px-2 py-1 rounded text-xs font-bold shadow-lg">
+                                    @movie.Quality
+                                </span>
+                            </div>
                         </div>
-                        
-                        <!-- Movie Info -->
-                        <div class="p-4">
+
+                        <!-- Movie Info (Always Visible) -->
+                        <div class="p-3">
                             <h3 class="text-white font-semibold text-sm mb-2 line-clamp-2 group-hover:text-red-400 transition-colors duration-300">
                                 @movie.Title
                             </h3>
-                            
-                            <!-- Tags Display -->
+
+                            <!-- Quick Info -->
+                            <div class="flex items-center justify-between text-xs text-gray-400 mb-2">
+                                <span class="flex items-center">
+                                    <i class="fas fa-calendar mr-1"></i>
+                                    @movie.ReleaseDate.Year
+                                </span>
+                                <span class="flex items-center">
+                                    <i class="fas fa-globe mr-1"></i>
+                                    @movie.Country
+                                </span>
+                            </div>
+
+                            <!-- Tags Display (Simplified) -->
                             <div class="flex flex-wrap gap-1 mb-2">
-                                @foreach (var tagName in movie.MovieTags.Take(2))
+                                @foreach (var movieTag in movie.MovieTags.Take(2))
                                 {
-                                    var tag = allTags.FirstOrDefault(t => t.MovieTags == tagName);
+                                    var tag = movieTag.Tag;
                                     if (tag != null)
                                     {
                                         <span class="px-2 py-1 rounded text-xs text-white"
@@ -264,53 +509,35 @@
                                 @if (movie.MovieTags.Count > 2)
                                 {
                                     <span class="bg-gray-600 px-2 py-1 rounded text-xs text-white"
-                                          title="@string.Join(", ", movie.MovieTags.Skip(2))">
+                                          title="@string.Join(", ", movie.MovieTags.Skip(2).Select(mt => mt.Tag?.Name).Where(name => !string.IsNullOrEmpty(name)))">
                                         +@(movie.MovieTags.Count - 2)
                                     </span>
                                 }
                             </div>
-                            
-                            <div class="space-y-2 text-xs text-gray-400">
-                                <div class="flex items-center justify-between">
-                                    <span class="flex items-center">
-                                        <i class="fas fa-calendar mr-1"></i>
-                                        @movie.ReleaseDate.Year
+
+                            <!-- Price -->
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center space-x-2 text-xs">
+                                    <span class="flex items-center text-yellow-400">
+                                        <i class="fas fa-star mr-1"></i>
+                                        @movie.ImdbRating
                                     </span>
-                                    <span class="flex items-center">
-                                        <i class="fas fa-globe mr-1"></i>
-                                        @movie.Country
+                                    <span class="flex items-center text-blue-400">
+                                        <i class="fas fa-eye mr-1"></i>
+                                        @(movie.ViewCount > 1000000 ? $"{movie.ViewCount / 1000000:F1}M" : $"{movie.ViewCount / 1000:F0}K")
                                     </span>
                                 </div>
-                                
-                                <div class="flex items-center justify-between">
-                                    <span class="bg-gray-700 px-2 py-1 rounded text-xs">@movie.Quality</span>
-                                    @if (!movie.IsFree)
-                                    {
-                                        <span class="text-red-400 font-semibold">@movie.Price.ToString("N0")đ</span>
-                                    }
-                                    else
-                                    {
-                                        <span class="text-green-400 font-semibold">Miễn phí</span>
-                                    }
-                                </div>
+                                @if (!movie.IsFree)
+                                {
+                                    <span class="text-red-400 font-semibold text-xs">@movie.Price.ToString("N0")đ</span>
+                                }
+                                else
+                                {
+                                    <span class="text-green-400 font-semibold text-xs">Miễn phí</span>
+                                }
                             </div>
                         </div>
-                        
-                        <!-- Action Buttons -->
-                        <div class="absolute inset-x-0 bottom-0 p-4 bg-gradient-to-t from-black/90 to-transparent transform translate-y-full group-hover:translate-y-0 transition-transform duration-300">
-                            <div class="flex space-x-2">
-                                <button class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-3 rounded text-xs font-semibold transition-colors duration-300">
-                                    <i class="fas fa-play mr-1"></i>Xem ngay
-                                </button>
-                                <button class="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded transition-colors duration-300">
-                                    <i class="fas fa-heart"></i>
-                                </button>
-                                <button class="bg-gray-700 hover:bg-gray-600 text-white p-2 rounded transition-colors duration-300">
-                                    <i class="fas fa-bookmark"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+                    </a>
                 }
             </div>
         }
@@ -323,9 +550,14 @@
                 </div>
                 <h3 class="text-2xl font-bold text-white mb-4">Không tìm thấy phim nào</h3>
                 <p class="text-gray-400 mb-8">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc của bạn</p>
-                <a href="@Url.Action("Index")" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
-                    <i class="fas fa-refresh mr-2"></i>Xem tất cả phim
-                </a>
+                <div class="flex justify-center space-x-4">
+                    <a href="@Url.Action("Index")" class="bg-red-500 hover:bg-red-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-refresh mr-2"></i>Xem tất cả phim
+                    </a>
+                    <button id="openFilterFromEmpty" class="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-filter mr-2"></i>Mở bộ lọc
+                    </button>
+                </div>
             </div>
         }
     </div>
@@ -340,12 +572,12 @@
                 <!-- Previous Button -->
                 @if (ViewBag.CurrentPage > 1)
                 {
-                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = ViewBag.CurrentPage - 1 })" 
+                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = ViewBag.CurrentPage - 1 })"
                        class="bg-gray-700 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">
                         <i class="fas fa-chevron-left"></i>
                     </a>
                 }
-                
+
                 <!-- Page Numbers -->
                 @for (int i = Math.Max(1, ViewBag.CurrentPage - 2); i <= Math.Min(ViewBag.TotalPages, ViewBag.CurrentPage + 2); i++)
                 {
@@ -355,21 +587,21 @@
                     }
                     else
                     {
-                        <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = i })" 
+                        <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = i })"
                            class="bg-gray-700 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">@i</a>
                     }
                 }
-                
+
                 <!-- Next Button -->
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
-                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = ViewBag.CurrentPage + 1 })" 
+                    <a href="@Url.Action("Index", new { search = ViewBag.Search, tags = selectedTags, country = ViewBag.Country, quality = ViewBag.Quality, page = ViewBag.CurrentPage + 1 })"
                        class="bg-gray-700 hover:bg-red-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">
                         <i class="fas fa-chevron-right"></i>
                     </a>
                 }
             </div>
-            
+
             <!-- Page Info -->
             <div class="text-center mt-4 text-gray-400">
                 Trang @ViewBag.CurrentPage / @ViewBag.TotalPages
@@ -378,93 +610,271 @@
     </section>
 }
 
-<!-- Quick Actions Floating Button -->
-<div class="fixed bottom-6 right-6 z-40">
-    <div class="relative group">
-        <button class="bg-red-500 hover:bg-red-600 text-white w-14 h-14 rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110">
-            <i class="fas fa-filter"></i>
-        </button>
-        
-        <!-- Quick Filter Menu -->
-        <div class="absolute bottom-16 right-0 bg-gray-800 rounded-lg shadow-xl p-4 w-48 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform scale-95 group-hover:scale-100">
-            <h4 class="text-white font-semibold mb-3">Lọc nhanh</h4>
-            <div class="space-y-2">
-                <a href="@Url.Action("Index", new { genre = "Hành động" })" class="block text-gray-300 hover:text-white text-sm py-1 hover:translate-x-1 transition-all duration-300">
-                    <i class="fas fa-fist-raised mr-2"></i>Phim hành động
-                </a>
-                <a href="@Url.Action("Index", new { country = "Hàn Quốc" })" class="block text-gray-300 hover:text-white text-sm py-1 hover:translate-x-1 transition-all duration-300">
-                    <i class="fas fa-flag mr-2"></i>Phim Hàn Quốc
-                </a>
-                <a href="@Url.Action("Index", new { quality = "4K" })" class="block text-gray-300 hover:text-white text-sm py-1 hover:translate-x-1 transition-all duration-300">
-                    <i class="fas fa-hd-video mr-2"></i>Chất lượng 4K
-                </a>
-            </div>
-        </div>
-    </div>
-</div>
-
 @section Scripts {
     <script>
+        let currentMovieId = null;
+        let isDeleting = false;
+
         document.addEventListener('DOMContentLoaded', function() {
+            const filterToggle = document.getElementById('filterToggle');
+            const filterPanel = document.getElementById('filterPanel');
+            const closeFilter = document.getElementById('closeFilter');
+            const clearFilters = document.getElementById('clearFilters');
+            const resetFilters = document.getElementById('resetFilters');
+            const openFilterFromEmpty = document.getElementById('openFilterFromEmpty');
+
+            // Toggle filter panel
+            function toggleFilterPanel() {
+                const isVisible = !filterPanel.classList.contains('invisible');
+                if (isVisible) {
+                    // Hide
+                    filterPanel.classList.add('-translate-y-full', 'opacity-0');
+                    setTimeout(() => {
+                        filterPanel.classList.add('invisible');
+                    }, 500);
+                } else {
+                    // Show - position below header
+                    const navbar = document.querySelector('header');
+                    const navbarHeight = navbar ? navbar.offsetHeight : 80;
+                    filterPanel.style.top = navbarHeight + 'px';
+                    filterPanel.classList.remove('invisible');
+                    setTimeout(() => {
+                        filterPanel.classList.remove('-translate-y-full', 'opacity-0');
+                    }, 10);
+                }
+            }
+
+            filterToggle?.addEventListener('click', toggleFilterPanel);
+            closeFilter?.addEventListener('click', toggleFilterPanel);
+            openFilterFromEmpty?.addEventListener('click', toggleFilterPanel);
+
+            // Clear all filters
+            clearFilters?.addEventListener('click', function() {
+                window.location.href = '@Url.Action("Index")';
+            });
+
+            // Reset filters form
+            resetFilters?.addEventListener('click', function() {
+                const form = document.getElementById('advancedSearchForm');
+                form.reset();
+                const searchInput = form.querySelector('input[name="search"]');
+                if (searchInput) {
+                    searchInput.value = '@criteria.Search';
+                }
+                updateFilterCount();
+            });
+
             // Handle tag checkbox styling
             const tagCheckboxes = document.querySelectorAll('.tag-checkbox');
-            
             tagCheckboxes.forEach(checkbox => {
                 const input = checkbox.querySelector('.tag-input');
                 const indicator = checkbox.querySelector('.tag-indicator');
                 const checkIcon = indicator.querySelector('i');
-                
+
                 function updateCheckbox() {
                     if (input.checked) {
-                        indicator.style.backgroundColor = indicator.style.borderColor;
+                        const borderColor = getComputedStyle(indicator).borderColor;
+                        indicator.style.backgroundColor = borderColor;
                         checkIcon.style.opacity = '1';
-                        checkbox.classList.add('ring-2', 'ring-red-500', 'bg-red-500/20');
+                        checkbox.classList.add('ring-2');
                     } else {
                         indicator.style.backgroundColor = 'transparent';
                         checkIcon.style.opacity = '0';
-                        checkbox.classList.remove('ring-2', 'ring-red-500', 'bg-red-500/20');
+                        checkbox.classList.remove('ring-2');
                     }
                 }
-                
+
+                // Initial state
                 updateCheckbox();
-                
+
+                // Handle clicks on the entire label
                 checkbox.addEventListener('click', function(e) {
-                    if (e.target !== input) {
-                        input.checked = !input.checked;
-                        updateCheckbox();
+                    if (e.target === input) return;
+                    e.preventDefault();
+                    input.checked = !input.checked;
+                    const changeEvent = new Event('change', { bubbles: true });
+                    input.dispatchEvent(changeEvent);
+                    updateCheckbox();
+                    updateFilterCount();
+                });
+
+                // Handle direct input changes
+                input.addEventListener('change', function() {
+                    updateCheckbox();
+                    updateFilterCount();
+                });
+            });
+
+            // Update filter count
+            function updateFilterCount() {
+                const filterCount = document.getElementById('filterCount');
+                const checkedTags = document.querySelectorAll('input[name="tags"]:checked').length;
+                const selectedCountry = document.querySelector('select[name="country"]').value ? 1 : 0;
+                const selectedYear = document.querySelector('select[name="year"]')?.value ? 1 : 0;
+                const selectedRating = document.querySelector('select[name="rating"]')?.value ? 1 : 0;
+                const selectedPrice = document.querySelector('input[name="price"]:checked')?.value && document.querySelector('input[name="price"]:checked').value !== '' ? 1 : 0;
+                const selectedFeatured = document.querySelector('input[name="featured"]:checked') ? 1 : 0;
+                const selectedNewRelease = document.querySelector('input[name="newRelease"]:checked') ? 1 : 0;
+
+                const total = checkedTags + selectedCountry + selectedYear + selectedRating + selectedPrice + selectedFeatured + selectedNewRelease;
+
+                if (total > 0) {
+                    filterCount.textContent = total;
+                    filterCount.classList.remove('hidden');
+                } else {
+                    filterCount.classList.add('hidden');
+                }
+            }
+
+            // Auto-update filter count on form changes
+            const form = document.getElementById('advancedSearchForm');
+            if (form) {
+                form.addEventListener('change', updateFilterCount);
+                updateFilterCount(); // Initial count
+            }
+
+            // Close filter panel when clicking outside
+            document.addEventListener('click', function(e) {
+                if (!filterPanel.contains(e.target) && !filterToggle.contains(e.target) && !filterPanel.classList.contains('invisible')) {
+                    if (!e.target.closest('#filterPanel') && !e.target.closest('#filterToggle')) {
+                        toggleFilterPanel();
                     }
-                });
-                
-                input.addEventListener('change', updateCheckbox);
+                }
             });
-            
-            // Auto-submit form when filters change
-            const form = document.getElementById('searchForm');
-            const selects = form.querySelectorAll('select');
-            const checkboxes = form.querySelectorAll('input[type="checkbox"]');
-            
-            selects.forEach(select => {
-                select.addEventListener('change', () => {
-                    setTimeout(() => form.submit(), 300);
-                });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && !filterPanel.classList.contains('invisible')) {
+                    toggleFilterPanel();
+                }
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    toggleFilterPanel();
+                }
             });
-            
-            // Add smooth animations for movie cards
-            const movieCards = document.querySelectorAll('.movie-card');
-            
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach((entry, index) => {
-                    if (entry.isIntersecting) {
-                        setTimeout(() => {
-                            entry.target.classList.add('animate-fade-in');
-                        }, index * 100);
-                    }
+
+            // Prevent modal close when clicking inside modal content
+            const modalContent = document.getElementById('modalContent');
+            if (modalContent) {
+                modalContent.addEventListener('click', function(e) {
+                    e.stopPropagation();
                 });
-            }, { threshold: 0.1 });
-            
-            movieCards.forEach(card => {
-                observer.observe(card);
-            });
+            }
         });
+
+        // Show delete modal
+        function showDeleteModal(id, title, originalTitle, posterUrl, year, country, rating, views) {
+            currentMovieId = id;
+
+            // Populate modal with movie data
+            document.getElementById('moviePoster').src = posterUrl || '/placeholder.svg?height=120&width=80';
+            document.getElementById('moviePoster').alt = title;
+            document.getElementById('movieTitle').textContent = title;
+            document.getElementById('movieOriginalTitle').textContent = originalTitle || '';
+            document.getElementById('movieYear').textContent = year;
+            document.getElementById('movieCountry').textContent = country;
+            document.getElementById('movieRating').textContent = rating;
+            document.getElementById('movieViews').textContent = parseInt(views).toLocaleString();
+
+            // Show modal with Tailwind animations
+            const modal = document.getElementById('deleteModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalContent.classList.remove('scale-95');
+                modalContent.classList.add('scale-100');
+            }, 10);
+
+            // Focus management
+            document.body.style.overflow = 'hidden';
+
+            // Add escape key listener
+            document.addEventListener('keydown', handleEscapeKey);
+        }
+
+        // Hide delete modal
+        function hideDeleteModal() {
+            if (isDeleting) return; // Prevent closing while deleting
+
+            const modal = document.getElementById('deleteModal');
+            const modalContent = document.getElementById('modalContent');
+
+            modal.classList.add('opacity-0');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+
+                // Reset state
+                currentMovieId = null;
+                document.body.style.overflow = '';
+                document.removeEventListener('keydown', handleEscapeKey);
+            }, 300);
+        }
+
+        // Confirm delete movie
+        async function confirmDeleteMovie() {
+            if (!currentMovieId || isDeleting) return;
+
+            isDeleting = true;
+
+            // Update button to loading state
+            const deleteBtn = document.getElementById('deleteBtn');
+            const cancelBtn = document.getElementById('cancelBtn');
+
+            deleteBtn.innerHTML = `
+                <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                <span>Đang xóa...</span>
+            `;
+            deleteBtn.disabled = true;
+            deleteBtn.classList.add('opacity-50', 'cursor-not-allowed');
+            cancelBtn.disabled = true;
+            cancelBtn.classList.add('opacity-50', 'cursor-not-allowed');
+
+            try {
+                // Create a form and submit it
+                const form = document.createElement('form');
+                form.action = `/Admin/Movies/Delete/${currentMovieId}`;
+                form.method = "post";
+
+                // Add CSRF token if needed
+                const token = document.querySelector('input[name="__RequestVerificationToken"]');
+                if (token) {
+                    const tokenInput = document.createElement('input');
+                    tokenInput.type = 'hidden';
+                    tokenInput.name = '__RequestVerificationToken';
+                    tokenInput.value = token.value;
+                    form.appendChild(tokenInput);
+                }
+
+                document.body.appendChild(form);
+                form.submit();
+
+            } catch (error) {
+                console.error('Error deleting movie:', error);
+                // Reset button state on error
+                deleteBtn.innerHTML = `
+                    <i class="fas fa-trash-alt"></i>
+                    <span>Xóa phim</span>
+                `;
+                deleteBtn.disabled = false;
+                deleteBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+                cancelBtn.disabled = false;
+                cancelBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+
+                isDeleting = false;
+            }
+        }
+
+        // Handle escape key
+        function handleEscapeKey(event) {
+            if (event.key === 'Escape') {
+                hideDeleteModal();
+            }
+        }
+
     </script>
 }

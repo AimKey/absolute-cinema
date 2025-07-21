@@ -1,0 +1,1112 @@
+﻿@model Common.DTOs.MovieDTOs.MovieDTO
+@{
+    ViewData["Title"] = "Thêm Phim Mới - Admin";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml";
+    var allTags = ViewBag.AllTags as List<Common.ViewModels.TagVM>;
+    var allActors = ViewBag.AllActors as List<Common.ViewModels.ActorVM>;
+    var allDirectors = ViewBag.AllDirectors as List<Common.ViewModels.DirectorVM>;
+    // Convert selected IDs to JSON for JavaScript
+    var selectedTagNamesJson = System.Text.Json.JsonSerializer.Serialize(Model.SelectedTags);
+    var selectedActorIdsJson = System.Text.Json.JsonSerializer.Serialize(Model.SelectedActorIds);
+    var selectedDirectorIdsJson = System.Text.Json.JsonSerializer.Serialize(Model.SelectedDirectorIds);
+}
+
+<!-- Admin Create Movie Page -->
+<div class="min-h-screen bg-gray-900">
+    <!-- Header Section -->
+    <section class="bg-gradient-to-r from-gray-800 via-blue-900 to-gray-800 py-12">
+        <div class="container mx-auto px-4">
+            <!-- Breadcrumb -->
+            <nav class="flex mb-6" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-3">
+                    <li class="inline-flex items-center">
+                        <a href="/Admin" class="inline-flex items-center text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300">
+                            <i class="fas fa-home w-4 h-4 mr-2"></i>
+                            Dashboard
+                        </a>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-500 mx-2"></i>
+                            <a href="/Admin/Movies" class="text-sm font-medium text-gray-400 hover:text-white transition-colors duration-300">
+                                Quản lý Phim
+                            </a>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="flex items-center">
+                            <i class="fas fa-chevron-right text-gray-500 mx-2"></i>
+                            <span class="text-sm font-medium text-blue-400">Thêm Phim Mới</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+
+            <!-- Page Title -->
+            <div class="flex items-center justify-between">
+                <div>
+                    <h1 class="text-3xl font-bold text-white mb-2">
+                        <i class="fas fa-plus-circle text-green-500 mr-3"></i>
+                        Thêm Phim Mới
+                    </h1>
+                    <p class="text-gray-400">Thêm phim mới vào hệ thống quản lý</p>
+                </div>
+                <div class="flex space-x-3">
+                    <a href="/Admin/Movies" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Quay lại</span>
+                    </a>
+                    <button type="button" id="previewBtn" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-all duration-300 flex items-center space-x-2">
+                        <i class="fas fa-eye"></i>
+                        <span>Xem trước</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content -->
+    <section class="py-8">
+        <div class="container mx-auto px-4">
+            <form asp-action="Create" method="post" id="createMovieForm" enctype="multipart/form-data" class="space-y-8">
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                    <!-- Left Column - Main Info -->
+                    <div class="lg:col-span-2 space-y-6">
+                        <!-- Basic Information -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                Thông Tin Cơ Bản
+                            </h3>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <!-- Title -->
+                                <div class="md:col-span-2">
+                                    <label asp-for="Title" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-film mr-1 text-red-500"></i>
+                                        Tên Phim <span class="text-red-500">*</span>
+                                    </label>
+                                    <input asp-for="Title" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Nhập tên phim...">
+                                    <span asp-validation-for="Title" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Original Title -->
+                                <div class="md:col-span-2">
+                                    <label asp-for="OriginalTitle" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-language mr-1 text-yellow-500"></i>
+                                        Tên Gốc
+                                    </label>
+                                    <input asp-for="OriginalTitle" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Tên phim bằng tiếng gốc...">
+                                    <span asp-validation-for="OriginalTitle" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Duration -->
+                                <div>
+                                    <label asp-for="Duration" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-clock mr-1 text-green-500"></i>
+                                        Thời Lượng (phút) <span class="text-red-500">*</span>
+                                    </label>
+                                    <input asp-for="Duration" type="number" min="1" max="1000" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="120">
+                                    <span asp-validation-for="Duration" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Release Date -->
+                                <div>
+                                    <label asp-for="ReleaseDate" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-calendar mr-1 text-purple-500"></i>
+                                        Ngày Phát Hành <span class="text-red-500">*</span>
+                                    </label>
+                                    <input asp-for="ReleaseDate" type="date" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                    <span asp-validation-for="ReleaseDate" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Country -->
+                                <div>
+                                    <label asp-for="Country" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-globe mr-1 text-blue-500"></i>
+                                        Quốc Gia <span class="text-red-500">*</span>
+                                    </label>
+                                    <select asp-for="Country" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                        <option value="">Chọn quốc gia</option>
+                                        <option value="Mỹ">🇺🇸 Mỹ</option>
+                                        <option value="Hàn Quốc">🇰🇷 Hàn Quốc</option>
+                                        <option value="Nhật Bản">🇯🇵 Nhật Bản</option>
+                                        <option value="Trung Quốc">🇨🇳 Trung Quốc</option>
+                                        <option value="Việt Nam">🇻🇳 Việt Nam</option>
+                                        <option value="Thái Lan">🇹🇭 Thái Lan</option>
+                                        <option value="Ấn Độ">🇮🇳 Ấn Độ</option>
+                                        <option value="Anh">🇬🇧 Anh</option>
+                                        <option value="Pháp">🇫🇷 Pháp</option>
+                                        <option value="Đức">🇩🇪 Đức</option>
+                                    </select>
+                                    <span asp-validation-for="Country" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Language -->
+                                @* <div> *@
+                                @*     <label asp-for="Language" class="block text-sm font-medium text-gray-300 mb-2"> *@
+                                @*         <i class="fas fa-comments mr-1 text-indigo-500"></i> *@
+                                @*         Ngôn Ngữ *@
+                                @*     </label> *@
+                                @*     <input asp-for="Language" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="Tiếng Việt, English..."> *@
+                                @*     <span asp-validation-for="Language" class="text-red-400 text-sm mt-1"></span> *@
+                                @* </div> *@
+                            </div>
+                        </div>
+
+                        <!-- Description -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-align-left text-green-500 mr-2"></i>
+                                Mô Tả Phim
+                            </h3>
+                            <div>
+                                <label asp-for="Description" class="block text-sm font-medium text-gray-300 mb-2">
+                                    Nội Dung <span class="text-red-500">*</span>
+                                </label>
+                                <textarea asp-for="Description" rows="8" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 resize-none" placeholder="Mô tả nội dung phim, cốt truyện, diễn viên chính..."></textarea>
+                                <span asp-validation-for="Description" class="text-red-400 text-sm mt-1"></span>
+                                <div class="text-xs text-gray-500 mt-1">
+                                    <span id="descriptionCount">0</span>/2000 ký tự
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Media URLs with Cloudinary Upload -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-images text-purple-500 mr-2"></i>
+                                Hình Ảnh & Video
+                            </h3>
+                            <div class="space-y-6">
+                                <!-- Poster Upload -->
+                                <div>
+                                    <label asp-for="PosterURL" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-image mr-1 text-blue-500"></i>
+                                        Poster Phim <span class="text-red-500">*</span>
+                                    </label>
+
+                                    <!-- Upload Section -->
+                                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                                        <div class="flex items-center justify-center w-full">
+                                            <label for="posterFileInput" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-750 transition-all duration-300">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6" id="posterUploadArea">
+                                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                                    <p class="mb-2 text-sm text-gray-400">
+                                                        <span class="font-semibold">Click để upload</span> hoặc kéo thả file
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">PNG, JPG, WebP (MAX. 10MB)</p>
+                                                </div>
+                                                <div class="hidden" id="posterUploadProgress">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-500"></div>
+                                                        <span class="text-blue-400">Đang upload...</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                                                        <div class="bg-blue-600 h-2 rounded-full transition-all duration-300" id="posterProgressBar" style="width: 0%"></div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            <input id="posterFileInput" type="file" class="hidden" accept="image/*" />
+                                        </div>
+                                    </div>
+
+                                    <!-- URL Input -->
+                                    <div class="flex space-x-2">
+                                        <input asp-for="PosterURL" type="url" class="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="https://example.com/poster.jpg hoặc upload file ở trên" id="posterInput">
+                                        <button type="button" onclick="previewImage('posterInput', 'posterPreview')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-3 rounded-lg transition-all duration-300">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="PosterURL" class="text-red-400 text-sm mt-1"></span>
+
+                                    <!-- Preview -->
+                                    <div id="posterPreview" class="mt-4 hidden">
+                                        <div class="relative inline-block">
+                                            <img class="w-32 h-48 object-cover rounded-lg border border-gray-600" alt="Poster Preview">
+                                            <button type="button" onclick="clearImage('posterInput', 'posterPreview')" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Background Upload -->
+                                <div>
+                                    <label asp-for="BackgroundURL" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-panorama mr-1 text-green-500"></i>
+                                        Background Phim
+                                    </label>
+
+                                    <!-- Upload Section -->
+                                    <div class="bg-gray-700 rounded-lg p-4 mb-4">
+                                        <div class="flex items-center justify-center w-full">
+                                            <label for="backgroundFileInput" class="flex flex-col items-center justify-center w-full h-32 border-2 border-gray-600 border-dashed rounded-lg cursor-pointer bg-gray-800 hover:bg-gray-750 transition-all duration-300">
+                                                <div class="flex flex-col items-center justify-center pt-5 pb-6" id="backgroundUploadArea">
+                                                    <i class="fas fa-cloud-upload-alt text-3xl text-gray-400 mb-2"></i>
+                                                    <p class="mb-2 text-sm text-gray-400">
+                                                        <span class="font-semibold">Click để upload</span> hoặc kéo thả file
+                                                    </p>
+                                                    <p class="text-xs text-gray-500">PNG, JPG, WebP (MAX. 10MB)</p>
+                                                </div>
+                                                <div class="hidden" id="backgroundUploadProgress">
+                                                    <div class="flex items-center space-x-2">
+                                                        <div class="animate-spin rounded-full h-6 w-6 border-b-2 border-green-500"></div>
+                                                        <span class="text-green-400">Đang upload...</span>
+                                                    </div>
+                                                    <div class="w-full bg-gray-600 rounded-full h-2 mt-2">
+                                                        <div class="bg-green-600 h-2 rounded-full transition-all duration-300" id="backgroundProgressBar" style="width: 0%"></div>
+                                                    </div>
+                                                </div>
+                                            </label>
+                                            <input id="backgroundFileInput" type="file" class="hidden" accept="image/*" />
+                                        </div>
+                                    </div>
+
+                                    <!-- URL Input -->
+                                    <div class="flex space-x-2">
+                                        <input asp-for="BackgroundURL" type="url" class="flex-1 px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="https://example.com/background.jpg hoặc upload file ở trên" id="backgroundInput">
+                                        <button type="button" onclick="previewImage('backgroundInput', 'backgroundPreview')" class="bg-green-600 hover:bg-green-700 text-white px-4 py-3 rounded-lg transition-all duration-300">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                    </div>
+                                    <span asp-validation-for="BackgroundURL" class="text-red-400 text-sm mt-1"></span>
+
+                                    <!-- Preview -->
+                                    <div id="backgroundPreview" class="mt-4 hidden">
+                                        <div class="relative inline-block">
+                                            <img class="w-full max-w-md h-32 object-cover rounded-lg border border-gray-600" alt="Background Preview">
+                                            <button type="button" onclick="clearImage('backgroundInput', 'backgroundPreview')" class="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-6 h-6 flex items-center justify-center text-xs">
+                                                <i class="fas fa-times"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Trailer URL -->
+                                <div>
+                                    <label asp-for="TrailerURL" class="block text-sm font-medium text-gray-300 mb-2">
+                                        <i class="fas fa-play-circle mr-1 text-red-500"></i>
+                                        URL Trailer (YouTube)
+                                    </label>
+                                    <input asp-for="TrailerURL" type="url" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="https://www.youtube.com/watch?v=...">
+                                    <span asp-validation-for="TrailerURL" class="text-red-400 text-sm mt-1"></span>
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        Hỗ trợ YouTube URL (watch hoặc embed)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Tags Selection with Search -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-tags text-yellow-500 mr-2"></i>
+                                Thể Loại
+                            </h3>
+                            <div id="tags-select-container" class="relative">
+                                <div class="flex flex-wrap gap-2 mb-2" id="selected-tags-display">
+                                    <!-- Selected tags will be rendered here -->
+                                </div>
+                                <input type="text" id="tags-search-input" placeholder="Tìm kiếm thể loại..."
+                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                <div id="tags-options-dropdown" class="absolute z-10 w-full bg-gray-700 border border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden">
+                                    <!-- Tag options will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-3">
+                                Chọn các thể loại phù hợp với phim
+                            </div>
+                        </div>
+
+                        <!-- Actors Selection with Search -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-users text-orange-500 mr-2"></i>
+                                Diễn Viên
+                            </h3>
+                            <div id="actors-select-container" class="relative">
+                                <div class="flex flex-wrap gap-2 mb-2" id="selected-actors-display">
+                                    <!-- Selected actors will be rendered here -->
+                                </div>
+                                <input type="text" id="actors-search-input" placeholder="Tìm kiếm diễn viên..."
+                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                <div id="actors-options-dropdown" class="absolute z-10 w-full bg-gray-700 border border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden">
+                                    <!-- Actor options will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-3">
+                                Chọn các diễn viên tham gia phim
+                            </div>
+                        </div>
+
+                        <!-- Directors Selection with Search -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-xl font-bold text-white mb-6 flex items-center">
+                                <i class="fas fa-video text-cyan-500 mr-2"></i>
+                                Đạo Diễn
+                            </h3>
+                            <div id="directors-select-container" class="relative">
+                                <div class="flex flex-wrap gap-2 mb-2" id="selected-directors-display">
+                                    <!-- Selected directors will be rendered here -->
+                                </div>
+                                <input type="text" id="directors-search-input" placeholder="Tìm kiếm đạo diễn..."
+                                       class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                <div id="directors-options-dropdown" class="absolute z-10 w-full bg-gray-700 border border-gray-600 rounded-lg mt-1 max-h-60 overflow-y-auto shadow-lg hidden">
+                                    <!-- Director options will be rendered here -->
+                                </div>
+                            </div>
+                            <div class="text-xs text-gray-500 mt-3">
+                                Chọn các đạo diễn của phim
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right Column - Settings & Actions -->
+                    <div class="space-y-6">
+                        <!-- Rating & Quality -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                                <i class="fas fa-star text-yellow-500 mr-2"></i>
+                                Đánh Giá & Chất Lượng
+                            </h3>
+                            <div class="space-y-4">
+                                <!-- IMDB Rating -->
+                                <div>
+                                    <label asp-for="ImdbRating" class="block text-sm font-medium text-gray-300 mb-2">
+                                        Đánh Giá IMDB
+                                    </label>
+                                    <input asp-for="ImdbRating" type="number" step="0.1" min="0" max="10" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="8.5">
+                                    <span asp-validation-for="ImdbRating" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Quality -->
+                                @* <div> *@
+                                @*     <label asp-for="Quality" class="block text-sm font-medium text-gray-300 mb-2"> *@
+                                @*         Chất Lượng <span class="text-red-500">*</span> *@
+                                @*     </label> *@
+                                @*     <select asp-for="Quality" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300"> *@
+                                @*         <option value="">Chọn chất lượng</option> *@
+                                @*         <option value="4K">4K Ultra HD</option> *@
+                                @*         <option value="FHD">Full HD (1080p)</option> *@
+                                @*         <option value="HD">HD (720p)</option> *@
+                                @*         <option value="SD">SD (480p)</option> *@
+                                @*     </select> *@
+                                @*     <span asp-validation-for="Quality" class="text-red-400 text-sm mt-1"></span> *@
+                                @* </div> *@
+                                <!-- Age Restriction -->
+                                <div>
+                                    <label asp-for="AgeRestriction" class="block text-sm font-medium text-gray-300 mb-2">
+                                        Độ Tuổi
+                                    </label>
+                                    <select asp-for="AgeRestriction" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                        <option value="">Chọn độ tuổi</option>
+                                        <option value="G">G - Mọi lứa tuổi</option>
+                                        <option value="PG">PG - Dưới sự hướng dẫn</option>
+                                        <option value="PG-13">PG-13 - Trên 13 tuổi</option>
+                                        <option value="R">R - Trên 17 tuổi</option>
+                                        <option value="NC-17">NC-17 - Chỉ người lớn</option>
+                                    </select>
+                                    <span asp-validation-for="AgeRestriction" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Status & Pricing -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                                <i class="fas fa-cog text-blue-500 mr-2"></i>
+                                Trạng Thái & Giá
+                            </h3>
+                            <div class="space-y-4">
+                                <!-- Status -->
+                                <div>
+                                    <label asp-for="Status" class="block text-sm font-medium text-gray-300 mb-2">
+                                        Trạng Thái <span class="text-red-500">*</span>
+                                    </label>
+                                    <select asp-for="Status" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300">
+                                        <option value="">Chọn trạng thái</option>
+                                        <option value="PUBLISHED">Hoạt động</option>
+                                        <option value="NOT_SHOW_SHOWTIME">Ẩn lịch chiếu</option>
+                                        <option value="HIDDEN">Ẩn phim</option>
+                                    </select>
+                                    <span asp-validation-for="Status" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Price -->
+                                <div>
+                                    <label asp-for="Price" class="block text-sm font-medium text-gray-300 mb-2">
+                                        Giá (VNĐ)
+                                    </label>
+                                    <input asp-for="Price" type="number" min="0" step="1000" class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300" placeholder="50000">
+                                    <span asp-validation-for="Price" class="text-red-400 text-sm mt-1"></span>
+                                </div>
+                                <!-- Checkboxes -->
+                                @* <div class="space-y-3"> *@
+                                @*     <label class="flex items-center space-x-3 text-gray-300 hover:text-white cursor-pointer"> *@
+                                @*         <input asp-for="IsFree" type="checkbox" class="rounded border-gray-600 text-green-600 focus:ring-green-500 focus:ring-offset-gray-800"> *@
+                                @*         <span class="flex items-center"> *@
+                                @*             <i class="fas fa-gift text-green-500 mr-2"></i> *@
+                                @*             Miễn phí *@
+                                @*         </span> *@
+                                @*     </label> *@
+                                @*     <label class="flex items-center space-x-3 text-gray-300 hover:text-white cursor-pointer"> *@
+                                @*         <input asp-for="IsFeatured" type="checkbox" class="rounded border-gray-600 text-yellow-600 focus:ring-yellow-500 focus:ring-offset-gray-800"> *@
+                                @*         <span class="flex items-center"> *@
+                                @*             <i class="fas fa-star text-yellow-500 mr-2"></i> *@
+                                @*             Phim nổi bật *@
+                                @*         </span> *@
+                                @*     </label> *@
+                                @*     <label class="flex items-center space-x-3 text-gray-300 hover:text-white cursor-pointer"> *@
+                                @*         <input asp-for="IsNewRelease" type="checkbox" class="rounded border-gray-600 text-blue-600 focus:ring-blue-500 focus:ring-offset-gray-800"> *@
+                                @*         <span class="flex items-center"> *@
+                                @*             <i class="fas fa-sparkles text-blue-500 mr-2"></i> *@
+                                @*             Mới phát hành *@
+                                @*         </span> *@
+                                @*     </label> *@
+                                @* </div> *@
+                            </div>
+                        </div>
+
+                        <!-- Action Buttons -->
+                        <div class="bg-gray-800 rounded-lg p-6 border border-gray-700">
+                            <h3 class="text-lg font-bold text-white mb-4 flex items-center">
+                                <i class="fas fa-save text-green-500 mr-2"></i>
+                                Hành Động
+                            </h3>
+                            <div class="space-y-3">
+                                <button type="submit" class="w-full bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-save"></i>
+                                    <span>Lưu Phim</span>
+                                </button>
+                                @* <button type="button" id="saveDraftBtn" class="w-full bg-yellow-600 hover:bg-yellow-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2"> *@
+                                @*     <i class="fas fa-file-alt"></i> *@
+                                @*     <span>Lưu Nháp</span> *@
+                                @* </button> *@
+                                <a href="/Admin/Movies" class="w-full bg-gray-600 hover:bg-gray-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center justify-center space-x-2">
+                                    <i class="fas fa-times"></i>
+                                    <span>Hủy Bỏ</span>
+                                </a>
+                            </div>
+                        </div>
+
+                        <!-- Quick Tips -->
+                        <div class="bg-blue-900/20 border border-blue-700/50 rounded-lg p-4">
+                            <h4 class="text-blue-400 font-semibold mb-2 flex items-center">
+                                <i class="fas fa-lightbulb mr-2"></i>
+                                Mẹo
+                            </h4>
+                            <ul class="text-sm text-blue-300 space-y-1">
+                                <li>• Upload ảnh trực tiếp lên Cloudinary</li>
+                                <li>• Sử dụng hình ảnh chất lượng cao cho poster</li>
+                                <li>• Mô tả ngắn gọn nhưng đầy đủ thông tin</li>
+                                <li>• Chọn đúng thể loại để dễ tìm kiếm</li>
+                                <li>• Kiểm tra URL trước khi lưu</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </section>
+</div>
+
+<!-- Preview Modal -->
+<div id="previewModal" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-lg max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="text-xl font-bold text-white">Xem Trước Phim</h3>
+                <button type="button" id="closePreview" class="text-gray-400 hover:text-white">
+                    <i class="fas fa-times text-xl"></i>
+                </button>
+            </div>
+            <div id="previewContent" class="text-white">
+                <!-- Preview content will be generated here -->
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Data from server-side - Fixed JSON serialization
+        const allTagsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(allTags ?? new List<Common.ViewModels.TagVM>()));
+        const allActorsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(allActors ?? new List<Common.ViewModels.ActorVM>()));
+        const allDirectorsData = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(allDirectors ?? new List<Common.ViewModels.DirectorVM>()));
+        const selectedTagNamesInitial = @Html.Raw(selectedTagNamesJson ?? "[]");
+        const selectedActorIdsInitial = @Html.Raw(selectedActorIdsJson ?? "[]");
+        const selectedDirectorIdsInitial = @Html.Raw(selectedDirectorIdsJson ?? "[]");
+
+        // Debug: Log data to console
+        console.log('Tags data:', allTagsData);
+        console.log('Actors data:', allActorsData);
+        console.log('Directors data:', allDirectorsData);
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Character count for description
+            const descriptionTextarea = document.querySelector('textarea[name="Description"]');
+            const descriptionCount = document.getElementById('descriptionCount');
+            if (descriptionTextarea && descriptionCount) {
+                descriptionTextarea.addEventListener('input', function() {
+                    descriptionCount.textContent = this.value.length;
+                });
+                descriptionCount.textContent = descriptionTextarea.value.length;
+            }
+
+            // Handle IsFree checkbox
+            const isFreeCheckbox = document.querySelector('input[name="IsFree"]');
+            const priceInput = document.querySelector('input[name="Price"]');
+            if (isFreeCheckbox && priceInput) {
+                isFreeCheckbox.addEventListener('change', function() {
+                    if (this.checked) {
+                        priceInput.value = '0';
+                        priceInput.disabled = true;
+                    } else {
+                        priceInput.disabled = false;
+                    }
+                });
+                if (isFreeCheckbox.checked) {
+                    priceInput.value = '0';
+                    priceInput.disabled = true;
+                }
+            }
+
+            // Initialize Cloudinary Upload
+            initCloudinaryUpload();
+
+            // Preview functionality
+            const previewBtn = document.getElementById('previewBtn');
+            const previewModal = document.getElementById('previewModal');
+            const closePreview = document.getElementById('closePreview');
+
+            previewBtn?.addEventListener('click', function() {
+                generatePreview();
+                previewModal.classList.remove('hidden');
+            });
+
+            closePreview?.addEventListener('click', function() {
+                previewModal.classList.add('hidden');
+            });
+
+            previewModal?.addEventListener('click', function(e) {
+                if (e.target === this) {
+                    this.classList.add('hidden');
+                }
+            });
+
+            // Form validation
+            const form = document.getElementById('createMovieForm');
+            form?.addEventListener('submit', function(e) {
+                if (!validateForm()) {
+                    e.preventDefault();
+                }
+            });
+
+            // Save draft functionality
+            // const saveDraftBtn = document.getElementById('saveDraftBtn');
+            // saveDraftBtn?.addEventListener('click', function() {
+            //     const statusSelect = document.querySelector('select[name="Status"]');
+            //     const originalStatus = statusSelect.value;
+            //     statusSelect.value = 'Draft';
+
+            //     if (validateForm()) {
+            //         form.submit();
+            //     } else {
+            //         statusSelect.value = originalStatus;
+            //     }
+            // });
+
+            // Initialize searchable multi-selects with proper data structure
+            initSearchableMultiSelect({
+                containerId: 'tags-select-container',
+                searchInputId: 'tags-search-input',
+                optionsDropdownId: 'tags-options-dropdown',
+                selectedDisplayId: 'selected-tags-display',
+                data: allTagsData,
+                selectedInitial: selectedTagNamesInitial,
+                inputName: 'SelectedTags',
+                valueKey: 'Name',
+                displayKey: 'Name',
+                colorKey: 'Color',
+                placeholder: 'Tìm kiếm thể loại...'
+            });
+
+            initSearchableMultiSelect({
+                containerId: 'actors-select-container',
+                searchInputId: 'actors-search-input',
+                optionsDropdownId: 'actors-options-dropdown',
+                selectedDisplayId: 'selected-actors-display',
+                data: allActorsData,
+                selectedInitial: selectedActorIdsInitial,
+                inputName: 'SelectedActorIds',
+                valueKey: 'Id',
+                displayKey: 'Name',
+                avatarKey: 'AvatarURL',
+                placeholder: 'Tìm kiếm diễn viên...'
+            });
+
+            initSearchableMultiSelect({
+                containerId: 'directors-select-container',
+                searchInputId: 'directors-search-input',
+                optionsDropdownId: 'directors-options-dropdown',
+                selectedDisplayId: 'selected-directors-display',
+                data: allDirectorsData,
+                selectedInitial: selectedDirectorIdsInitial,
+                inputName: 'SelectedDirectorIds',
+                valueKey: 'Id',
+                displayKey: 'Name',
+                avatarKey: 'AvatarURL',
+                placeholder: 'Tìm kiếm đạo diễn...'
+            });
+        });
+
+        // Cloudinary Upload Functions
+        function initCloudinaryUpload() {
+            // Poster Upload
+            const posterFileInput = document.getElementById('posterFileInput');
+            const posterInput = document.getElementById('posterInput');
+            const posterUploadArea = document.getElementById('posterUploadArea');
+            const posterUploadProgress = document.getElementById('posterUploadProgress');
+            const posterProgressBar = document.getElementById('posterProgressBar');
+
+            posterFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadToCloudinary(file, 'poster', posterInput, posterUploadArea, posterUploadProgress, posterProgressBar);
+                }
+            });
+
+            // Background Upload
+            const backgroundFileInput = document.getElementById('backgroundFileInput');
+            const backgroundInput = document.getElementById('backgroundInput');
+            const backgroundUploadArea = document.getElementById('backgroundUploadArea');
+            const backgroundUploadProgress = document.getElementById('backgroundUploadProgress');
+            const backgroundProgressBar = document.getElementById('backgroundProgressBar');
+
+            backgroundFileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    uploadToCloudinary(file, 'background', backgroundInput, backgroundUploadArea, backgroundUploadProgress, backgroundProgressBar);
+                }
+            });
+
+            // Drag and Drop for Poster
+            setupDragAndDrop('posterFileInput', posterFileInput);
+            // Drag and Drop for Background
+            setupDragAndDrop('backgroundFileInput', backgroundFileInput);
+        }
+
+        function setupDragAndDrop(labelId, fileInput) {
+            const label = document.querySelector(`label[for="${labelId}"]`);
+
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                label.addEventListener(eventName, preventDefaults, false);
+            });
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                label.addEventListener(eventName, highlight, false);
+            });
+
+            ['dragleave', 'drop'].forEach(eventName => {
+                label.addEventListener(eventName, unhighlight, false);
+            });
+
+            function highlight(e) {
+                label.classList.add('border-blue-500', 'bg-blue-900/20');
+            }
+
+            function unhighlight(e) {
+                label.classList.remove('border-blue-500', 'bg-blue-900/20');
+            }
+
+            label.addEventListener('drop', handleDrop, false);
+
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+
+                if (files.length > 0) {
+                    fileInput.files = files;
+                    fileInput.dispatchEvent(new Event('change'));
+                }
+            }
+        }
+
+        async function uploadToCloudinary(file, type, urlInput, uploadArea, progressContainer, progressBar) {
+            // Validate file
+            if (!validateFile(file)) {
+                return;
+            }
+
+            // Show progress
+            uploadArea.classList.add('hidden');
+            progressContainer.classList.remove('hidden');
+
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('type', type);
+
+            try {
+                const response = await fetch('/api/upload/image', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update progress to 100%
+                    progressBar.style.width = '100%';
+
+                    // Set the URL in input
+                    urlInput.value = result.url;
+
+                    // Trigger preview
+                    const previewId = type === 'poster' ? 'posterPreview' : 'backgroundPreview';
+                    previewImage(urlInput.id, previewId);
+
+                    // Show success message
+                    showNotification('Upload thành công!', 'success');
+
+                    // Reset after delay
+                    setTimeout(() => {
+                        resetUploadArea(uploadArea, progressContainer, progressBar);
+                    }, 1000);
+                } else {
+                    throw new Error(result.message || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                showNotification('Upload thất bại: ' + error.message, 'error');
+                resetUploadArea(uploadArea, progressContainer, progressBar);
+            }
+        }
+
+        function validateFile(file) {
+            // Check file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showNotification('Chỉ hỗ trợ file JPG, PNG, WebP', 'error');
+                return false;
+            }
+
+            // Check file size (10MB)
+            const maxSize = 10 * 1024 * 1024;
+            if (file.size > maxSize) {
+                showNotification('File không được vượt quá 10MB', 'error');
+                return false;
+            }
+
+            return true;
+        }
+
+        function resetUploadArea(uploadArea, progressContainer, progressBar) {
+            uploadArea.classList.remove('hidden');
+            progressContainer.classList.add('hidden');
+            progressBar.style.width = '0%';
+        }
+
+        function showNotification(message, type) {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `fixed top-4 right-4 z-50 px-6 py-3 rounded-lg text-white font-medium transition-all duration-300 ${
+                type === 'success' ? 'bg-green-600' : 'bg-red-600'
+            }`;
+            notification.textContent = message;
+
+            document.body.appendChild(notification);
+
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Image preview function
+        function previewImage(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+            const img = preview.querySelector('img');
+
+            if (input.value) {
+                img.src = input.value;
+                img.onerror = function() {
+                    showNotification('Không thể tải hình ảnh. Vui lòng kiểm tra URL.', 'error');
+                    preview.classList.add('hidden');
+                };
+                img.onload = function() {
+                    preview.classList.remove('hidden');
+                };
+            } else {
+                preview.classList.add('hidden');
+            }
+        }
+
+        // Clear image function
+        function clearImage(inputId, previewId) {
+            const input = document.getElementById(inputId);
+            const preview = document.getElementById(previewId);
+
+            input.value = '';
+            preview.classList.add('hidden');
+        }
+
+        // Enhanced Searchable Multi-Select Function
+        function initSearchableMultiSelect(options) {
+            const { containerId, searchInputId, optionsDropdownId, selectedDisplayId, data, selectedInitial, inputName, valueKey, displayKey, avatarKey, colorKey, placeholder } = options;
+
+            console.log(`Initializing ${inputName}:`, { data, selectedInitial });
+
+            const container = document.getElementById(containerId);
+            const searchInput = document.getElementById(searchInputId);
+            const optionsDropdown = document.getElementById(optionsDropdownId);
+            const selectedDisplay = document.getElementById(selectedDisplayId);
+            const form = document.getElementById('createMovieForm');
+
+            if (!container || !searchInput || !optionsDropdown || !selectedDisplay || !form) {
+                console.error(`Missing elements for ${inputName}:`, {
+                    container: !!container,
+                    searchInput: !!searchInput,
+                    optionsDropdown: !!optionsDropdown,
+                    selectedDisplay: !!selectedDisplay,
+                    form: !!form
+                });
+                return;
+            }
+
+            if (!data || !Array.isArray(data)) {
+                console.error(`Invalid data for ${inputName}:`, data);
+                return;
+            }
+
+            let selectedItems = new Set(selectedInitial || []);
+
+            function renderSelectedItems() {
+                selectedDisplay.innerHTML = '';
+                // Clear existing hidden inputs
+                Array.from(form.querySelectorAll(`input[name="${inputName}"]`)).forEach(input => input.remove());
+
+                selectedItems.forEach(itemValue => {
+                    const item = data.find(d => {
+                        const dataValue = d[valueKey]?.toString();
+                        return dataValue === itemValue?.toString();
+                    });
+
+                    if (!item) {
+                        console.warn(`Item not found for value: ${itemValue}`);
+                        return;
+                    }
+
+                    const chip = document.createElement('span');
+                    chip.className = `inline-flex items-center px-3 py-1 rounded-full text-sm font-medium text-white ${colorKey ? '' : 'bg-blue-600'}`;
+
+                    if (colorKey && item[colorKey]) {
+                        chip.style.backgroundColor = item[colorKey];
+                    }
+
+                    chip.innerHTML = `
+                        ${avatarKey && item[avatarKey] ? `<img src="${item[avatarKey]}" alt="${item[displayKey] ?? ''}" class="w-5 h-5 rounded-full object-cover mr-2">` : ''}
+                        ${item[displayKey] ?? ''}
+                        <button type="button" class="ml-2 text-white hover:text-gray-200 focus:outline-none" data-value="${itemValue}">
+                            <i class="fas fa-times text-xs"></i>
+                        </button>
+                    `;
+
+                    selectedDisplay.appendChild(chip);
+
+                    // Add hidden input for form submission
+                    const hiddenInput = document.createElement('input');
+                    hiddenInput.type = 'hidden';
+                    hiddenInput.name = inputName;
+                    hiddenInput.value = itemValue;
+                    form.appendChild(hiddenInput);
+                });
+            }
+
+            function renderOptions(filterText = '') {
+                console.log(`Rendering options for ${inputName} with filter: "${filterText}"`);
+                optionsDropdown.innerHTML = '';
+
+                const filteredData = data.filter(item => {
+                    const itemValue = item[valueKey]?.toString();
+                    const isAlreadySelected = selectedItems.has(itemValue);
+                    const matchesFilter = (item[displayKey] ?? '').toLowerCase().includes(filterText.toLowerCase());
+                    return !isAlreadySelected && matchesFilter;
+                });
+
+                console.log(`Filtered data for ${inputName}:`, filteredData);
+
+                if (filteredData.length === 0) {
+                    const noResults = document.createElement('div');
+                    noResults.className = 'p-3 text-gray-400 text-sm';
+                    noResults.textContent = filterText ? 'Không tìm thấy kết quả.' : 'Không có lựa chọn nào.';
+                    optionsDropdown.appendChild(noResults);
+                } else {
+                    filteredData.forEach(item => {
+                        const optionDiv = document.createElement('div');
+                        optionDiv.className = 'flex items-center space-x-3 p-3 cursor-pointer hover:bg-gray-600 transition-colors duration-200';
+                        const itemValue = item[valueKey]?.toString();
+                        optionDiv.setAttribute('data-value', itemValue);
+
+                        optionDiv.innerHTML = `
+                            ${avatarKey && item[avatarKey] ? `<img src="${item[avatarKey]}" alt="${item[displayKey] ?? ''}" class="w-8 h-8 rounded-full object-cover">` : ''}
+                            <span class="text-white">${item[displayKey] ?? ''}</span>
+                        `;
+
+                        optionsDropdown.appendChild(optionDiv);
+                    });
+                }
+
+                optionsDropdown.classList.remove('hidden');
+            }
+
+            // Event Listeners
+            searchInput.addEventListener('input', (e) => {
+                console.log(`Search input changed for ${inputName}:`, e.target.value);
+                renderOptions(e.target.value);
+            });
+
+            searchInput.addEventListener('focus', () => {
+                console.log(`Search input focused for ${inputName}`);
+                renderOptions(searchInput.value);
+            });
+
+            searchInput.addEventListener('blur', (e) => {
+                setTimeout(() => {
+                    if (!optionsDropdown.contains(document.activeElement)) {
+                        optionsDropdown.classList.add('hidden');
+                    }
+                }, 150);
+            });
+
+            optionsDropdown.addEventListener('mousedown', (e) => {
+                e.preventDefault();
+                const target = e.target.closest('[data-value]');
+                if (target) {
+                    const value = target.getAttribute('data-value');
+                    console.log(`Selected item for ${inputName}:`, value);
+                    if (!selectedItems.has(value)) {
+                        selectedItems.add(value);
+                        searchInput.value = '';
+                        renderSelectedItems();
+                        renderOptions();
+                        searchInput.focus();
+                    }
+                }
+            });
+
+            selectedDisplay.addEventListener('click', (e) => {
+                const removeButton = e.target.closest('button[data-value]');
+                if (removeButton) {
+                    const valueToRemove = removeButton.getAttribute('data-value');
+                    console.log(`Removing item for ${inputName}:`, valueToRemove);
+                    selectedItems.delete(valueToRemove);
+                    renderSelectedItems();
+                    renderOptions(searchInput.value);
+                }
+            });
+
+            // Initial render
+            renderSelectedItems();
+            console.log(`Testing initial render for ${inputName}`);
+            renderOptions();
+            optionsDropdown.classList.add('hidden');
+        }
+
+        // Generate preview function
+        function generatePreview() {
+            const formData = new FormData(document.getElementById('createMovieForm'));
+            const data = {};
+
+            for (let [key, value] of formData.entries()) {
+                if (key === "SelectedTags" || key === "SelectedActorIds" || key === "SelectedDirectorIds") {
+                    if (!data[key]) {
+                        data[key] = [];
+                    }
+                    data[key].push(value);
+                } else {
+                    data[key] = value;
+                }
+            }
+
+            const selectedTagsNames = Array.isArray(data.SelectedTags) ? data.SelectedTags.join(', ') : (data.SelectedTags || 'Chưa chọn');
+            const selectedActorsDisplay = Array.isArray(data.SelectedActorIds) && data.SelectedActorIds.length > 0 ? `${data.SelectedActorIds.length} diễn viên được chọn` : 'Chưa chọn';
+            const selectedDirectorsDisplay = Array.isArray(data.SelectedDirectorIds) && data.SelectedDirectorIds.length > 0 ? `${data.SelectedDirectorIds.length} đạo diễn được chọn` : 'Chưa chọn';
+
+            const previewHTML = `
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="md:col-span-1">
+                        ${data.PosterURL ? `<img src="${data.PosterURL}" alt="Poster" class="w-full rounded-lg">` : '<div class="w-full h-64 bg-gray-700 rounded-lg flex items-center justify-center"><i class="fas fa-image text-4xl text-gray-500"></i></div>'}
+                    </div>
+                    <div class="md:col-span-2">
+                        <h2 class="text-2xl font-bold mb-2">${data.Title || 'Tên phim'}</h2>
+                        ${data.OriginalTitle ? `<p class="text-gray-400 mb-4">${data.OriginalTitle}</p>` : ''}
+                        <div class="grid grid-cols-2 gap-4 mb-4 text-sm">
+                            <div><strong>Thời lượng:</strong> ${data.Duration || 'N/A'} phút</div>
+                            <div><strong>Năm:</strong> ${data.ReleaseDate ? new Date(data.ReleaseDate).getFullYear() : 'N/A'}</div>
+                            <div><strong>Quốc gia:</strong> ${data.Country || 'N/A'}</div>
+                            <div><strong>Chất lượng:</strong> ${data.Quality || 'N/A'}</div>
+                            <div><strong>Đánh giá:</strong> ${data.ImdbRating || 'N/A'}/10</div>
+                            <div><strong>Giá:</strong> ${data.IsFree === 'true' ? 'Miễn phí' : (data.Price ? data.Price + 'đ' : 'N/A')}</div>
+                        </div>
+                        <div class="mb-4">
+                            <strong>Thể loại:</strong>
+                            <span>${selectedTagsNames}</span>
+                        </div>
+                        <div class="mb-4">
+                            <strong>Diễn viên:</strong>
+                            <span>${selectedActorsDisplay}</span>
+                        </div>
+                        <div class="mb-4">
+                            <strong>Đạo diễn:</strong>
+                            <span>${selectedDirectorsDisplay}</span>
+                        </div>
+                        <div class="mb-4">
+                            <strong>Mô tả:</strong>
+                            <p class="mt-2 text-gray-300">${data.Description || 'Chưa có mô tả'}</p>
+                        </div>
+                        <div class="flex space-x-2">
+                            ${data.IsFeatured === 'true' ? '<span class="bg-yellow-500 text-black px-2 py-1 rounded text-xs">HOT</span>' : ''}
+                            ${data.IsNewRelease === 'true' ? '<span class="bg-blue-500 text-white px-2 py-1 rounded text-xs">NEW</span>' : ''}
+                            ${data.IsFree === 'true' ? '<span class="bg-green-500 text-white px-2 py-1 rounded text-xs">FREE</span>' : ''}
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('previewContent').innerHTML = previewHTML;
+        }
+
+        // Form validation
+        function validateForm() {
+            const requiredFields = [
+                { name: 'Title', label: 'Tên phim' },
+                { name: 'Duration', label: 'Thời lượng' },
+                { name: 'ReleaseDate', label: 'Ngày phát hành' },
+                { name: 'Country', label: 'Quốc gia' },
+                { name: 'PosterURL', label: 'URL Poster' },
+                { name: 'Description', label: 'Mô tả' },
+                { name: 'Status', label: 'Trạng thái' }
+            ];
+
+            let isValid = true;
+            const errors = [];
+
+            requiredFields.forEach(field => {
+                const input = document.querySelector(`[name="${field.name}"]`);
+                if (!input || !input.value.trim()) {
+                    errors.push(field.label);
+                    isValid = false;
+                }
+            });
+
+            if (!isValid) {
+                alert('Vui lòng điền đầy đủ các trường bắt buộc:\n' + errors.join('\n'));
+            }
+
+            return isValid;
+        }
+    </script>
+}

@@ -1,0 +1,54 @@
+﻿@model BusinessObjects.Models.Room
+
+@{
+    ViewData["Title"] = "Tạo Phòng Chiếu Mới";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml";
+}
+
+<div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-white mb-8">Tạo Phòng Chiếu Mới</h1>
+
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 max-w-lg mx-auto">
+        <form asp-action="Create" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-red-500 mb-4"></div>
+
+            <div class="mb-4">
+                <label asp-for="Name" class="block text-gray-300 text-sm font-bold mb-2">Tên Phòng:</label>
+                <input asp-for="Name" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" />
+                <span asp-validation-for="Name" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="Capacity" class="block text-gray-300 text-sm font-bold mb-2">Sức chứa:</label>
+                <input asp-for="Capacity" type="number" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" />
+                <span asp-validation-for="Capacity" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-4">
+                <label asp-for="ScreenType" class="block text-gray-300 text-sm font-bold mb-2">Loại màn hình:</label>
+                <input asp-for="ScreenType" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white" />
+                <span asp-validation-for="ScreenType" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="mb-6">
+                <label asp-for="Description" class="block text-gray-300 text-sm font-bold mb-2">Mô tả:</label>
+                <textarea asp-for="Description" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline bg-gray-700 border-gray-600 text-white h-24"></textarea>
+                <span asp-validation-for="Description" class="text-red-500 text-xs italic"></span>
+            </div>
+
+            <div class="flex items-center justify-between">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline transition-colors duration-200">
+                    <i class="fas fa-save mr-2"></i>Lưu
+                </button>
+                <a asp-action="Index" class="inline-block align-baseline font-bold text-sm text-blue-500 hover:text-blue-800">
+                    <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
