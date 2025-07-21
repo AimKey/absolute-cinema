@@ -3,6 +3,7 @@ using Common.Constants;
 using Common.DTOs.ShowtimeDTOs;
 using Common.ViewModels.ShowtimeVMs;
 using Repositories;
+using Services.HelperServices;
 using Services.Interfaces;
 using System.Security.Cryptography;
 
@@ -11,22 +12,49 @@ namespace Services.Implementations;
 public class ShowtimeService : IShowtimeService
 {
     private readonly IShowtimeRepository _showtimeRepository;
+    private readonly ShowtimeSearchContext searchContext;
+    private readonly SearchShowtimeByMovieNameStrategy searchByMovieNameStrategy;
+    private readonly SearchShowtimeByRoomNameStrategy searchByRoomNameStrategy;
+    private readonly SearchShowtimeByRoomNameAndMovieNameStrategy defaultSearchStrategy;
 
-    public ShowtimeService(IShowtimeRepository showtimeRepository)
+    public ShowtimeService(IShowtimeRepository showtimeRepository,
+        ShowtimeSearchContext searchContext,
+        SearchShowtimeByMovieNameStrategy searchByMovieNameStrategy,
+        SearchShowtimeByRoomNameStrategy searchByRoomNameStrategy,
+        SearchShowtimeByRoomNameAndMovieNameStrategy defaultSearchStrategy)
     {
         _showtimeRepository = showtimeRepository;
+        this.searchContext = searchContext;
+        this.searchByMovieNameStrategy = searchByMovieNameStrategy;
+        this.searchByRoomNameStrategy = searchByRoomNameStrategy;
+        this.defaultSearchStrategy = defaultSearchStrategy;
     }
 
     public ViewAllShowtimeVM GetAllVM(ViewAllShowtimeVM vm = null)
     {
-        var roomQuery = string.IsNullOrEmpty(vm?.RoomName) ? string.Empty : vm.RoomName;
-        var movieQuery = string.IsNullOrEmpty(vm?.MovieName) ? string.Empty : vm.MovieName;
         // Search query filters
-        var list = _showtimeRepository.Get(
-            st => st.Room.Name.Contains(roomQuery)
-            && st.Movie.Title.Contains(movieQuery));
+        var list = _showtimeRepository.Get();
+        vm.Query = vm.Query ?? "";
 
-        var startTime = vm.FromDate ?? DateTime.MinValue;
+        if (vm.SearchType == "movieName")
+        {
+            searchContext.SetStrategy(searchByMovieNameStrategy);
+            list = searchContext.Search(list.ToList(), vm.Query);
+        }
+        else if (vm.SearchType == "roomName")
+        {
+            searchContext.SetStrategy(searchByRoomNameStrategy);
+            list = searchContext.Search(list.ToList(), vm.Query);
+        } else
+        {
+            searchContext.SetStrategy(defaultSearchStrategy);
+            list = searchContext.Search(list.ToList(), vm.Query);
+        }
+
+            //var roomQuery = string.IsNullOrEmpty(vm?.RoomName) ? string.Empty : vm.RoomName;
+            //var movieQuery = string.IsNullOrEmpty(vm?.MovieName) ? string.Empty : vm.MovieName;
+
+            var startTime = vm.FromDate ?? DateTime.MinValue;
         var endTime = vm.ToDate ?? DateTime.MaxValue;
         // Filter by date range
         list = list.Where(st =>
@@ -55,8 +83,8 @@ public class ShowtimeService : IShowtimeService
         vm.PageSize = PageConstants.PageSize;
         vm.PageNumber = vm.PageNumber <= 0 ? 1 : vm.PageNumber;
         vm.TotalPage = totalPage;
-        vm.RoomName = roomQuery;
-        vm.MovieName = movieQuery;
+        vm.RoomName = "";
+        vm.MovieName = "";
         vm.Showtimes = list;
         return vm;
     }
@@ -188,7 +216,7 @@ public class ShowtimeService : IShowtimeService
                 throw new Exception($"This showtime is already booked by other user, unable to edit");
             }
         }
-        
+
         // Update
         var existingShowtime = _showtimeRepository.GetByID(oldId);
         existingShowtime.StartTime = updateShowtimeDTO.StartTime;
@@ -214,10 +242,10 @@ public class ShowtimeService : IShowtimeService
         {
             throw new Exception("This showtime is already booked by other user, cannot modfiy");
         }
-        // Check if showtime is in progress
-        if (st.StartTime <= DateTime.Now && st.EndTime >= DateTime.Now)
+        // Check if showtime is in the past
+        if (st.StartTime <= DateTime.Now)
         {
-            throw new Exception("This showtime is in progress, cannot modify");
+            throw new Exception("This showtime is in the past or ongoing, cannot modify.");
         }
         return true;
     }

@@ -8,6 +8,11 @@ namespace Common.ViewModels.ShowtimeVMs
         // Filter properties
         public string RoomName { get; set; }
         public string MovieName { get; set; }
+
+        // Strategy pattern
+        public string SearchType { get; set; }
+        public string Query { get; set; }
+
         public bool OrderByDesc { get; set; } = true; // Default to get the newest first
         public DateTime? FromDate { get; set; }
         public DateTime? ToDate { get; set; }

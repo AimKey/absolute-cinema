@@ -118,6 +118,11 @@ namespace Absolute_cinema
             // Showtime Services
             builder.Services.AddScoped<IShowtimeService, ShowtimeService>();
             builder.Services.AddScoped<IShowtimeSeatService, ShowtimeSeatService>();
+            // Search Services for showtimes
+            builder.Services.AddTransient<SearchShowtimeByRoomNameStrategy>();
+            builder.Services.AddTransient<SearchShowtimeByMovieNameStrategy>();
+            builder.Services.AddTransient<SearchShowtimeByRoomNameAndMovieNameStrategy>();
+            builder.Services.AddTransient<ShowtimeSearchContext>();
 
             // Booking and Payment Services
             builder.Services.AddScoped<IBookingService, BookingService>();
@@ -131,6 +136,8 @@ namespace Absolute_cinema
             builder.Services.AddScoped<IHashPasswordService, HashPasswordService>();
             // Db init services
             builder.Services.AddScoped<DbInitializer>();
+
+            
         }
 
         private static void SetupRepos(WebApplicationBuilder builder)

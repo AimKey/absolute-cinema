@@ -12,30 +12,35 @@ using Common.ViewModels.ShowtimeVMs;
 using Common.Constants;
 using Common;
 using Common.DTOs.ShowtimeDTOs;
+using Services.HelperServices;
 
 namespace Absolute_cinema.Controllers
 {
+    [Route("Admin/Showtimes")]
     public class ShowtimesController : Controller
     {
         private IShowtimeService _showtimeService;
+        private readonly ShowtimeSearchContext searchContext;
         private readonly IRoomService _roomService;
         private readonly IMovieService _movieService;
 
-        public ShowtimesController(IMovieService movieService, IRoomService roomService, IShowtimeService showtimeService)
+        public ShowtimesController(IMovieService movieService, IRoomService roomService, IShowtimeService showtimeService
+            , ShowtimeSearchContext searchContext)
         {
             _movieService = movieService;
             _roomService = roomService;
             _showtimeService = showtimeService;
+            this.searchContext = searchContext;
         }
 
-        // GET: Showtimes
+        [HttpGet("")]
         public IActionResult Index(ViewAllShowtimeVM vm)
         {
             var vms = _showtimeService.GetAllVM(vm);
             return View(vms);
         }
 
-        // GET: Showtimes/Details/5
+        [HttpGet("Details/{id}")]
         public IActionResult Details(Guid? id)
         {
             if (id == null)
@@ -51,7 +56,7 @@ namespace Absolute_cinema.Controllers
             return View(showtime);
         }
 
-        // GET: Showtimes/Create
+        [HttpGet("Create")]
         public IActionResult Create()
         {
             var movies = _movieService.GetAll();
@@ -61,7 +66,7 @@ namespace Absolute_cinema.Controllers
             return View();
         }
 
-        [HttpPost]
+        [HttpPost("Create")]
         [ValidateAntiForgeryToken]
         public IActionResult Create(CreateShowtimeDTO showtimeDTO)
         {
@@ -88,6 +93,7 @@ namespace Absolute_cinema.Controllers
             return View(showtimeDTO);
         }
 
+        [HttpGet("Edit/{id}")]
         public IActionResult Edit(Guid? id)
         {
             if (id == null)
@@ -123,7 +129,7 @@ namespace Absolute_cinema.Controllers
             return View(dto);
         }
 
-        [HttpPost]
+        [HttpPost("Edit/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult Edit(Guid id, UpdateShowtimeDTO dto)
         {
@@ -162,28 +168,37 @@ namespace Absolute_cinema.Controllers
             return View(dto);
         }
 
-        // GET: Showtimes/Delete/5
+        [HttpGet("Delete/{id}")]
         public IActionResult Delete(Guid? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
-            var showtime = _showtimeService.GetById(id.Value);
-            if (showtime == null)
+            try
             {
-                return NotFound();
+                var result = _showtimeService.IsShowtimeEditable(id.Value);
+                var showtime = _showtimeService.GetById(id.Value);
+                if (showtime == null)
+                {
+                    return NotFound();
+                }
+                return View(showtime);
             }
-            return View(showtime);
+            catch (Exception e)
+            {
+                TempData["msg"] = e.Message;
+                TempData[StatusConstants.MessageType] = StatusConstants.Error;
+                return RedirectToAction(nameof(Index));
+            }
         }
 
-        // POST: Showtimes/Delete/5
-        [HttpPost, ActionName("Delete")]
+        [HttpPost("DeleteConfirmed/{id}")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {
             var msg = "";
-            var msgType = StatusConstants.Error;  
+            var msgType = StatusConstants.Error;
             try
             {
                 var showtime = _showtimeService.GetById(id);
@@ -221,6 +236,7 @@ namespace Absolute_cinema.Controllers
             ViewData["RoomId"] = new SelectList(rooms, "Id", "Name");
         }
 
+        [HttpGet("GetCurrentShowtimeOfRoomInADay")]
         public IActionResult GetCurrentShowtimeOfRoomInADay(Guid roomId, DateTime date)
         {
             List<PreviewRoomShowtimeVM> showtimes = _showtimeService
@@ -228,6 +244,7 @@ namespace Absolute_cinema.Controllers
             return PartialView("Showtime/PreviewRoomShowtimeInADay", showtimes);
         }
 
+        [HttpGet("IsShowtimeAvailableToEdit")]
         public IActionResult IsShowtimeAvailableToEdit(Guid showtimeId)
         {
             bool status = true;
