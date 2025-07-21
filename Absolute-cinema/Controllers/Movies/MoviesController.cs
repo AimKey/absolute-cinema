@@ -3,12 +3,11 @@ namespace Absolute_cinema.Controllers.Movies;
 
 using Microsoft.AspNetCore.Mvc;
 using BusinessObjects.Models;
-using Services.Interfaces;
 using System.Collections.Generic;
 using Common.ViewModels;
-using Common.Constants;
 using Common.Filters.Movies;
 using Common.Mappers;
+using Services.Interfaces;
 
 public class MoviesController : Controller
 {

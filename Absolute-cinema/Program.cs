@@ -8,6 +8,7 @@ using Services.HelperServices;
 using Services.BackgroundServices.Showtimes;
 using Common.Models;
 using Common.DTOs.CloudinaryDTOs;
+using Services.VNPay;
 
 namespace Absolute_cinema
 {
@@ -16,6 +17,7 @@ namespace Absolute_cinema
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             
@@ -114,7 +116,8 @@ namespace Absolute_cinema
         {
             // Email Service
             builder.Services.AddScoped<IEmailService, EmailService>();
-            
+            //Connection VNPay API
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             // User Services
             builder.Services.AddScoped<IUserService, UserService>();
             builder.Services.AddScoped<IUserDetailService, UserDetailService>();
