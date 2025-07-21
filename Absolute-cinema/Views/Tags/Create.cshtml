@@ -1,0 +1,60 @@
+﻿@model Common.DTOs.TagDTOs.CreateTagDTO
+@{
+    ViewData["Title"] = "Thêm thể loại mới";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml"; @* Sử dụng layout admin *@
+}
+
+<!-- Admin Hero Section for Create Page -->
+<section class="relative bg-gradient-to-r from-gray-800 via-blue-900 to-gray-800 py-16">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative container mx-auto px-4 text-center">
+        <h1 class="text-4xl font-bold text-white mb-4 animate-fade-in">
+            <i class="fas fa-plus-circle text-green-400 mr-3"></i>
+            Thêm Thể Loại Mới
+        </h1>
+        <p class="text-lg text-gray-300 mb-8 animate-pulse">
+            Tạo một thể loại phim mới vào hệ thống
+        </p>
+    </div>
+</section>
+
+<!-- Create Tag Form Section -->
+<section class="py-8 bg-gray-900 min-h-screen flex items-start justify-center">
+    <div class="container mx-auto px-4 max-w-2xl">
+        <div class="bg-gray-800 rounded-lg shadow-2xl border border-gray-700 p-6 md:p-8">
+            <h2 class="text-2xl font-bold text-white mb-6 text-center">Thông tin thể loại</h2>
+            <hr class="border-gray-700 mb-6" />
+
+            <form asp-action="Create" method="post">
+                <div asp-validation-summary="ModelOnly" class="text-red-400 text-sm mb-4 p-3 bg-red-900/20 border border-red-700 rounded"></div>
+
+                <div class="mb-6">
+                    <label asp-for="Name" class="block text-sm font-medium text-gray-300 mb-2">Tên thể loại</label>
+                    <input asp-for="Name" class="w-full px-4 py-2 bg-gray-700 text-white rounded-md border border-gray-600 focus:border-blue-500 focus:ring-blue-500/20 transition-all duration-200" placeholder="Nhập tên thể loại..." />
+                    <span asp-validation-for="Name" class="text-red-400 text-sm mt-1 block"></span>
+                </div>
+
+                <div class="mb-6 flex items-center space-x-3">
+                    <input type="checkbox" asp-for="IsActive" class="form-checkbox h-5 w-5 text-blue-600 bg-gray-700 border-gray-600 rounded focus:ring-blue-500 transition-all duration-200" />
+                    <label asp-for="IsActive" class="text-sm font-medium text-gray-300">Hoạt động</label>
+                    <span asp-validation-for="IsActive" class="text-red-400 text-sm mt-1 block"></span>
+                </div>
+
+                <div class="flex justify-end space-x-4 mt-8">
+                    <a asp-action="Index" class="bg-gray-700 hover:bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                        <i class="fas fa-arrow-left"></i>
+                        <span>Quay lại danh sách</span>
+                    </a>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                        <i class="fas fa-save"></i>
+                        <span>Tạo mới</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");} @* Đảm bảo client-side validation hoạt động *@
+}

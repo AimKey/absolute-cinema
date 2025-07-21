@@ -1,0 +1,82 @@
+﻿@using Common
+@using System.Text.Encodings.Web
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (TempData["msg"] != null)
+{
+    var rawMsg = JavaScriptEncoder.Default.Encode(TempData["msg"]?.ToString() ?? "");
+    var msgType = TempData[StatusConstants.MessageType]?.ToString()?.ToLower();
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = '@Html.Raw(rawMsg)';
+            const type = '@msgType';
+
+            // Toast configuration
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 4000,
+                timerProgressBar: true,
+                background: '#1f2937',
+                color: '#ffffff',
+                width: '350px',
+                padding: '1rem',
+                customClass: {
+                    popup: 'swal-toast-popup',
+                    title: 'swal-toast-title',
+                    htmlContainer: 'swal-toast-text',
+                    timerProgressBar: 'swal-toast-progress'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+                    // Add slide-in animation
+                    toast.style.animation = 'slideInFromRight 0.3s ease-out';
+                },
+                willClose: (toast) => {
+                    toast.style.animation = 'slideOutToRight 0.3s ease-in';
+                }
+            });
+
+            let config = {
+                title: message,
+                icon: 'info',
+                iconColor: '#3b82f6'
+            };
+
+            // Customize based on message type
+            switch (type) {
+                case '@StatusConstants.Success':
+                    config.icon = 'success';
+                    config.iconColor = '#10b981';
+                    config.title = message;
+                    break;
+
+                case '@StatusConstants.Error':
+                    config.icon = 'error';
+                    config.iconColor = '#ef4444';
+                    config.title = message;
+                    config.timer = 6000; // Longer for errors
+                    break;
+
+                case '@StatusConstants.Warning':
+                    config.icon = 'warning';
+                    config.iconColor = '#f59e0b';
+                    config.title = message;
+                    break;
+
+                default:
+                    config.title = message;
+                    break;
+            }
+
+            Toast.fire(config);
+        });
+
+    </script>
+}
+<link rel="stylesheet" href="~/css/Layout/notification.css" />

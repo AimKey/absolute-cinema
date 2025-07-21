@@ -1,0 +1,113 @@
+@model Absolute_cinema.Models.ViewModels.LoginViewModel
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng nhập - Absolute Cinema</title>
+    <link href="~/css/auth.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="auth-container">
+        <div class="auth-card">
+            <!-- Left Info Panel -->
+            <div class="auth-info">
+                <div class="auth-info-content">
+                    <div class="cinema-logo">ABSOLUTE CINEMA</div>
+                    <div class="cinema-tagline">Trải nghiệm điện ảnh đỉnh cao tại rạp chiếu phim hàng đầu Việt Nam</div>
+                    
+                    <ul class="cinema-features">
+                        <li>Hệ thống âm thanh Dolby Atmos cao cấp</li>
+                        <li>Màn hình IMAX với chất lượng 4K</li>
+                        <li>Ghế ngồi VIP thoải mái và sang trọng</li>
+                        <li>Đa dạng thể loại phim từ Hollywood đến Châu Á</li>
+                        <li>Suất chiếu linh hoạt từ sáng đến đêm</li>
+                        <li>Ưu đãi đặc biệt cho thành viên thân thiết</li>
+                    </ul>
+                    
+                    <div class="cinema-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">50+</span>
+                            <span class="stat-label">Phòng chiếu</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">100K+</span>
+                            <span class="stat-label">Khách hàng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Form Panel -->
+            <div class="auth-form">
+                <div class="form-header">
+                    <h1 class="form-title">Chào mừng trở lại!</h1>
+                    <p class="form-subtitle">Đăng nhập để tiếp tục trải nghiệm điện ảnh tuyệt vời</p>
+                </div>
+
+               
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle"></i> @TempData["SuccessMessage"]
+                    </div>
+                }
+                
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+                
+                @if (!ViewData.ModelState.IsValid)
+                {
+                    <div class="validation-summary">
+                        <ul>
+                            @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                            {
+                                <li>@error.ErrorMessage</li>
+                            }
+                        </ul>
+                    </div>
+                }
+                
+                <form asp-action="Login" method="post">
+                    <div class="form-group">
+                        <label asp-for="Username">Tên đăng nhập</label>
+                        <input asp-for="Username" type="text" class="form-control" placeholder="Nhập tên đăng nhập của bạn" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <label asp-for="Password">Mật khẩu</label>
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu của bạn" required />
+                    </div>
+                    
+                    <div class="form-group">
+                        <button type="submit" class="btn btn-primary">Đăng nhập</button>
+                    </div>
+                    
+                    <div class="form-links">
+                        <a asp-action="ForgotPassword" class="forgot-password-link">Quên mật khẩu?</a>
+                    </div>
+                    
+                    <div class="form-divider">
+                        <span>hoặc</span>
+                    </div>
+                    
+                    <div class="form-link">
+                        <p>Chưa có tài khoản? <a asp-action="Register">Đăng ký ngay</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="~/js/auth-new.js"></script>
+</body>
+</html>

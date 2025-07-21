@@ -1,0 +1,619 @@
+﻿@model BusinessObjects.Models.Room
+@{
+    ViewData["Title"] = $"Quản lý Ghế - {Model.Name}";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml";
+}
+
+<div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-white mb-8">Quản lý Ghế cho Phòng: @Model.Name</h1>
+    @Html.AntiForgeryToken() @* Anti-Forgery Token cho các yêu cầu AJAX *@
+
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 mb-8">
+        <h2 class="text-2xl font-semibold text-white mb-4">Sơ đồ phòng chiếu</h2>
+        <div class="flex flex-col items-center justify-center">
+            <!-- Screen -->
+            <div class="w-full max-w-3xl bg-gray-700 text-white text-center py-4 rounded-t-lg mb-8 shadow-inner text-xl font-semibold border-b-4 border-red-500">
+                MÀN HÌNH
+            </div>
+
+            <!-- Seat Grid Container -->
+            <div id="seatGridContainer" class="relative overflow-auto p-4 bg-gray-900 border border-gray-700 rounded-lg min-h-[300px] w-full max-w-4xl mx-auto flex flex-col items-start"> @* items-start để hàng chữ cái căn trái *@
+                <!-- Seats will be rendered here by JavaScript -->
+                @if (!Model.Seats.Any())
+                {
+                    <p class="text-gray-400 text-center py-10 w-full">Chưa có ghế nào trong phòng này. Hãy thêm ghế mới!</p>
+                }
+            </div>
+            <p class="text-gray-400 text-sm mt-4">
+                <i class="fas fa-mouse-right mr-1"></i> Nhấp chuột phải vào ghế để chỉnh sửa hoặc xóa.
+            </p>
+
+            <div class="mt-8 flex flex-wrap justify-center gap-4">
+                <button id="addSeatBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-plus mr-2"></i>Thêm Ghế
+                </button>
+                <button id="autoFillBtn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-magic mr-2"></i>Tự động lấp đầy ghế
+                </button>
+                <button id="saveSeatsBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-save mr-2"></i>Lưu Sơ đồ Ghế
+                </button>
+                <button id="clearAllSeatsBtn" class="bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline transition-all duration-200 transform hover:scale-105">
+                    <i class="fas fa-trash-alt mr-2"></i>Xóa Tất Cả Ghế
+                </button>
+                <a asp-action="Index" class="inline-flex items-center px-4 py-2 rounded-full bg-gray-600 text-white font-semibold text-sm transition-all duration-300 hover:bg-gray-700 transform hover:scale-105">
+                    <i class="fas fa-arrow-left mr-2"></i>Quay lại danh sách phòng
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Seat Type Legend -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6 mt-8">
+        <h2 class="text-2xl font-semibold text-white mb-4">Chú thích loại ghế</h2>
+        <div id="seatTypeLegend" class="flex flex-wrap gap-4">
+            <!-- Legend items will be populated by JavaScript -->
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const roomId = '@Model.Id'; // Lấy RoomId từ Model
+        const roomCapacity = @Model.Capacity; // Lấy Capacity từ Model
+        const seatGridContainer = document.getElementById('seatGridContainer');
+        const addSeatBtn = document.getElementById('addSeatBtn');
+        const autoFillBtn = document.getElementById('autoFillBtn'); // Nút mới
+        const saveSeatsBtn = document.getElementById('saveSeatsBtn');
+        const clearAllSeatsBtn = document.getElementById('clearAllSeatsBtn'); // Nút xóa tất cả
+        const seatTypeLegend = document.getElementById('seatTypeLegend');
+
+        let seats = []; // Array to hold seat objects, sẽ được tải qua API
+        let seatTypes = []; // Array to hold seat type objects, sẽ được tải qua API
+
+        const MAX_SEATS_PER_ROW = 14; // Giới hạn số cột vật lý tối đa trên mỗi hàng
+
+        // --- Helper Functions ---
+
+        // Hàm hỗ trợ để gán màu cho loại ghế (phải giống với backend nếu có)
+        function GetColorForSeatType(seatTypeName) {
+            switch (seatTypeName) {
+                case "Standard": return "#4CAF50"; // Green
+                case "VIP": return "#FFC107";      // Amber
+                case "Couple": return "#2196F3";   // Blue (Sweet Box)
+                default: return "#6B7280";         // Default gray
+            }
+        }
+
+        // Function to fetch seat types
+        async function fetchSeatTypes() {
+            try {
+                const response = await fetch('/api/RoomManagementApi/seattype/all'); // Gọi API để lấy loại ghế
+                if (!response.ok) {
+                    throw new Error('Failed to fetch seat types');
+                }
+                seatTypes = await response.json();
+                renderSeatTypeLegend();
+            } catch (error) {
+                console.error("Error fetching seat types:", error);
+                Swal.fire('Lỗi', 'Không thể tải loại ghế. Vui lòng thử lại.', 'error');
+                // Fallback to default if API fails or empty
+                seatTypes = [
+                    { id: 'default-standard', name: 'Standard', priceMutiplier: 1.0, color: '#4CAF50' },
+                    { id: 'default-vip', name: 'VIP', priceMutiplier: 1.5, color: '#FFC107' },
+                    { id: 'default-couple', name: 'Couple', priceMutiplier: 1.8, color: '#2196F3' } // Added name for fallback
+                ];
+                renderSeatTypeLegend();
+            }
+        }
+
+        // Function to render seat type legend
+        function renderSeatTypeLegend() {
+            seatTypeLegend.innerHTML = '';
+            seatTypes.forEach(type => {
+                const div = document.createElement('div');
+                div.className = 'flex items-center gap-2';
+                div.innerHTML = `
+                    <span class="w-4 h-4 rounded-full" style="background-color: ${type.color};"></span>
+                    <span class="text-gray-300">${type.name.toUpperCase()} (${type.priceMutiplier}x)</span> @* Chuyển sang chữ in hoa *@
+                `;
+                seatTypeLegend.appendChild(div);
+            });
+        }
+
+        // Function to fetch existing seats for the room
+        async function fetchSeatsForRoom() {
+            try {
+                const response = await fetch(`/api/RoomManagementApi/rooms/${roomId}/seats`); // Gọi API để lấy ghế của phòng
+                if (!response.ok) {
+                    throw new Error('Failed to fetch seats for room');
+                }
+                seats = await response.json();
+                renderSeatGrid();
+            } catch (error) {
+                console.error("Error fetching seats:", error);
+                Swal.fire('Lỗi', 'Không thể tải sơ đồ ghế. Vui lòng thử lại.', 'error');
+                // If no seats, start with an empty grid
+                renderSeatGrid();
+            }
+        }
+
+        // Function to render the seat grid
+        function renderSeatGrid() {
+            seatGridContainer.innerHTML = ''; // Clear existing seats
+
+            // Group seats by row for easier rendering
+            const seatsByRow = seats.reduce((acc, seat) => {
+                if (!acc[seat.seatRow]) {
+                    acc[seat.seatRow] = [];
+                }
+                acc[seat.seatRow].push(seat);
+                return acc;
+            }, {});
+
+            const sortedRows = Object.keys(seatsByRow).sort(); // Sort rows alphabetically
+
+            if (sortedRows.length === 0) {
+                seatGridContainer.innerHTML = '<p class="text-gray-400 text-center py-10 w-full">Chưa có ghế nào trong phòng này. Hãy thêm ghế mới!</p>';
+                return;
+            }
+
+            sortedRows.forEach(rowName => {
+                const rowDiv = document.createElement('div');
+                rowDiv.className = 'flex items-center my-2 w-full';
+                rowDiv.dataset.row = rowName;
+
+                const rowLabel = document.createElement('span');
+                rowLabel.className = 'text-gray-400 font-bold mr-4 w-8 text-left flex-shrink-0'; // Căn trái và cố định chiều rộng
+                rowLabel.textContent = rowName;
+                rowDiv.appendChild(rowLabel);
+
+                const seatsInRowContainer = document.createElement('div');
+                seatsInRowContainer.className = 'flex flex-wrap flex-grow justify-center'; // Căn giữa các ghế trong hàng
+                rowDiv.appendChild(seatsInRowContainer);
+
+                const seatsInRow = seatsByRow[rowName].sort((a, b) => a.seatNumber - b.seatNumber);
+
+                seatsInRow.forEach(seat => {
+                    const seatType = seatTypes.find(st => st.id === seat.seatTypeId);
+                    const seatColor = seatType ? seatType.color : '#6B7280'; // Default gray if type not found
+                    const isCoupleSeat = seatType && seatType.name === "Couple";
+
+                    const seatElement = document.createElement('div');
+                    // Dùng w-16 cho ghế couple (gấp đôi w-8 của ghế đơn)
+                    seatElement.className = `seat-item ${isCoupleSeat ? 'w-16' : 'w-8'} h-8 flex items-center justify-center rounded-md cursor-pointer m-1 border border-gray-600 transition-all duration-150 ease-in-out hover:scale-105 relative`;
+                    seatElement.style.backgroundColor = seatColor;
+                    seatElement.dataset.id = seat.id;
+                    seatElement.dataset.row = seat.seatRow;
+                    seatElement.dataset.number = seat.seatNumber; // seatNumber giờ là ID logic
+                    seatElement.dataset.typeId = seat.seatTypeId;
+                    // Cập nhật tooltip để hiển thị tên loại ghế in hoa
+                    seatElement.title = `Ghế ${seat.seatRow}${seat.seatNumber} (${seatType ? seatType.name.toUpperCase() : 'KHÔNG XÁC ĐỊNH'})`;
+
+                    const seatNumberSpan = document.createElement('span');
+                    seatNumberSpan.className = 'text-xs font-bold text-white text-shadow-sm';
+                    
+                    // Hiển thị số ghế logic
+                    seatNumberSpan.textContent = seat.seatNumber;
+                    seatElement.appendChild(seatNumberSpan);
+
+                    // Add context menu listener
+                    seatElement.addEventListener('contextmenu', (e) => {
+                        e.preventDefault(); // Prevent default right-click menu
+                        showSeatContextMenu(e, seat);
+                    });
+
+                    seatsInRowContainer.appendChild(seatElement);
+                });
+                seatGridContainer.appendChild(rowDiv);
+            });
+        }
+
+        // Function to show context menu for a seat
+        function showSeatContextMenu(event, seat) {
+            // Remove any existing context menu
+            const existingMenu = document.getElementById('seatContextMenu');
+            if (existingMenu) {
+                existingMenu.remove();
+            }
+
+            const menu = document.createElement('div');
+            menu.id = 'seatContextMenu';
+            menu.className = 'absolute z-50 bg-gray-700 border border-gray-600 rounded-md shadow-lg py-1 text-sm';
+            menu.style.left = `${event.pageX}px`;
+            menu.style.top = `${event.pageY}px`;
+
+            menu.innerHTML = `
+                <button class="block w-full text-left px-4 py-2 text-gray-200 hover:bg-gray-600" data-action="edit">Sửa ghế</button>
+                <button class="block w-full text-left px-4 py-2 text-red-400 hover:bg-gray-600" data-action="delete">Xóa ghế</button>
+            `;
+
+            document.body.appendChild(menu);
+
+            // Handle menu item clicks
+            menu.addEventListener('click', (e) => {
+                const action = e.target.dataset.action;
+                if (action === 'edit') {
+                    editSeat(seat);
+                } else if (action === 'delete') {
+                    deleteSeat(seat.id);
+                }
+                menu.remove(); // Close menu after click
+            });
+
+            // Close menu when clicking outside
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target)) {
+                    menu.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            document.addEventListener('click', closeMenu);
+        }
+
+        // --- CRUD Operations (Client-side simulation) ---
+
+        // Add Seat
+        addSeatBtn.addEventListener('click', async () => {
+            const { value: formValues } = await Swal.fire({
+                title: 'Thêm Ghế Mới',
+                html:
+                    '<input id="swal-input1" class="swal2-input bg-gray-700 text-white border-gray-600" placeholder="Hàng (ví dụ: A, B)">' +
+                    '<input id="swal-input2" type="number" class="swal2-input bg-gray-700 text-white border-gray-600" placeholder="Số ghế (ví dụ: 1, 2)">' +
+                    '<select id="swal-input3" class="swal2-input bg-gray-700 text-white border-gray-600">' +
+                        seatTypes.map(type => `<option value="${type.id}">${type.name.toUpperCase()}</option>`).join('') + @* Chuyển sang chữ in hoa *@
+                    '</select>',
+                focusConfirm: false,
+                preConfirm: () => {
+                    const seatRow = document.getElementById('swal-input1').value.toUpperCase();
+                    const seatNumber = parseInt(document.getElementById('swal-input2').value); // Đây là số ghế logic
+                    const seatTypeId = document.getElementById('swal-input3').value;
+                    const selectedSeatType = seatTypes.find(type => type.id === seatTypeId);
+                    const isCoupleSeat = selectedSeatType && selectedSeatType.name === "Couple";
+
+                    if (!seatRow || isNaN(seatNumber) || !seatTypeId) {
+                        Swal.showValidationMessage('Vui lòng điền đầy đủ thông tin hợp lệ');
+                        return false;
+                    }
+
+                    // Kiểm tra trùng lặp logic (cùng hàng, cùng số ghế logic)
+                    if (seats.some(s => s.seatRow === seatRow && s.seatNumber === seatNumber)) {
+                        Swal.showValidationMessage('Ghế với số này đã tồn tại trong hàng!');
+                        return false;
+                    }
+
+                    // TODO: Cần thêm kiểm tra trùng lặp vật lý nếu seatNumber là ID logic.
+                    // Hiện tại, việc này phức tạp và không được bao gồm trong bản cập nhật này.
+                    // Người dùng cần đảm bảo không có ghế chồng chéo vật lý khi nhập thủ công.
+
+                    return { seatRow: seatRow, seatNumber: seatNumber, seatTypeId: seatTypeId, isCoupleSeat: isCoupleSeat };
+                },
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB', // gray-300
+                confirmButtonColor: '#EF4444', // red-500
+                cancelButtonColor: '#6B7280' // gray-500
+            });
+
+            if (formValues) {
+                const newSeat = {
+                    id: Guid.newGuid(), // Generate a new GUID
+                    roomId: roomId,
+                    seatRow: formValues.seatRow,
+                    seatNumber: formValues.seatNumber, // Gán số ghế logic
+                    seatTypeId: formValues.seatTypeId,
+                    description: formValues.isCoupleSeat ? 'Ghế đôi' : '', // Optional description
+                    createdAt: new Date().toISOString()
+                };
+                seats.push(newSeat);
+                renderSeatGrid();
+                Swal.fire('Thành công!', 'Ghế đã được thêm vào sơ đồ.', 'success');
+            }
+        });
+
+        // Edit Seat
+        async function editSeat(seatToEdit) {
+            const { value: formValues } = await Swal.fire({
+                title: 'Chỉnh sửa Ghế',
+                html:
+                    `<input id="swal-input1" class="swal2-input bg-gray-700 text-white border-gray-600" placeholder="Hàng (ví dụ: A, B)" value="${seatToEdit.seatRow}">` +
+                    `<input id="swal-input2" type="number" class="swal2-input bg-gray-700 text-white border-gray-600" placeholder="Số ghế (ví dụ: 1, 2)" value="${seatToEdit.seatNumber}">` +
+                    `<select id="swal-input3" class="swal2-input bg-gray-700 text-white border-gray-600">` +
+                        seatTypes.map(type => `<option value="${type.id}" ${type.id === seatToEdit.seatTypeId ? 'selected' : ''}>${type.name.toUpperCase()}</option>`).join('') + @* Chuyển sang chữ in hoa *@
+                    `</select>`,
+                focusConfirm: false,
+                preConfirm: () => {
+                    const seatRow = document.getElementById('swal-input1').value.toUpperCase();
+                    const seatNumber = parseInt(document.getElementById('swal-input2').value); // Đây là số ghế logic
+                    const seatTypeId = document.getElementById('swal-input3').value;
+                    const selectedSeatType = seatTypes.find(type => type.id === seatTypeId);
+                    const isCoupleSeat = selectedSeatType && selectedSeatType.name === "Couple";
+
+                    if (!seatRow || isNaN(seatNumber) || !seatTypeId) {
+                        Swal.showValidationMessage('Vui lòng điền đầy đủ thông tin hợp lệ');
+                        return false;
+                    }
+                    // Kiểm tra trùng lặp logic (cùng hàng, cùng số ghế logic), loại trừ ghế đang chỉnh sửa
+                    if (seats.some(s => s.seatRow === seatRow && s.seatNumber === seatNumber && s.id !== seatToEdit.id)) {
+                        Swal.showValidationMessage('Ghế với số này đã tồn tại trong hàng!');
+                        return false;
+                    }
+
+                    // TODO: Cần thêm kiểm tra trùng lặp vật lý nếu seatNumber là ID logic.
+                    // Hiện tại, việc này phức tạp và không được bao gồm trong bản cập nhật này.
+                    // Người dùng cần đảm bảo không có ghế chồng chéo vật lý khi nhập thủ công.
+
+                    return { seatRow: seatRow, seatNumber: seatNumber, seatTypeId: seatTypeId, isCoupleSeat: isCoupleSeat };
+                },
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB', // gray-300
+                confirmButtonColor: '#EF4444', // red-500
+                cancelButtonColor: '#6B7280' // gray-500
+            });
+
+            if (formValues) {
+                const index = seats.findIndex(s => s.id === seatToEdit.id);
+                if (index !== -1) {
+                    seats[index] = {
+                        ...seats[index],
+                        seatRow: formValues.seatRow,
+                        seatNumber: formValues.seatNumber, // Gán số ghế logic
+                        seatTypeId: formValues.seatTypeId,
+                        description: formValues.isCoupleSeat ? 'Ghế đôi' : '',
+                        updatedAt: new Date().toISOString()
+                    };
+                    renderSeatGrid();
+                    Swal.fire('Thành công!', 'Ghế đã được cập nhật.', 'success');
+                }
+            }
+        }
+
+        // Delete Seat
+        async function deleteSeat(seatId) {
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa ghế này?',
+                text: "Hành động này không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy bỏ',
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB' // gray-300
+            });
+
+            if (result.isConfirmed) {
+                seats = seats.filter(s => s.id !== seatId);
+                renderSeatGrid();
+                Swal.fire('Đã xóa!', 'Ghế đã được xóa khỏi sơ đồ.', 'success');
+            }
+        }
+
+        // Save Seats (to backend)
+        saveSeatsBtn.addEventListener('click', async () => {
+            Swal.fire({
+                title: 'Đang lưu sơ đồ ghế...',
+                allowOutsideClick: false,
+                didOpen: () => {
+                    Swal.showLoading();
+                },
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB' // gray-300
+            });
+
+            try {
+                // Gửi toàn bộ mảng 'seats' về backend
+                const response = await fetch(`/api/RoomManagementApi/rooms/${roomId}/seats`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]').value
+                    },
+                    body: JSON.stringify(seats)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Lỗi khi lưu sơ đồ ghế.');
+                }
+
+                Swal.fire('Thành công!', 'Sơ đồ ghế đã được lưu vào cơ sở dữ liệu.', 'success');
+            } catch (error) {
+                console.error("Error saving seats:", error);
+                Swal.fire('Lỗi', error.message || 'Không thể lưu sơ đồ ghế. Vui lòng thử lại.', 'error');
+            }
+        });
+
+        // --- Auto-fill Seats Function ---
+        async function autoFillSeats() {
+            if (seatTypes.length === 0) {
+                Swal.fire('Lỗi', 'Không thể tự động lấp đầy. Vui lòng đảm bảo đã tải loại ghế.', 'error');
+                return;
+            }
+
+            let newSeatsToAdd = [];
+            let currentRowChar = 'A';
+            let currentLogicalSeatNum = 1; // Số ghế logic trong hàng hiện tại
+            let currentPhysicalColumn = 1; // Vị trí cột vật lý trong hàng hiện tại
+
+            // Xác định điểm bắt đầu (hàng, số ghế logic, cột vật lý) nếu đã có ghế
+            if (seats.length > 0) {
+                const seatsGroupedByRow = seats.reduce((acc, seat) => {
+                    if (!acc[seat.seatRow]) acc[seat.seatRow] = [];
+                    acc[seat.seatRow].push(seat);
+                    return acc;
+                }, {});
+
+                const sortedRows = Object.keys(seatsGroupedByRow).sort();
+                if (sortedRows.length > 0) {
+                    const lastExistingRow = sortedRows[sortedRows.length - 1];
+                    const seatsInLastRow = seatsGroupedByRow[lastExistingRow].sort((a, b) => a.seatNumber - b.seatNumber);
+
+                    currentRowChar = lastExistingRow;
+                    currentLogicalSeatNum = seatsInLastRow.length > 0 ? seatsInLastRow[seatsInLastRow.length - 1].seatNumber + 1 : 1;
+                    currentPhysicalColumn = 1; // Tính toán lại vị trí vật lý cho hàng cuối cùng
+                    for (const seat of seatsInLastRow) {
+                        const seatType = seatTypes.find(st => st.id === seat.seatTypeId);
+                        const physicalSpan = (seatType && seatType.name === "Couple") ? 2 : 1;
+                        currentPhysicalColumn += physicalSpan;
+                    }
+
+                    // Nếu hàng cuối cùng đã đầy hoặc không đủ chỗ cho ghế tiếp theo, chuyển sang hàng mới
+                    if (currentPhysicalColumn > MAX_SEATS_PER_ROW) {
+                        currentRowChar = String.fromCharCode(currentRowChar.charCodeAt(0) + 1);
+                        currentLogicalSeatNum = 1;
+                        currentPhysicalColumn = 1;
+                    }
+                }
+            }
+
+            let totalPhysicalSlotsOccupied = seats.reduce((total, seat) => {
+                const type = seatTypes.find(st => st.id === seat.seatTypeId);
+                return total + ((type && type.name === "Couple") ? 2 : 1);
+            }, 0);
+
+            let remainingPhysicalCapacity = roomCapacity - totalPhysicalSlotsOccupied;
+
+            if (remainingPhysicalCapacity <= 0) {
+                Swal.fire('Thông báo', 'Phòng đã đầy hoặc không còn chỗ trống để thêm ghế.', 'info');
+                return;
+            }
+
+            const standardType = seatTypes.find(st => st.name === "Standard");
+            const vipType = seatTypes.find(st => st.name === "VIP");
+            const coupleType = seatTypes.find(st => st.name === "Couple");
+
+            if (!standardType) {
+                Swal.fire('Lỗi', 'Không tìm thấy loại ghế "Standard". Vui lòng tạo nó trước.', 'error');
+                return;
+            }
+
+            const targetCoupleRatio = 0.15;
+            let desiredCoupleSeats = Math.floor((roomCapacity * targetCoupleRatio) / 2);
+            if (coupleType && desiredCoupleSeats * 2 > remainingPhysicalCapacity) {
+                desiredCoupleSeats = Math.floor(remainingPhysicalCapacity / 2);
+            }
+
+            let numCoupleSeatsToGenerate = desiredCoupleSeats;
+            let numStandardSeatsToGenerate = remainingPhysicalCapacity - (numCoupleSeatsToGenerate * 2);
+
+            // Tạo ghế Standard/VIP trước
+            for (let i = 0; i < numStandardSeatsToGenerate; i++) {
+                const seatPhysicalSpan = 1;
+                if (remainingPhysicalCapacity < seatPhysicalSpan) break; // Không đủ chỗ vật lý
+
+                // Kiểm tra nếu thêm ghế này sẽ vượt quá MAX_SEATS_PER_ROW, thì chuyển hàng
+                if (currentPhysicalColumn + seatPhysicalSpan - 1 > MAX_SEATS_PER_ROW) {
+                    currentRowChar = String.fromCharCode(currentRowChar.charCodeAt(0) + 1);
+                    currentLogicalSeatNum = 1; // Reset số ghế logic cho hàng mới
+                    currentPhysicalColumn = 1;
+                }
+
+                const seatTypeToAssign = (vipType && i % 2 === 0) ? vipType : standardType;
+
+                newSeatsToAdd.push({
+                    id: Guid.newGuid(),
+                    roomId: roomId,
+                    seatRow: currentRowChar,
+                    seatNumber: currentLogicalSeatNum, // Gán số ghế logic tuần tự trong hàng
+                    seatTypeId: seatTypeToAssign.id,
+                    description: '',
+                    createdAt: new Date().toISOString()
+                });
+                remainingPhysicalCapacity -= seatPhysicalSpan;
+                currentPhysicalColumn += seatPhysicalSpan;
+                currentLogicalSeatNum++;
+            }
+
+            // Tạo ghế Couple ở cuối
+            if (coupleType) {
+                for (let i = 0; i < numCoupleSeatsToGenerate; i++) {
+                    const seatPhysicalSpan = 2;
+                    if (remainingPhysicalCapacity < seatPhysicalSpan) break; // Không đủ chỗ vật lý
+
+                    // Kiểm tra nếu thêm ghế đôi này sẽ vượt quá MAX_SEATS_PER_ROW, thì chuyển hàng
+                    if (currentPhysicalColumn + seatPhysicalSpan - 1 > MAX_SEATS_PER_ROW) {
+                        currentRowChar = String.fromCharCode(currentRowChar.charCodeAt(0) + 1);
+                        currentLogicalSeatNum = 1; // Reset số ghế logic cho hàng mới
+                        currentPhysicalColumn = 1;
+                    }
+
+                    newSeatsToAdd.push({
+                        id: Guid.newGuid(),
+                        roomId: roomId,
+                        seatRow: currentRowChar,
+                        seatNumber: currentLogicalSeatNum, // Gán số ghế logic tuần tự trong hàng
+                        seatTypeId: coupleType.id,
+                        description: 'Ghế đôi',
+                        createdAt: new Date().toISOString()
+                    });
+                    remainingPhysicalCapacity -= seatPhysicalSpan;
+                    currentPhysicalColumn += seatPhysicalSpan;
+                    currentLogicalSeatNum++;
+                }
+            }
+
+            if (newSeatsToAdd.length > 0) {
+                seats.push(...newSeatsToAdd);
+                renderSeatGrid();
+                Swal.fire('Thành công!', `Đã thêm ${newSeatsToAdd.length} ghế vào sơ đồ.`, 'success');
+            } else {
+                Swal.fire('Thông báo', 'Không có ghế nào được thêm vào. Có thể phòng đã đầy hoặc không đủ chỗ cho ghế đôi.', 'info');
+            }
+        }
+
+        // --- Clear All Seats Function ---
+        async function clearAllSeats() {
+            const result = await Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa TẤT CẢ ghế?',
+                text: "Hành động này sẽ xóa tất cả ghế khỏi sơ đồ và không thể hoàn tác!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Có, xóa tất cả!',
+                cancelButtonText: 'Hủy bỏ',
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB' // gray-300
+            });
+
+            if (result.isConfirmed) {
+                seats = []; // Clear the array
+                renderSeatGrid(); // Re-render the empty grid
+                Swal.fire('Đã xóa!', 'Tất cả ghế đã được xóa khỏi sơ đồ.', 'success');
+            }
+        }
+
+
+        // Simple GUID generator (for client-side only)
+        const Guid = {
+            newGuid: function() {
+                return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                    var r = Math.random() * 16 | 0,
+                        v = c == 'x' ? r : (r & 0x3 | 0x8);
+                    return v.toString(16);
+                });
+            }
+        };
+
+        // --- Initialization ---
+        document.addEventListener('DOMContentLoaded', async () => {
+            await fetchSeatTypes(); // Fetch seat types first
+            await fetchSeatsForRoom(); // Then fetch seats for the room
+        });
+
+        // Event Listeners for new buttons
+        autoFillBtn.addEventListener('click', autoFillSeats);
+        clearAllSeatsBtn.addEventListener('click', clearAllSeats); // Gắn sự kiện cho nút xóa tất cả
+    </script>
+}
+
+
+
+
+
+
+
+
+
+

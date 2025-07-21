@@ -1,0 +1,143 @@
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Đăng ký thành công - Absolute Cinema</title>
+    <link href="~/css/auth.css" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .success-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Inter', sans-serif;
+        }
+        .success-card {
+            background: white;
+            border-radius: 20px;
+            padding: 50px;
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+        .success-icon {
+            font-size: 80px;
+            color: #28a745;
+            margin-bottom: 30px;
+        }
+        .success-title {
+            font-size: 32px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .success-message {
+            font-size: 18px;
+            color: #666;
+            line-height: 1.6;
+            margin-bottom: 30px;
+        }
+        .email-instructions {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 30px 0;
+        }
+        .email-instructions h4 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        .email-instructions ul {
+            text-align: left;
+            margin: 0;
+            padding-left: 20px;
+        }
+        .email-instructions li {
+            margin-bottom: 8px;
+            color: #6c757d;
+        }
+        .btn-home {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            text-decoration: none;
+            display: inline-block;
+            transition: transform 0.2s;
+        }
+        .btn-home:hover {
+            transform: translateY(-2px);
+            color: white;
+            text-decoration: none;
+        }
+        .cinema-info {
+            margin-top: 40px;
+            padding-top: 30px;
+            border-top: 1px solid #dee2e6;
+        }
+        .cinema-logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: #333;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-card">
+            <div class="success-icon">✅</div>
+            <h1 class="success-title">Đăng ký thành công!</h1>
+            <p class="success-message">
+                Chúc mừng! Tài khoản của bạn đã được tạo thành công. 
+                Chúng tôi đã gửi một email xác thực đến địa chỉ email mà bạn đã đăng ký.
+            </p>
+
+            <div class="email-instructions">
+                <h4>📧 Hướng dẫn xác thực email:</h4>
+                <ul>
+                    <li>Kiểm tra hộp thư đến (Inbox) của bạn</li>
+                    <li>Tìm email từ Absolute Cinema với tiêu đề "Xác thực tài khoản"</li>
+                    <li>Click vào nút "Xác thực tài khoản" trong email</li>
+                    <li>Nếu không thấy email, hãy kiểm tra thư mục Spam/Junk</li>
+                    <li>Link xác thực sẽ hết hạn sau 24 giờ</li>
+                </ul>
+            </div>
+
+            <div style="margin: 30px 0;">
+                <a asp-action="Login" class="btn-home">Đăng nhập ngay</a>
+            </div>
+
+            <div class="cinema-info">
+                <div class="cinema-logo">🎬 ABSOLUTE CINEMA</div>
+                <p style="color: #6c757d; margin: 0;">
+                    Trải nghiệm điện ảnh đỉnh cao với chúng tôi!
+                </p>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <script>
+            setTimeout(function() {
+                alert('@TempData["SuccessMessage"]');
+            }, 500);
+        </script>
+    }
+</body>
+</html>

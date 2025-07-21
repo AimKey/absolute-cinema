@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Page Not Found";
+    Layout = "_Layout"; // Assuming your main layout is _Layout.cshtml
+}
+
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-900 text-white px-4 py-8">
+    <div class="text-center">
+        <i class="fas fa-exclamation-triangle text-red-500 text-8xl mb-6 animate-bounce-slow"></i>
+        <h1 class="text-6xl font-bold text-red-500 mb-4">404</h1>
+        <h2 class="text-3xl font-semibold text-gray-200 mb-4">Không tìm thấy trang</h2>
+        <p class="text-lg text-gray-400 mb-8">
+            Rất tiếc, trang bạn đang tìm kiếm không tồn tại hoặc đã bị di chuyển.
+        </p>
+        <a href="/" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg">
+            <i class="fas fa-home mr-2"></i>
+            Về trang chủ
+        </a>
+    </div>
+</div>
+
+<style>
+    .animate-bounce-slow {
+        animation: bounce-slow 2s infinite ease-in-out;
+    }
+</style>
+

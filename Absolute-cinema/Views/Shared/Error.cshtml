@@ -1,0 +1,42 @@
+﻿@{
+    ViewData["Title"] = "Error";
+    Layout = "_Layout"; // Assuming your main layout is _Layout.cshtml
+}
+
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-900 text-white px-4 py-8">
+    <div class="text-center">
+        <i class="fas fa-bug text-red-500 text-8xl mb-6 animate-pulse-slow"></i> @* Using fas fa-bug for error icon *@
+        <h1 class="text-6xl font-bold text-red-500 mb-4">Lỗi</h1>
+        <h2 class="text-3xl font-semibold text-gray-200 mb-4">Đã xảy ra lỗi không mong muốn</h2>
+        <p class="text-lg text-gray-400 mb-8">
+            Chúng tôi xin lỗi vì sự bất tiện này. Vui lòng thử lại sau hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn.
+        </p>
+        @if (ViewData["ShowRequestId"]?.ToString() == "True")
+        {
+            <p class="text-sm text-gray-500 mb-4">
+                <strong>Request ID:</strong> <code>@ViewData["RequestId"]</code>
+            </p>
+        }
+        <a href="/" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg">
+            <i class="fas fa-home mr-2"></i>
+            Về trang chủ
+        </a>
+    </div>
+</div>
+
+<style>
+    /* Reusing the pulse-slow animation from your existing header */
+    @@keyframes pulse-slow {
+        0%, 100% {
+            opacity: 1;
+        }
+
+        50% {
+            opacity: .5;
+        }
+    }
+
+    .animate-pulse-slow {
+        animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>

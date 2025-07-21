@@ -1,0 +1,191 @@
+﻿@using Common.DTOs.ShowtimeDTOs
+@model UpdateShowtimeDTO
+@{
+    ViewData["Title"] = "Edit Showtime";
+    Layout = "Admin/_AdminLayout";
+}
+
+<div class="min-h-screen bg-gray-900 text-gray-100">
+    <div class="container mx-auto px-6 py-8">
+        <!-- Header Section -->
+        <div class="mb-8">
+            <h1 class="mb-2 flex items-center text-3xl font-bold text-white">
+                <svg class="mr-2 h-8 w-8 text-yellow-400" fill="none" stroke="currentColor" 
+                viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                Edit Showtime
+            </h1>
+            <p class="text-gray-400">Update the details of this showtime</p>
+        </div>
+
+        @* Button to toggle back the preview *@
+        <button id="openPreview"
+                class="cursor-pointer rounded bg-blue-600 px-3 py-2 text-white transition-transform duration-300 ease-in-out hover:bg-blue-700">
+            Preview room showtime
+        </button>
+
+        <!-- Form Card -->
+        <div class="flex justify-center gap-16">
+            @* Floating room display container *@
+            <div id="showtimePreviewContainer" class="flex hidden justify-center rounded-2xl">
+                <div class="h-96 w-full max-w-xl min-w-sm overflow-auto rounded-lg border border-gray-700 bg-gray-800 p-4 text-gray-100 shadow-lg">
+                    <div id="showtimePreviewContent">
+                        <!-- Partial view will be loaded here -->
+                        <h2 class="text-xl text-white">Please choose a room and date time first</h2>
+                    </div>
+                </div>
+            </div>
+
+            <form asp-action="Edit" class="max-w-2xl rounded-2xl border border-gray-700 bg-gray-800 p-10 shadow-2xl">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="mb-4 text-red-400"></div>
+                <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div>
+                        <label asp-for="RoomId" class="mb-1 block text-sm font-semibold text-gray-300">Room</label>
+                        <select asp-for="RoomId" id="roomSelect"
+                                class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                asp-items="ViewBag.RoomId"></select>
+                    </div>
+
+                    <div>
+                        <label asp-for="MovieId" class="mb-1 block text-sm font-semibold text-gray-300">Movie</label>
+                        <select asp-for="MovieId"
+                                class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
+                                asp-items="ViewBag.MovieId"></select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label asp-for="StartTime" class="mb-1 block text-sm font-semibold text-gray-300">
+                            Start Time
+                        </label>
+                        <input asp-for="StartTime" type="datetime-local" id="startTimeSelect"
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                               value="@Model.StartTime.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="StartTime" class="text-xs text-red-400"></span>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label for="showtimeDuration" class="mb-1 block text-sm font-semibold text-gray-300">
+                            Enter showtime duration (Minutes)
+                        </label>
+                        <input type="number" min="1" placeholder="Ex: 30 (minutes)" id="showtimeDuration"
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" value="@ViewData["duration"]"
+                               required />
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label asp-for="EndTime" class="mb-1 block text-sm font-semibold text-gray-300">
+                            End time
+                        </label>
+                        <input asp-for="EndTime" id="EndTime" type="datetime-local"
+                               class="placeholder-gray-400 pointer-events-none w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 opacity-50 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+                               min="@DateTime.Now.ToString("yyyy-MM-ddTHH:mm")"
+                               value="@Model.EndTime.ToString("yyyy-MM-ddTHH:mm")" />
+                        <span asp-validation-for="EndTime" class="text-xs text-red-400"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="BasePrice" class="mb-1 block text-sm font-semibold text-gray-300">
+                            Base price
+                        </label>
+                        <input asp-for="BasePrice" type="number" min="0" value="@Model.BasePrice.ToString("F0")"
+                               class="placeholder-gray-400 w-full rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none" />
+                        <span asp-validation-for="BasePrice" class="text-xs text-red-400"></span>
+                    </div>
+
+                    <div>
+                        <label asp-for="Status" class="mb-1 block text-sm font-semibold text-gray-300">Active</label>
+                        <input asp-for="Status" type="checkbox"
+                               class="form-checkbox h-6 w-6 rounded border-gray-600 text-blue-600 focus:ring-blue-500" checked />
+                    </div>
+
+                </div>
+                <div class="mt-8 flex items-center justify-between">
+                    <button type="submit"
+                            class="inline-flex cursor-pointer items-center rounded-lg bg-blue-600 px-6 py-3 text-lg font-semibold text-white shadow-lg transition-transform duration-300 hover:bg-blue-700 hover:shadow-xl">
+                        <i class="fa-solid fa-pen-to-square mr-2"></i>
+                        Edit showtime
+                    </button>
+                    <a asp-action="Index" class="ml-4 text-base text-gray-400 underline hover:text-white">
+                        Back to
+                        List
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+
+    <script>
+        // Trigger on room select and time select
+        let roomSelect = document.getElementById("roomSelect");
+        let timeSelect = document.getElementById("startTimeSelect");
+        let togglePreivewBtn = document.getElementById("openPreview");
+
+        // If it has value, trigger loadShowTimePreview immediately
+        if (timeSelect.value && roomSelect.value) {
+            checkLoadAndPreview();
+        }
+
+
+        function loadShowtimePreview(roomId, date) {
+            fetch(`/Admin/Showtimes/GetCurrentShowtimeOfRoomInADay?roomId=${roomId}&date=${date}`)
+                .then(response => response.text())
+                .then(html => {
+                    console.log('Fetch completed')
+                    console.log(html)
+                    document.getElementById('showtimePreviewContent').innerHTML = html;
+                    document.getElementById('showtimePreviewContainer').classList.remove('hidden');
+                })
+                .catch(e => {
+                    console.error('Fetch failed: ' + e)
+                })
+        }
+
+        roomSelect.addEventListener("change", checkLoadAndPreview)
+        timeSelect.addEventListener("change", checkLoadAndPreview)
+        timeSelect.addEventListener("change", changeEndtime)
+
+        togglePreivewBtn.addEventListener("click", (e) => {
+            document.getElementById('showtimePreviewContainer').classList.toggle('hidden');
+        })
+
+        function checkLoadAndPreview() {
+            const roomId = roomSelect.value;
+            const date = timeSelect.value;
+
+            console.log(`Detecting room and date changes: ${roomId} ${date}`)
+            if (roomId && date) {
+                loadShowtimePreview(roomId, date);
+            }
+        }
+
+        // Handle automatically set the end time when the duration input changed
+        let durationInput = document.getElementById("showtimeDuration");
+
+        durationInput.addEventListener("change", function () {
+            changeEndtime();
+        });
+
+        function getDateTimeLocalString(date) {
+            return date.toLocaleDateString('sv-SE') + 'T' + date.toLocaleTimeString('sv-SE', { hour12: false }).slice(0, 5);
+        }
+
+        function changeEndtime() {
+            const startTime = new Date(document.getElementById("startTimeSelect").value);
+            const duration = parseInt(durationInput.value);
+            var tzoffset = (new Date()).getTimezoneOffset() * 60000; //offset in milliseconds
+            var localISOTime = (new Date(Date.now() - tzoffset)).toISOString().slice(0, 16); // Off set for timezone bc ISOString don't have a predefined timezone
+
+            if (startTime && !isNaN(duration)) {
+                const endTime = new Date(startTime.getTime() + duration * 60000 - tzoffset); // Add duration in minutes
+                document.getElementById("EndTime").value = endTime.toISOString().slice(0, 16); // Format to datetime-local
+            }
+        }
+    </script>
+}
