@@ -6,6 +6,7 @@ using Services.Implementations;
 using Hangfire;
 using Services.HelperServices;
 using Services.BackgroundServices.Showtimes;
+using Absolute_cinema.Services.VNPay;
 
 namespace Absolute_cinema
 {
@@ -14,6 +15,8 @@ namespace Absolute_cinema
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            //Connection VNPay API
+            builder.Services.AddScoped<IVnPayService, VnPayService>();
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 
