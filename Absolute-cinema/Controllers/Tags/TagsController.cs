@@ -1,16 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using BusinessObjects.Models;
-using DataAccessObjects;
 using Services.Interfaces;
 using Common.Filters.Tags;
-using Azure;
 using Common.DTOs.TagDTOs;
+using Common;
 
 namespace Absolute_cinema.Controllers.Tags;
 
@@ -18,18 +12,16 @@ namespace Absolute_cinema.Controllers.Tags;
 [Route("Admin/Tags")]
 public class TagsController : Controller
 {
-    private readonly AbsoluteCinemaContext _context;
     private readonly ITagService _tagService;
 
-    public TagsController(AbsoluteCinemaContext context, ITagService tagService)
+    public TagsController(ITagService tagService)
     {
-        _context = context;
         _tagService = tagService;
     }
 
     // GET: Tags
     [HttpGet("")]
-    public async Task<IActionResult> Index(
+    public IActionResult Index(
         string search, 
         string status, 
         string sort, 
@@ -65,15 +57,11 @@ public class TagsController : Controller
     }
 
     // GET: Tags/Details/5
-    public async Task<IActionResult> Details(Guid? id)
+    public IActionResult Details(Guid id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
 
-        var tag = await _context.Tags
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var tag = _tagService.GetById(id);
+
         if (tag == null)
         {
             return NotFound();
@@ -96,22 +84,25 @@ public class TagsController : Controller
     // POST: Tags/Create
     [HttpPost("Create")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create(CreateTagDTO tagDTO)
+    public IActionResult Create(CreateTagDTO tagDTO)
     {
-        _tagService.AddNewTag(tagDTO);
+        try
+        {
+            _tagService.AddNewTag(tagDTO);
+            SetTempMessage($"Tag '{tagDTO.Name}' has been created successfully.", StatusConstants.Success);
+        }
+        catch (Exception)
+        {
+            SetTempMessage("An error occurred while creating the tag. Please try again.", StatusConstants.Error);
+        }
         return RedirectToAction(nameof(Index));
     }
 
     // GET: Tags/Edit/5
     [HttpGet("Edit/{id:guid}")]
-    public async Task<IActionResult> Edit(Guid? id)
+    public IActionResult Edit(Guid id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var tag = _tagService.GetById(id.Value);
+        var tag = _tagService.GetById(id);
         if (tag == null)
         {
             return NotFound();
@@ -130,7 +121,7 @@ public class TagsController : Controller
     // POST: Tags/Edit/5
     [HttpPost("Edit/{id:guid}")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(UpdateTagDTO tagDTO)
+    public IActionResult Edit(UpdateTagDTO tagDTO)
     {
         if (ModelState.IsValid)
         {
@@ -152,9 +143,9 @@ public class TagsController : Controller
     // POST: Tags/Delete/5
     [HttpPost]
     [Route("Delete/{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public IActionResult Delete(Guid id)
     {
-        var tag = await _context.Tags.FindAsync(id);
+        var tag = _tagService.GetById(id);
         if (tag == null)
         {
             SetTempMessage("Tag not found.", "error");
@@ -163,8 +154,7 @@ public class TagsController : Controller
 
         try
         {
-            _context.Tags.Remove(tag);
-            await _context.SaveChangesAsync();
+            _tagService.Delete(tag);
             SetTempMessage($"Tag '{tag.Name}' has been deleted successfully.", "success");
         }
         catch (Exception)

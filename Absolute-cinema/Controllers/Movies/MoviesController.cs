@@ -56,7 +56,7 @@ public class MoviesController : Controller
         };
 
         // filter and sort movies based on the criteria
-        var result = _movieService.FilterMovies(criteria);
+        var result = _movieService.FilterMovies(criteria, isAdmin : false);
 
         // set ViewBag properties for the view
         ViewBag.CurrentPage = result.CurrentPage;
@@ -73,10 +73,12 @@ public class MoviesController : Controller
     // Details action to display the details of a specific movie
     public IActionResult Details(Guid id)
     {
+        // TODO: CHECK ROLE -> IF ADMIN : can navigate
+
         MovieVM movie;
-        // get movie by id
         try 
         {
+            // get movie by id
             movie = _movieService.GetMovieVMById(id);
         }
         catch (KeyNotFoundException)

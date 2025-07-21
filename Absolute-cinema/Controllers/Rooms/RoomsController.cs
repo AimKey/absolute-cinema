@@ -1,42 +1,38 @@
 ﻿
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using BusinessObjects.Models;
 using DataAccessObjects;
-using Microsoft.Data.SqlClient;
-using Common.ViewModels;
 using Common;
 using Services.Interfaces;
+using Common.DTOs.RoomDTOs;
 
 namespace Absolute_cinema.Controllers.Rooms;
 
 public class RoomsController : Controller
 {
-    private readonly AbsoluteCinemaContext _context;
     private readonly IRoomService _roomService;
 
-    public RoomsController(AbsoluteCinemaContext context, IRoomService roomService)
+    public RoomsController(IRoomService roomService)
     {
-        _context = context;
         _roomService = roomService;
     }
 
     // GET: Rooms
-    public async Task<IActionResult> Index()
+    public IActionResult Index()
     {
-        return View(await _context.Rooms.ToListAsync());
+        var rooms = _roomService.GetAll();
+        return View(rooms);
     }
 
     // GET: Rooms/Details/5
-    public async Task<IActionResult> Details(Guid? id)
+    public IActionResult Details(Guid? id)
     {
         if (id == null)
         {
             return NotFound();
         }
 
-        var room = await _context.Rooms
-            .FirstOrDefaultAsync(m => m.Id == id);
+        var room = _roomService.GetById(id.Value);
+
         if (room == null)
         {
             return NotFound();
@@ -48,120 +44,112 @@ public class RoomsController : Controller
     // GET: Rooms/Create
     public IActionResult Create()
     {
-        return View();
+        CreateRoomDTO createRoomDTO = new CreateRoomDTO
+        {
+            Capacity = 0,
+        };
+        return View(createRoomDTO);
     }
 
     // POST: Rooms/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Create([Bind("Id,Name,Capacity,ScreenType,Description,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Room room)
+    public IActionResult Create(CreateRoomDTO createRoomDTO)
     {
         if (ModelState.IsValid)
         {
-            room.Id = Guid.NewGuid();
-            _context.Add(room);
-            await _context.SaveChangesAsync();
+            // add new room
+            try
+            {
+                _roomService.AddNewRoom(createRoomDTO);
+            }
+            catch (Exception)
+            {
+                SetTempMessage($"An error occurred while creating the room", StatusConstants.Error);
+                return View(createRoomDTO);
+            }
+            // set a success message
+            SetTempMessage($"Create room {createRoomDTO.Name} successfully!", StatusConstants.Success);
+            
             return RedirectToAction(nameof(Index));
         }
-        return View(room);
+        return View(createRoomDTO);
     }
 
     // GET: Rooms/Edit/5
-    public async Task<IActionResult> Edit(Guid? id)
+    public IActionResult Edit(Guid id)
     {
-        if (id == null)
-        {
-            return NotFound();
-        }
-
-        var room = await _context.Rooms.FindAsync(id);
+        // Check if the room exists
+        var room = _roomService.GetById(id);
         if (room == null)
         {
             return NotFound();
         }
-        return View(room);
+
+        // Prepare the UpdateRoomDTO for the view
+        UpdateRoomDTO updateRoomDTO = new UpdateRoomDTO
+        {
+            Id = room.Id,
+            Name = room.Name,
+            Capacity = room.Capacity,
+            ScreenType = room.ScreenType,
+            Description = room.Description
+        };
+
+        return View(updateRoomDTO);
     }
 
     // POST: Rooms/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> Edit(Guid id, [Bind("Id,Name,Capacity,ScreenType,Description,CreatedAt,CreatedBy,UpdatedAt,UpdatedBy,RemovedAt,RemovedBy")] Room room)
+    public IActionResult Edit(UpdateRoomDTO updateRoomDTO)
     {
-        if (id != room.Id)
-        {
-            return NotFound();
-        }
-
         if (ModelState.IsValid)
         {
             try
             {
-                _context.Update(room);
-                await _context.SaveChangesAsync();
+                _roomService.UpdateRoom(updateRoomDTO);
+                SetTempMessage($"Update room {updateRoomDTO.Name} successfully!", StatusConstants.Success);
+                return RedirectToAction(nameof(Index));
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception)
             {
-                if (!RoomExists(room.Id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
+                SetTempMessage($"An error occurred while updating the room", StatusConstants.Error);
             }
-            return RedirectToAction(nameof(Index));
         }
-        return View(room);
+
+        return View(updateRoomDTO);
     }
 
 
     // POST: Rooms/Delete/5
     [HttpPost]
     [Route("Rooms/Delete/{id:guid}")]
-    public async Task<IActionResult> Delete(Guid id)
+    public IActionResult Delete(Guid id)
     {
-        var room = await _context.Rooms.FindAsync(id);
-        if (room == null)
+        try
         {
-            return NotFound();
+            var room = _roomService.GetById(id);
+            if (room == null)
+            {
+                SetTempMessage($"Room with ID {id} not found", StatusConstants.Error);
+                return RedirectToAction(nameof(Index));
+            }
+            _roomService.Delete(room);
+            SetTempMessage($"Room {room.Name} has been deleted successfully!", StatusConstants.Success);
         }
-
-        if (room != null)
+        catch (Exception)
         {
-            try
-            {
-                _roomService.Delete(room);
-                SetTempMessage($"Delete room successfully!", StatusConstants.Success);
-            }
-            catch (SqlException)
-            {
-                SetTempMessage("Cannot delete this room because it is referenced by other entities.", StatusConstants.Error);
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception)
-            {
-                SetTempMessage($"An error occurred while trying to delete the room.", StatusConstants.Error);
-                return RedirectToAction(nameof(Index));
-            }
+            SetTempMessage($"An error occurred while deleting the room", StatusConstants.Error);
         }
 
         return RedirectToAction(nameof(Index));
     }
 
-    private bool RoomExists(Guid id)
-    {
-        return _context.Rooms.Any(e => e.Id == id);
-    }
-
-
+    // GET: Rooms/ManageSeats/5
     public IActionResult ManageSeats(Guid id)
     {
-        var room = _context.Rooms.FirstOrDefault(r => r.Id == id && r.RemovedAt == null);
+        var room = _roomService.GetById(id);
         if (room == null)
         {
             return NotFound();

@@ -6,12 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Absolute_cinema.Controllers.Api;
 
-[Route("api/[controller]")] // Định nghĩa route cho API Controller
-[ApiController] // Đánh dấu đây là một API Controller
-                // [Authorize(Roles = "Admin")] // Có thể thêm Authorize nếu API cần bảo mật
+[Route("api/[controller]")] 
+[ApiController]             
 public class RoomManagementApiController : ControllerBase
 {
-    // Dữ liệu mẫu (thay thế bằng DbContext của bạn)
     private readonly AbsoluteCinemaContext _context;
 
     public RoomManagementApiController(AbsoluteCinemaContext context)
@@ -25,14 +23,12 @@ public class RoomManagementApiController : ControllerBase
     [HttpGet("seattype/all")]
     public IActionResult GetAllSeatTypes()
     {
-        // Trong thực tế: return Ok(_context.SeatTypes.ToList());
-        // Thêm màu sắc cho mục đích hiển thị trong JS
         var seatTypesWithColors = _context.SeatTypes.Select(st => new
         {
             st.Id,
             st.Name,
             st.PriceMutiplier,
-            color = GetColorForSeatType(st.Name) // Hàm GetColorForSeatType sẽ được định nghĩa
+            color = GetColorForSeatType(st.Name) 
         }).ToList();
         return Ok(seatTypesWithColors);
     }
@@ -41,7 +37,6 @@ public class RoomManagementApiController : ControllerBase
     [HttpGet("rooms/{roomId}/seats")]
     public IActionResult GetSeatsForRoom(Guid roomId)
     {
-        // Trong thực tế: return Ok(_context.Seats.Where(s => s.RoomId == roomId && s.RemovedAt == null).ToList());
         var seats = _context.Seats.Where(s => s.RoomId == roomId && s.RemovedAt == null).ToList();
         var seatVMs = seats.Select(s => new SeatVM
         {
@@ -60,37 +55,30 @@ public class RoomManagementApiController : ControllerBase
     [HttpPost("rooms/{roomId}/seats")]
     public IActionResult SaveSeatsForRoom(Guid roomId, [FromBody] List<SeatVM> updatedSeats)
     {
-        // Đây là nơi bạn sẽ thực hiện logic lưu vào cơ sở dữ liệu thực tế.
-        // Ví dụ:
-        // 1. Xóa tất cả ghế cũ của phòng này trong DB
-        //    _context.Seats.RemoveRange(_context.Seats.Where(s => s.RoomId == roomId));
-        // 2. Thêm tất cả ghế mới từ updatedSeats vào DB
-        //    _context.Seats.AddRange(updatedSeats);
-        // 3. Lưu thay đổi
-        //    _context.SaveChanges();
-
         List<Seat> seats = _context.Seats.Where(s => s.RoomId == roomId && s.RemovedAt == null).ToList();
+        
         // Chuyển đổi từ SeatVM sang Seat
         var updatedSeatEntities = updatedSeats.Select(vm => new Seat
         {
-            Id = vm.Id == Guid.Empty ? Guid.NewGuid() : vm.Id, // Tạo mới nếu Id là Guid.Empty
+            Id = vm.Id == Guid.Empty ? Guid.NewGuid() : vm.Id,
             SeatRow = vm.SeatRow,
             SeatNumber = vm.SeatNumber,
             Description = vm.Description,
             SeatTypeId = vm.SeatTypeId,
             RoomId = roomId,
-            CreatedAt = DateTime.UtcNow, // Thêm thời gian tạo
-            CreatedBy = null, // Có thể thêm thông tin người tạo nếu cần
-            UpdatedAt = DateTime.UtcNow, // Cập nhật thời gian cập nhật
-            UpdatedBy = null // Có thể thêm thông tin người cập nhật nếu cần
+            CreatedAt = DateTime.UtcNow,
+            CreatedBy = null, 
+            UpdatedAt = DateTime.UtcNow, 
+            UpdatedBy = null
         }).ToList();
 
         // Xóa ghế cũ của phòng này
-        _context.Seats.RemoveRange(seats); // Xóa ghế cũ của phòng này
+        _context.Seats.RemoveRange(seats);
         
-        _context.Seats.AddRange(updatedSeatEntities); // Thêm ghế mới vào cơ sở dữ liệu
+        _context.Seats.AddRange(updatedSeatEntities); 
+
         // Lưu thay đổi vào cơ sở dữ liệu
-        _context.SaveChanges(); // Lưu thay đổi vào cơ sở dữ liệu
+        _context.SaveChanges(); 
 
         return Ok(new { message = "Sơ đồ ghế đã được lưu thành công!" });
     }

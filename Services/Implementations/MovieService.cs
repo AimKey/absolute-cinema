@@ -67,10 +67,17 @@ public class MovieService : IMovieService
     }
 
     // enhanced methods
-    public PagedResult<MovieVM> FilterMovies(MovieFilterCriteria criteria)
+    public PagedResult<MovieVM> FilterMovies(MovieFilterCriteria criteria, bool isAdmin)
     {
+        // Get movies        
         var movies = _movieRepository.Get()
-            .AsQueryable();
+                    .AsQueryable();
+
+        // if admin , include hidden movies
+        if (!isAdmin)
+        {
+            movies = movies.Where(m => !m.Status.Equals(MovieStatusConstant.HIDDEN));
+        }
 
         /** Filter logic */
         // Filter by search term
@@ -117,9 +124,6 @@ public class MovieService : IMovieService
             movies = movies.Where(m => m.ImdbRating >= minRating);
         }
 
-        //if (criteria.Featured == true)
-        //    movies = movies.Where(m => m.IsFeatured);
-
         // new 
         if (criteria.NewRelease == true)
         {
@@ -131,7 +135,8 @@ public class MovieService : IMovieService
         movies = criteria.Sort switch
         {
             "rating" => movies.OrderByDescending(m => m.ImdbRating),
-            //"popular" => movies.OrderByDescending(m => m.ViewCount),
+            "cinema" => movies.Where(m => m.Showtimes.Any(st => st.StartTime >= DateTime.Now))
+                                .OrderByDescending(m => m.ReleaseDate),
             "title" => movies.OrderBy(m => m.Title),
             "year" => movies.OrderByDescending(m => m.ReleaseDate),
             _ => movies.OrderByDescending(m => m.CreatedAt)
@@ -175,6 +180,7 @@ public class MovieService : IMovieService
     public List<MovieVM> GetRalatedMovies(MovieVM movie)
     {
         return _movieRepository.Get()
+            .Where(m => !m.Status.Equals(MovieStatusConstant.HIDDEN))
             .Where(m => m.Id != movie.Id && m.MovieTags.Any(mt => movie.MovieTags.Any(movieTag => movieTag.Tag.Name == mt.Tag.Name)))
             .Take(6).Select(m => MovieMapper.MapToMovieVM(m))
             .ToList();
