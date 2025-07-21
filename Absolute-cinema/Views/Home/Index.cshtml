@@ -1,0 +1,40 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+@model Absolute_cinema.Models.ViewModels.TestUserVM
+
+<div class="text-center">
+    <div class="flex items-center justify-center h-32 bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200">
+        <h1 class="text-6xl font-extrabold text-gray-900 drop-shadow-md animate-bounce">
+            🎬 Absolute Cinema
+        </h1>
+    </div>
+    <div class="h-32 from-blue-300 via-orange-300 to-green-300 bg-gradient-to-r flex items-center justify-center">
+        <h2 class="mt-12 animate-pulse text-blue-600 text-center text-shadow-2xs text-xl">Your Ultimate Movie Experience!</h2>
+    </div>
+
+    <div class="my-8">
+        <h3 class="text-2xl font-bold mb-4">🎭 Welcome to the Cinema</h3>
+        <div class="flex justify-center gap-4 mb-6">
+            <a href="@Url.Action("Login", "Account")" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+                🔑 Login
+            </a>
+            <a href="@Url.Action("Register", "Account")" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+                📝 Join Now
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null)
+    {
+        <div class="bg-gray-100 p-6 rounded-lg shadow-md max-w-md mx-auto">
+            <h4 class="text-lg font-semibold mb-4">🎫 Test User Data from Database:</h4>
+            <p><strong>Username:</strong> @Model.Username</p>
+            <p><strong>Role:</strong> @Model.Role</p>
+            <p><strong>Full Name:</strong> @Model.UserDetail?.FullName</p>
+            <p><strong>Gender:</strong> @Model.UserDetail?.Gender</p>
+        </div>
+    }
+    
+    <p class="mt-6">Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+</div>
