@@ -1,0 +1,23 @@
+﻿@using Common.ViewModels.ShowtimeVMs
+@model List<PreviewRoomShowtimeVM>
+
+<div class="rounded-lg bg-gray-800 text-gray-100">
+    <h2 class="mb-4 text-xl font-semibold">Showtime preview for this room today</h2>
+
+    @if (Model.Any())
+    {
+        foreach (var showtime in Model)
+        {
+            <div class="mb-4 rounded-lg bg-gray-700 p-2 shadow">
+                <h3 class="text-sm text-gray-400">
+                    @showtime.StartTime.ToString("hh:mm tt") - @showtime.EndTime.ToString("hh:mm tt")
+                </h3>
+                <p class="mt-2 text-lg">@showtime.Movie.Title</p>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-gray-400">This room does not have any showtime yet.</p>
+    }
+</div>
