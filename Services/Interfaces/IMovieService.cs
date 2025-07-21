@@ -17,7 +17,7 @@ public interface IMovieService
     void Delete(Movie movie);
 
     // enhanced operations
-    PagedResult<MovieVM> FilterMovies(MovieFilterCriteria criteria);
+    PagedResult<MovieVM> FilterMovies(MovieFilterCriteria criteriam, bool isAdmin);
     MovieVM GetMovieVMById(Guid id);
     List<MovieVM> GetRalatedMovies(MovieVM movie);
     void AddNewMovie(MovieDTO movie);

@@ -73,18 +73,6 @@
 
         const MAX_SEATS_PER_ROW = 14; // Giới hạn số cột vật lý tối đa trên mỗi hàng
 
-        // --- Helper Functions ---
-
-        // Hàm hỗ trợ để gán màu cho loại ghế (phải giống với backend nếu có)
-        function GetColorForSeatType(seatTypeName) {
-            switch (seatTypeName) {
-                case "Standard": return "#4CAF50"; // Green
-                case "VIP": return "#FFC107";      // Amber
-                case "Couple": return "#2196F3";   // Blue (Sweet Box)
-                default: return "#6B7280";         // Default gray
-            }
-        }
-
         // Function to fetch seat types
         async function fetchSeatTypes() {
             try {

@@ -3,13 +3,12 @@ namespace Absolute_cinema.Controllers.Movies;
 
 using Microsoft.AspNetCore.Mvc;
 using BusinessObjects.Models;
-using Services.Interfaces;
 using System.Collections.Generic;
 using Common.ViewModels;
-using Common.Constants;
 using Common.Filters.Movies;
 using Common.Mappers;
 using Common.ViewModels.MovieVMs;
+using Services.Interfaces;
 
 public class MoviesController : Controller
 {
@@ -57,7 +56,7 @@ public class MoviesController : Controller
         };
 
         // filter and sort movies based on the criteria
-        var result = _movieService.FilterMovies(criteria);
+        var result = _movieService.FilterMovies(criteria, isAdmin : false);
 
         // set ViewBag properties for the view
         ViewBag.CurrentPage = result.CurrentPage;
@@ -74,10 +73,12 @@ public class MoviesController : Controller
     // Details action to display the details of a specific movie
     public IActionResult Details(Guid id)
     {
+        // TODO: CHECK ROLE -> IF ADMIN : can navigate
+
         MovieVM movie;
-        // get movie by id
         try 
         {
+            // get movie by id
             movie = _movieService.GetMovieVMById(id);
         }
         catch (KeyNotFoundException)

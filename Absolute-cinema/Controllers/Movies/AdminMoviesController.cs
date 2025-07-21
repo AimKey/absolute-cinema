@@ -63,7 +63,7 @@ public class AdminMoviesController : Controller
         };
 
         // filter and sort movies based on the criteria
-        var result = _movieService.FilterMovies(criteria);
+        var result = _movieService.FilterMovies(criteria, isAdmin: true);
 
         // set ViewBag properties for the view
         ViewBag.CurrentPage = result.CurrentPage;

@@ -3,6 +3,7 @@ using Common.Mappers;
 using Common.ViewModels;
 using Common.ViewModels.SeatTypeVMs;
 using Common.ViewModels.SeatVMs;
+using Common.DTOs.RoomDTOs;
 using Repositories;
 using Services.Interfaces;
 
@@ -100,5 +101,41 @@ public class RoomService : IRoomService
 
         RoomSeatsVM roomSeatsVM = RoomSeatMapper.MapToRoomSeatVM(r, seatTypeVMs, seatsWithStatus, showtime);
         return roomSeatsVM;
+    }
+
+    public void AddNewRoom(CreateRoomDTO createRoomDTO)
+    {
+        // new room 
+        Room newRoom = new Room
+        {
+            Name = createRoomDTO.Name,
+            Capacity = createRoomDTO.Capacity,
+            ScreenType = createRoomDTO.ScreenType,
+            Description = createRoomDTO.Description,
+            CreatedAt = DateTime.Now,
+        };
+
+        // save db
+        Add(newRoom);
+    }
+
+    public void UpdateRoom(UpdateRoomDTO room)
+    {
+        // Check if the room exists
+        Room existRoom = GetById(room.Id);
+        if (existRoom == null)
+        {
+            throw new KeyNotFoundException();
+        }
+
+        // update properties
+        existRoom.Name = room.Name;
+        existRoom.Capacity = room.Capacity;
+        existRoom.ScreenType = room.ScreenType;
+        existRoom.Description = room.Description;
+        existRoom.UpdatedAt = DateTime.Now;
+
+        // save db
+        Update(existRoom);
     }
 }
