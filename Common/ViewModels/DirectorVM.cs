@@ -1,4 +1,4 @@
-﻿namespace Absolute_cinema.Models.ViewModels;
+﻿namespace Common.ViewModels;
 
 public class DirectorVM
 {

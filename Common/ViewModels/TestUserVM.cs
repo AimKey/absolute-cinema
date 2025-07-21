@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using BusinessObjects.Models;
 
-namespace Absolute_cinema.Models.ViewModels;
+namespace Common.ViewModels;
 
 public class TestUserVM
 {

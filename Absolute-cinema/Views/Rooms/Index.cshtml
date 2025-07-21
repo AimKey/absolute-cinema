@@ -1,0 +1,115 @@
+﻿@model IEnumerable<BusinessObjects.Models.Room>
+
+@{
+    ViewData["Title"] = "Quản lý Phòng Chiếu";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml";
+}
+
+<!DOCTYPE html>
+
+<div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-white mb-8">Quản lý Phòng Chiếu</h1>
+
+    <div class="flex justify-end mb-6">
+        <a asp-action="Create" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm Phòng Chiếu Mới
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Tên Phòng
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Sức chứa
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Loại màn hình
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Mô tả
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Ngày tạo
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                            Hành động
+                        </th>
+                    </tr>
+                </thead>
+                <tbody class="bg-gray-800 divide-y divide-gray-700">
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                @Html.DisplayFor(modelItem => item.Name)
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                @Html.DisplayFor(modelItem => item.Capacity)
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                @Html.DisplayFor(modelItem => item.ScreenType)
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                @Html.DisplayFor(modelItem => item.Description)
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                @Html.DisplayFor(modelItem => item.CreatedAt)
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                <a asp-action="Edit" asp-route-id="@item.Id" class="text-blue-500 hover:text-blue-700 mr-4">Sửa</a>
+                                <a asp-action="ManageSeats" asp-route-id="@item.Id" class="text-green-500 hover:text-green-700 mr-4">Quản lý ghế</a>
+                                <button type="button" onclick="confirmDelete('@item.Id')" class="text-red-500 hover:text-red-700">Xóa</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <p class="text-gray-400 text-center text-lg">Chưa có phòng chiếu nào được tạo.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa?',
+                text: "Bạn sẽ không thể hoàn tác hành động này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy bỏ'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    form.action = '@Url.Action("Delete", "Rooms")/' + id;
+                    form.style.display = 'none';
+
+                    const tokenInput = document.querySelector('#antiForgeryForm input[name="__RequestVerificationToken"]');
+                    const antiForgeryInput = document.createElement('input');
+                    antiForgeryInput.type = 'hidden';
+                    antiForgeryInput.name = '__RequestVerificationToken';
+                    antiForgeryInput.value = tokenInput?.value || '';
+                    form.appendChild(antiForgeryInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
+
+}

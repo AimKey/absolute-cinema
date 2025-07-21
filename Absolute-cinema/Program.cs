@@ -6,6 +6,7 @@ using Services.Implementations;
 using Hangfire;
 using Services.HelperServices;
 using Services.BackgroundServices.Showtimes;
+using Common.DTOs.CloudinaryDTOs;
 
 namespace Absolute_cinema
 {
@@ -23,6 +24,11 @@ namespace Absolute_cinema
             SetupServices(builder);
             // Background services
             SetupBackgroundServices(builder);
+             
+            // Configure Cloudinary
+            builder.Services.Configure<CloudinarySettings>(
+                builder.Configuration.GetSection("Cloudinary"));
+            builder.Services.AddScoped<ICloudinaryService,CloudinaryService>();
 
             // Configure the database to allow one request accessing the same context
             builder.Services.AddSqlServer<AbsoluteCinemaContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -67,6 +73,11 @@ namespace Absolute_cinema
                 // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
+
+            // Config notfound-forbidden
+            app.UseStatusCodePagesWithReExecute("/Errors/{0}");
+
+
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 

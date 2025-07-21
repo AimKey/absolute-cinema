@@ -1,24 +1,18 @@
-﻿
-@{
+﻿@{
     Layout = null;
 }
-
 <!DOCTYPE html>
-
 <html>
 <head>
     <meta name="viewport" content="width=device-width" />
     <title>Admin management</title>
-
     <link rel="stylesheet" href="~/css/styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class ="bg-gray-900 text-white">
+<body class="bg-gray-900 text-white">
     <partial name="_Notification" />
-
     @* Header *@
-    @* TODO: Replace with the admin header *@
     <header class="fixed top-0 z-50 w-full transition-all duration-500 ease-in-out" id="navbar">
         <nav class="container mx-auto px-4 py-4">
             <div class="flex items-center justify-between">
@@ -30,61 +24,82 @@
                         Absolute Cinema
                     </a>
                 </div>
-
                 <!-- Desktop Navigation -->
                 <div class="hidden items-center space-x-8 md:flex">
-                    <a asp-area="" asp-controller="Home" asp-action="Index"
-                       class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
-                        <span>Trang chủ</span>
-                    </a>
-                    <a asp-area="" asp-controller="Movies" asp-action="Index"
-                       class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
-                        <span>Phim lẻ</span>
-                    </a>
-                    <a asp-area="" asp-controller="Movie" asp-action="Index"
-                       class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
-                        <span>Phim bộ</span>
-                    </a>
-                    <a asp-area="" asp-controller="Movie" asp-action="Index"
-                       class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
-                        <span>Phim chiếu rạp</span>
-                    </a>
+                    <!-- Quản lí nội dung Dropdown -->
                     <div class="group relative">
                         <button class="nav-link-hover py-2 text-white transition-all duration-300 hover:text-red-500">
-                            <span>Thể loại</span>
+                            <span>Quản lí nội dung</span>
                             <i class="fas fa-chevron-down ml-1 transform text-xs transition-transform duration-300 group-hover:rotate-180"></i>
                         </button>
                         <div class="dropdown-menu animate-slide-in invisible absolute top-full left-0 mt-2 w-64 rounded-lg border border-gray-700 bg-gray-800/95 opacity-0 shadow-2xl backdrop-blur-md transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                            <div class="grid grid-cols-2 gap-2 p-4">
-                                <a asp-area="" asp-controller="Genre" asp-action="Action"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-fist-raised mr-2 group-hover:animate-bounce"></i>Hành động
+                            <div class="grid grid-cols-1 gap-2 p-2">
+                                @* Changed to grid-cols-1 for vertical display *@
+                                <a href="/Admin/Movies" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-video mr-2 group-hover:animate-bounce"></i>Phim
                                 </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Horror"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-ghost mr-2 group-hover:animate-bounce"></i>Kinh dị
+                                <a href="/Admin/Tags" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-tags mr-2 group-hover:animate-bounce"></i>Thể loại
                                 </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Comedy"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-laugh mr-2 group-hover:animate-bounce"></i>Hài hước
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-user-tie mr-2 group-hover:animate-bounce"></i>Diễn viên
                                 </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Romance"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-heart mr-2 group-hover:animate-bounce"></i>Tình cảm
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="SciFi"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-rocket mr-2 group-hover:animate-bounce"></i>Khoa học
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Adventure"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-map mr-2 group-hover:animate-bounce"></i>Phiêu lưu
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-video mr-2 group-hover:animate-bounce"></i>Đạo diễn
                                 </a>
                             </div>
                         </div>
                     </div>
-                </div>
 
+                    <!-- Quản lí rạp chiếu Dropdown -->
+                    <div class="group relative">
+                        <button class="nav-link-hover py-2 text-white transition-all duration-300 hover:text-red-500">
+                            <span>Quản lí rạp chiếu</span>
+                            <i class="fas fa-chevron-down ml-1 transform text-xs transition-transform duration-300 group-hover:rotate-180"></i>
+                        </button>
+                        <div class="dropdown-menu animate-slide-in invisible absolute top-full left-0 mt-2 w-64 rounded-lg border border-gray-700 bg-gray-800/95 opacity-0 shadow-2xl backdrop-blur-md transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                            <div class="grid grid-cols-1 gap-2 p-2">
+                                @* Changed to grid-cols-1 for vertical display *@
+                                <a href="/Rooms" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-door-open mr-2 group-hover:animate-bounce"></i>Phòng chiếu
+                                </a>
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-list mr-2 group-hover:animate-bounce"></i>Loại ghế
+                                </a>
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-chair mr-2 group-hover:animate-bounce"></i>Ghế ngồi
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Other direct admin links -->
+                    <div class="group relative">
+                        <button class="nav-link-hover py-2 text-white transition-all duration-300 hover:text-red-500">
+                            <span>Suất chiếu & Bán vé</span>
+                            <i class="fas fa-chevron-down ml-1 transform text-xs transition-transform duration-300 group-hover:rotate-180"></i>
+                        </button>
+                        <div class="dropdown-menu animate-slide-in invisible absolute top-full left-0 mt-2 w-64 rounded-lg border border-gray-700 bg-gray-800/95 opacity-0 shadow-2xl backdrop-blur-md transition-all duration-300 group-hover:visible group-hover:opacity-100">
+                            <div class="grid grid-cols-1 gap-2 p-2">
+                                @* Changed to grid-cols-1 for vertical display *@
+                                <a href="/Showtimes" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-clock mr-2 group-hover:animate-bounce"></i>Suất chiếu
+                                </a>
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-shopping-cart mr-2 group-hover:animate-bounce"></i>Đặt vé
+                                </a>
+                                <a href="#" class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
+                                    <i class="fas fa-receipt mr-2 group-hover:animate-bounce"></i>Vé đã bán
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <a href="#"
+                       class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
+                        <span>Người dùng</span>
+                    </a>
+                </div>
                 <!-- Search Bar & User Actions -->
                 <div class="hidden items-center space-x-4 md:flex">
                     <!-- Search Form -->
@@ -97,7 +112,6 @@
                             </button>
                         </div>
                     </form>
-
                     <!-- User Authentication Area -->
                     @if (User.Identity.IsAuthenticated)
                     {
@@ -147,25 +161,21 @@
                         </div>
                     }
                 </div>
-
             </div>
         </nav>
     </header>
-
+    @await Html.PartialAsync("_Notification")
     <!-- Main Content Area -->
     <main role="main" class="pt-20">
         @RenderBody()
     </main>
-
     <!-- Footer -->
     <partial name="_Footer" />
-
     <!-- Scripts -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     <script src="~/js/Layout/layout.js" asp-append-version="true"></script>
-
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

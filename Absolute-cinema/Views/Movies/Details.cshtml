@@ -1,7 +1,31 @@
-﻿@model Absolute_cinema.Models.ViewModels.MovieVM
+﻿@model Common.ViewModels.MovieVM
 @{
     ViewData["Title"] = Model.Title + " - Chi Tiết Phim";
-    var relatedMovies = ViewBag.RelatedMovies as List<Absolute_cinema.Models.ViewModels.MovieVM>;
+    var relatedMovies = ViewBag.RelatedMovies as List<Common.ViewModels.MovieVM>;
+
+    // Helper function to format time difference (can be moved to a shared helper)
+    string FormatTimeAgo(DateTime date)
+    {
+        TimeSpan diff = DateTime.Now - date;
+        if (diff.TotalDays >= 365) return $"{Math.Floor(diff.TotalDays / 365)} năm trước";
+        if (diff.TotalDays >= 30) return $"{Math.Floor(diff.TotalDays / 30)} tháng trước";
+        if (diff.TotalDays >= 7) return $"{Math.Floor(diff.TotalDays / 7)} tuần trước";
+        if (diff.TotalDays >= 1) return $"{Math.Floor(diff.TotalDays)} ngày trước";
+        if (diff.TotalHours >= 1) return $"{Math.Floor(diff.TotalHours)} giờ trước";
+        if (diff.TotalMinutes >= 1) return $"{Math.Floor(diff.TotalMinutes)} phút trước";
+        return "Vừa xong";
+    }
+
+    // Helper function to render stars
+    string RenderStars(int rating)
+    {
+        var starsHtml = "";
+        for (int i = 1; i <= 5; i++)
+        {
+            starsHtml += $"<i class=\"fas fa-star{(i > rating ? " far" : "")}\"></i>";
+        }
+        return starsHtml;
+    }
 }
 
 <!-- Movie Hero Section -->
@@ -13,7 +37,6 @@
         <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
     </div>
-
     <!-- Content -->
     <div class="relative z-10 container mx-auto px-4 pt-24 pb-12">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
@@ -24,14 +47,12 @@
                     <div class="relative group">
                         <img src="@Model.PosterURL" alt="@Model.Title"
                              class="w-full rounded-2xl shadow-2xl group-hover:scale-105 transition-transform duration-300">
-
                         <!-- Play Overlay -->
                         <div class="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl flex items-center justify-center">
                             <button class="bg-red-500 hover:bg-red-600 text-white w-20 h-20 rounded-full flex items-center justify-center shadow-2xl hover:scale-110 transition-all duration-300">
                                 <i class="fas fa-play ml-1 text-2xl"></i>
                             </button>
                         </div>
-
                         <!-- Badges -->
                         <div class="absolute top-4 left-4 space-y-2">
                             @if (Model.IsFeatured)
@@ -53,7 +74,6 @@
                                 </span>
                             }
                         </div>
-
                         <!-- Quality Badge -->
                         <div class="absolute top-4 right-4">
                             <span class="bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold shadow-lg">
@@ -61,7 +81,6 @@
                             </span>
                         </div>
                     </div>
-
                     <!-- Movie Basic Info -->
                     <div class="bg-gray-800/50 backdrop-blur-md p-4 rounded-xl space-y-3">
                         <div class="flex justify-between items-center">
@@ -85,14 +104,12 @@
                             <span class="text-white font-semibold">@Model.Language</span>
                         </div>
                     </div>
-
                     <!-- Cast & Crew -->
                     <div class="bg-gray-800/50 backdrop-blur-md p-4 rounded-xl">
                         <h4 class="text-lg font-bold text-white mb-4 flex items-center">
                             <i class="fas fa-users text-purple-500 mr-2"></i>
                             Diễn viên & Đạo diễn
                         </h4>
-
                         <!-- Directors -->
                         @if (Model.MovieDirectors != null && Model.MovieDirectors.Any())
                         {
@@ -113,7 +130,6 @@
                                 </div>
                             </div>
                         }
-
                         <!-- Actors -->
                         @if (Model.MovieActors != null && Model.MovieActors.Any())
                         {
@@ -137,7 +153,6 @@
                     </div>
                 </div>
             </div>
-
             <!-- Right Column: Movie Details -->
             <div class="lg:col-span-8 xl:col-span-9 space-y-6">
                 <!-- Title & Rating -->
@@ -151,7 +166,6 @@
                             <p class="text-xl text-gray-300 italic mb-4">@Model.OriginalTitle</p>
                         }
                     </div>
-
                     <!-- Rating -->
                     <div class="flex items-center space-x-4">
                         <div class="bg-blue-500 text-white px-4 py-2 rounded-xl font-bold text-lg flex items-center space-x-2 shadow-lg">
@@ -161,30 +175,25 @@
                         </div>
                     </div>
                 </div>
-
                 <!-- Action Buttons -->
                 <div class="flex flex-wrap gap-4">
                     <button class="bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-black px-8 py-3 rounded-xl font-bold text-lg flex items-center space-x-3 shadow-lg hover:scale-105 transition-all duration-300">
                         <i class="fas fa-play"></i>
                         <span>Xem Ngay</span>
                     </button>
-
                     <button class="bg-gray-700/50 hover:bg-gray-600/50 text-white px-6 py-3 rounded-xl font-bold flex items-center space-x-2 shadow-lg hover:scale-105 transition-all duration-300">
                         <i class="fas fa-heart"></i>
                         <span>Yêu thích</span>
                     </button>
-
                     <button class="bg-gray-700/50 hover:bg-gray-600/50 text-white px-6 py-3 rounded-xl font-bold flex items-center space-x-2 shadow-lg hover:scale-105 transition-all duration-300">
                         <i class="fas fa-plus"></i>
                         <span>Thêm vào</span>
                     </button>
-
                     <button class="bg-gray-700/50 hover:bg-gray-600/50 text-white px-6 py-3 rounded-xl font-bold flex items-center space-x-2 shadow-lg hover:scale-105 transition-all duration-300">
                         <i class="fas fa-share"></i>
                         <span>Chia sẻ</span>
                     </button>
                 </div>
-
                 <!-- Tags -->
                 <div class="flex flex-wrap gap-2">
                     @foreach (var movieTag in Model.MovieTags)
@@ -199,7 +208,6 @@
                         }
                     }
                 </div>
-
                 <!-- Tabs Navigation -->
                 <div class="border-b border-gray-700">
                     <nav class="flex space-x-8">
@@ -217,7 +225,6 @@
                         </button>
                     </nav>
                 </div>
-
                 <!-- Tab Content -->
                 <div class="tab-content">
                     <!-- Overview Tab -->
@@ -227,7 +234,6 @@
                             <h3 class="text-xl font-bold text-white mb-4">Nội dung phim</h3>
                             <p class="text-gray-300 leading-relaxed">@Model.Description</p>
                         </div>
-
                         <!-- Additional Info -->
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="bg-gray-800/30 backdrop-blur-md p-4 rounded-xl">
@@ -253,7 +259,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Gallery Tab -->
                     <div id="gallery" class="tab-pane hidden">
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -265,7 +270,6 @@
                             </div>
                         </div>
                     </div>
-
                     <!-- Cast Tab -->
                     <div id="cast" class="tab-pane hidden">
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
@@ -283,7 +287,6 @@
                             }
                         </div>
                     </div>
-
                     <!-- Reviews Tab -->
                     <div id="reviews" class="tab-pane hidden">
                         @if (relatedMovies != null && relatedMovies.Any())
@@ -304,84 +307,55 @@
                         }
                     </div>
                 </div>
-
                 <!-- Reviews Section -->
                 <div class="bg-gray-800/30 backdrop-blur-md p-6 rounded-2xl">
                     <div class="flex items-center justify-between mb-6">
                         <h3 class="text-xl font-bold text-white flex items-center">
                             <i class="fas fa-star text-yellow-500 mr-2"></i>
-                            Đánh giá (10)
+                            Đánh giá (@Model.Reviews.Count)
                         </h3>
                         <button class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors duration-300">
                             Viết đánh giá
                         </button>
                     </div>
-
                     <!-- Review Items -->
                     <div class="space-y-4">
-                        <!-- Review 1 -->
-                        <div class="flex space-x-4 p-4 bg-gray-700/30 rounded-lg">
-                            <img src="/placeholder.svg?height=40&width=40" alt="User" class="w-10 h-10 rounded-full object-cover">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="text-white font-medium">LAMTIEN_VN</h4>
-                                    <div class="flex items-center space-x-1">
-                                        <div class="flex text-yellow-400">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
+                        @if (Model.Reviews != null && Model.Reviews.Any())
+                        {
+                            @foreach (var review in Model.Reviews)
+                            {
+                                <div class="flex space-x-4 p-4 bg-gray-700/30 rounded-lg">
+                                    <img src="@(string.IsNullOrEmpty(review.User?.UserDetail?.AvatarURL) ? "https://res.cloudinary.com/donifpb7x/image/upload/v1739718879/avatar_ta3n7x.jpg" : review.User.UserDetail.AvatarURL)" alt="@review.User?.Username" class="w-10 h-10 rounded-full object-cover">
+                                    <div class="flex-1">
+                                        <div class="flex items-center justify-between mb-2">
+                                            <h4 class="text-white font-medium">@review.User?.Username</h4>
+                                            <div class="flex items-center space-x-1">
+                                                <div class="flex text-yellow-400">
+                                                    @Html.Raw(RenderStars(review.Rating))
+                                                </div>
+                                                <span class="text-gray-400 text-sm ml-2">@FormatTimeAgo(review.ReviewDate)</span>
+                                            </div>
                                         </div>
-                                        <span class="text-gray-400 text-sm ml-2">2 ngày trước</span>
+                                        <p class="text-gray-300 text-sm leading-relaxed">
+                                            @review.Content
+                                        </p>
+                                        @* <div class="flex items-center space-x-4 mt-3 text-xs text-gray-400"> *@
+                                        @*     <button class="hover:text-white transition-colors duration-300"> *@
+                                        @*         <i class="fas fa-thumbs-up mr-1"></i>Hữu ích *@
+                                        @*     </button> *@
+                                        @*     <button class="hover:text-white transition-colors duration-300"> *@
+                                        @*         <i class="fas fa-reply mr-1"></i>Trả lời *@
+                                        @*     </button> *@
+                                        @* </div> *@
                                     </div>
                                 </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    Cả Liam Neeson lẫn nhân vật Mike McCann đều đã quá già để thực hiện những pha hành động mạo hiểm như thế này...
-                                </p>
-                                <div class="flex items-center space-x-4 mt-3 text-xs text-gray-400">
-                                    <button class="hover:text-white transition-colors duration-300">
-                                        <i class="fas fa-thumbs-up mr-1"></i>Hữu ích
-                                    </button>
-                                    <button class="hover:text-white transition-colors duration-300">
-                                        <i class="fas fa-reply mr-1"></i>Trả lời
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Review 2 -->
-                        <div class="flex space-x-4 p-4 bg-gray-700/30 rounded-lg">
-                            <img src="/placeholder.svg?height=40&width=40" alt="User" class="w-10 h-10 rounded-full object-cover">
-                            <div class="flex-1">
-                                <div class="flex items-center justify-between mb-2">
-                                    <h4 class="text-white font-medium">MovieLover2024</h4>
-                                    <div class="flex items-center space-x-1">
-                                        <div class="flex text-yellow-400">
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="fas fa-star"></i>
-                                            <i class="far fa-star"></i>
-                                        </div>
-                                        <span class="text-gray-400 text-sm ml-2">1 tuần trước</span>
-                                    </div>
-                                </div>
-                                <p class="text-gray-300 text-sm leading-relaxed">
-                                    Phim hay, diễn xuất tốt. Liam Neeson vẫn rất cuốn hút trong vai diễn này. Đáng xem!
-                                </p>
-                                <div class="flex items-center space-x-4 mt-3 text-xs text-gray-400">
-                                    <button class="hover:text-white transition-colors duration-300">
-                                        <i class="fas fa-thumbs-up mr-1"></i>Hữu ích
-                                    </button>
-                                    <button class="hover:text-white transition-colors duration-300">
-                                        <i class="fas fa-reply mr-1"></i>Trả lời
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
+                            }
+                        }
+                        else
+                        {
+                            <p class="text-gray-400 text-center">Chưa có đánh giá nào cho phim này.</p>
+                        }
                     </div>
-
                     <!-- Load More Reviews -->
                     <div class="text-center mt-6">
                         <button class="text-red-400 hover:text-red-300 font-medium transition-colors duration-300">
@@ -394,33 +368,27 @@
         </div>
     </div>
 </section>
-
 @section Scripts {
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Tab functionality
             const tabButtons = document.querySelectorAll('.tab-button');
             const tabPanes = document.querySelectorAll('.tab-pane');
-
             tabButtons.forEach(button => {
                 button.addEventListener('click', function() {
                     const targetTab = this.getAttribute('data-tab');
-
                     // Remove active class from all buttons and panes
                     tabButtons.forEach(btn => {
                         btn.classList.remove('active', 'border-yellow-500', 'text-yellow-500');
                         btn.classList.add('border-transparent', 'text-gray-400');
                     });
-
                     tabPanes.forEach(pane => {
                         pane.classList.remove('active');
                         pane.classList.add('hidden');
                     });
-
                     // Add active class to clicked button and corresponding pane
                     this.classList.add('active', 'border-yellow-500', 'text-yellow-500');
                     this.classList.remove('border-transparent', 'text-gray-400');
-
                     const targetPane = document.getElementById(targetTab);
                     if (targetPane) {
                         targetPane.classList.add('active');
@@ -428,7 +396,6 @@
                     }
                 });
             });
-
             // Smooth scroll for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {

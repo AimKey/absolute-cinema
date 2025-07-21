@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Absolute_cinema.Models.ViewModels;
+namespace Common.ViewModels;
 
 public class ActorVM
 {

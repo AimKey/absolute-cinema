@@ -1,0 +1,148 @@
+﻿@model Common.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml"; // Sử dụng layout admin mới
+}
+
+<div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-white mb-8">Dashboard</h1>
+
+    <!-- Section: Tổng quan chung -->
+    <h2 class="text-3xl font-semibold text-white mb-6">Tổng quan chung</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        <!-- Card: Tổng số người dùng -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Tổng số người dùng</h3>
+                <p class="text-4xl font-bold text-blue-500 mt-2">@Model.TotalUsers</p>
+            </div>
+            <i class="fas fa-users text-5xl text-gray-600"></i>
+        </div>
+
+        <!-- Card: Người dùng mới -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Người dùng mới</h3>
+                <p class="text-4xl font-bold text-green-500 mt-2">@Model.NewUsers</p>
+            </div>
+            <i class="fas fa-user-plus text-5xl text-gray-600"></i>
+        </div>
+
+        <!-- Card: Tổng số suất chiếu -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Tổng số suất chiếu</h3>
+                <p class="text-4xl font-bold text-purple-500 mt-2">@Model.TotalScreenings</p>
+            </div>
+            <i class="fas fa-ticket-alt text-5xl text-gray-600"></i>
+        </div>
+
+        <!-- Card: Lịch chiếu hôm nay -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Lịch chiếu hôm nay</h3>
+                <p class="text-4xl font-bold text-orange-500 mt-2">@Model.MoviesToday</p>
+            </div>
+            <i class="fas fa-calendar-alt text-5xl text-gray-600"></i>
+        </div>
+    </div>
+
+    <!-- Section: Thống kê phim & rạp -->
+    <h2 class="text-3xl font-semibold text-white mb-6">Thống kê phim & rạp</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        <!-- Card: Tổng số phim -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Tổng số phim</h3>
+                <p class="text-4xl font-bold text-red-500 mt-2">@Model.TotalMovies</p>
+            </div>
+            <i class="fas fa-film text-5xl text-gray-600"></i>
+        </div>
+
+        <!-- Card: Tổng số thể loại -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Tổng số thể loại</h3>
+                <p class="text-4xl font-bold text-lime-500 mt-2">@Model.TotalGenres</p>
+            </div>
+            <i class="fas fa-tags text-5xl text-gray-600"></i>
+        </div>
+
+        <!-- Card: Tổng số phòng chiếu -->
+        <div class="bg-gray-800 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-gray-400">Tổng số phòng chiếu</h3>
+                <p class="text-4xl font-bold text-yellow-500 mt-2">@Model.TotalCinemaRooms</p>
+            </div>
+            <i class="fas fa-door-open text-5xl text-gray-600"></i>
+        </div>
+    </div>
+
+    <!-- Section: Thống kê doanh thu & vé -->
+    <h2 class="text-3xl font-semibold text-white mb-6">Thống kê doanh thu & vé</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+        <!-- Card: Tổng doanh thu -->
+        <div class="bg-emerald-700 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-emerald-200">Tổng doanh thu</h3>
+                <p class="text-4xl font-bold text-white mt-2">@Model.TotalRevenue.ToString("N0") VNĐ</p>
+            </div>
+            <i class="fas fa-dollar-sign text-5xl text-emerald-400"></i>
+        </div>
+
+        <!-- Card: Doanh thu hôm nay -->
+        <div class="bg-emerald-700 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-emerald-200">Doanh thu hôm nay</h3>
+                <p class="text-4xl font-bold text-white mt-2">@Model.RevenueToday.ToString("N0") VNĐ</p>
+            </div>
+            <i class="fas fa-money-bill-wave text-5xl text-emerald-400"></i>
+        </div>
+
+        <!-- Card: Tổng số vé đã bán -->
+        <div class="bg-emerald-700 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-emerald-200">Tổng số vé đã bán</h3>
+                <p class="text-4xl font-bold text-white mt-2">@Model.TotalTicketsSold</p>
+            </div>
+            <i class="fas fa-ticket text-5xl text-emerald-400"></i>
+        </div>
+
+        <!-- Card: Vé đã bán hôm nay -->
+        <div class="bg-emerald-700 rounded-lg shadow-lg p-6 flex items-center justify-between">
+            <div>
+                <h3 class="text-lg font-semibold text-emerald-200">Vé đã bán hôm nay</h3>
+                <p class="text-4xl font-bold text-white mt-2">@Model.TicketsSoldToday</p>
+            </div>
+            <i class="fas fa-calendar-check text-5xl text-emerald-400"></i>
+        </div>
+    </div>
+
+    <!-- Recent Activities Section -->
+    <div class="bg-gray-800 rounded-lg shadow-lg p-6">
+        <h2 class="text-2xl font-semibold text-white mb-4">Hoạt động gần đây</h2>
+        <ul class="space-y-3">
+            <li class="flex items-center text-gray-300">
+                <i class="fas fa-check-circle text-green-500 mr-3"></i>
+                <span>Phim "Kẻ cắp mặt trăng 4" đã được thêm vào.</span>
+                <span class="ml-auto text-gray-500 text-sm">10 phút trước</span>
+            </li>
+            <li class="flex items-center text-gray-300">
+                <i class="fas fa-edit text-blue-500 mr-3"></i>
+                <span>Cập nhật thông tin diễn viên "Tom Cruise".</span>
+                <span class="ml-auto text-gray-500 text-sm">1 giờ trước</span>
+            </li>
+            <li class="flex items-center text-gray-300">
+                <i class="fas fa-calendar-plus text-purple-500 mr-3"></i>
+                <span>Thêm lịch chiếu mới cho "Dune: Part Two".</span>
+                <span class="ml-auto text-gray-500 text-sm">3 giờ trước</span>
+            </li>
+            <li class="flex items-center text-gray-300">
+                <i class="fas fa-trash-alt text-red-500 mr-3"></i>
+                <span>Xóa phòng chiếu số 5.</span>
+                <span class="ml-auto text-gray-500 text-sm">Hôm qua</span>
+            </li>
+        </ul>
+    </div>
+</div>
