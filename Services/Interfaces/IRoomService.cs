@@ -1,4 +1,5 @@
 using BusinessObjects.Models;
+using Common.ViewModels;
 
 namespace Services.Interfaces;
 
@@ -10,4 +11,6 @@ public interface IRoomService
     void Update(Room room);
     void Delete(Guid id);
     void Delete(Room room);
+    Room GetRoomFromShowtimeId(Guid showtimeId);
+    RoomSeatsVM MapRoomToRoomSeatsVM(Room r, Guid showtimeId);
 } 

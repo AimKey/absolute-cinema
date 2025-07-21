@@ -4,6 +4,7 @@ using Services.Interfaces;
 using System.Security.Cryptography;
 using System.Text;
 using Common.Constants;
+using Common.DTOs.TicketDTOs;
 
 namespace Services.Implementations;
 

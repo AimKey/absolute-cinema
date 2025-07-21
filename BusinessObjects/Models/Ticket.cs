@@ -14,8 +14,8 @@ public class Ticket : IBaseModel
     public decimal Price { get; set; }                      // calculated based on the showtime base price x seat type price multiplier
 
     // Foreign Key
-    public Guid BookingId { get; set; }            
-    // public Guid ShowtimeSeatId { get; set; }  // No need bc ShowtimeSeat already has a TicketId
+    public Guid BookingId { get; set; }
+    public Guid ShowtimeSeatId { get; set; }
 
     // Navigation Properties
     public virtual Booking Booking { get; set; }

@@ -14,7 +14,7 @@ using Common;
 using Common.DTOs.ShowtimeDTOs;
 using Services.HelperServices;
 
-namespace Absolute_cinema.Controllers
+namespace Absolute_cinema.Controllers.Showtimes
 {
     [Route("Admin/Showtimes")]
     public class ShowtimesController : Controller
@@ -260,7 +260,7 @@ namespace Absolute_cinema.Controllers
             }
             return Json(new
             {
-                status = status,
+                status,
                 message = msg
             });
         }

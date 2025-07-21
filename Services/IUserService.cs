@@ -1,4 +1,5 @@
 using BusinessObjects.Models;
+using Common.DTOs.TicketDTOs;
 
 namespace Services.Interfaces;
 

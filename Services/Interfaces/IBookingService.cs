@@ -10,4 +10,7 @@ public interface IBookingService
     void Update(Booking booking);
     void Delete(Guid id);
     void Delete(Booking booking);
+    Guid CreateTemporaryBookingForUser(Guid userId);
+    Booking CalculateBookingForUser(Guid bookingId, Guid userId);
+    Booking GetReviewBookingVM(Guid bookingId, Guid userId);
 } 

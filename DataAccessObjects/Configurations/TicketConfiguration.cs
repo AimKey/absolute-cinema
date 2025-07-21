@@ -14,11 +14,12 @@ namespace DataAccessObjects.Configurations
         public void Configure(EntityTypeBuilder<Ticket> builder)
         {
             builder.HasKey(t => t.Id);
-            
-            // Ticket - Showtime seat
+
+            // Ticket - Showtime? seat
             builder.HasOne(t => t.ShowtimeSeat)
                 .WithOne(st => st.Ticket)
-                .HasForeignKey<ShowtimeSeat>(st => st.TicketId);
+                .HasForeignKey<Ticket>(t => t.ShowtimeSeatId)
+                .IsRequired(true);
         }
     }
 }

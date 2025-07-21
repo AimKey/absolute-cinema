@@ -50,7 +50,7 @@
                         <label asp-for="MovieId" class="mb-1 block text-sm font-semibold text-gray-300">Movie</label>
                         <select asp-for="MovieId"
                                 class="form-input w-full rounded-lg border border-gray-700 bg-gray-900 px-3 py-2 text-white transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500"
-                                asp-items="ViewBag.MovieId"></select>
+                                asp-items="ViewBag.MovieId" id="movieSelect"></select>
                     </div>
 
                     <div class="md:col-span-2">
@@ -187,5 +187,24 @@
                 document.getElementById("EndTime").value = endTime.toISOString().slice(0, 16); // Format to datetime-local
             }
         }
+
+        let movieSelect = document.getElementById("movieSelect");
+        // Add event listener for movie change
+        movieSelect.addEventListener("change", function () {
+            const movieId = this.value;
+            if (movieId) {
+                fetch(`/Movies/GetMovieInfo?movieId=${movieId}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.status === "ok" && data.movie) {
+                            const duration = data.movie.duration;
+                            if (duration) {
+                                durationInput.value = duration;
+                                changeEndtime();
+                            }
+                        }
+                    });
+            }
+        });
     </script>
 }

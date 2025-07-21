@@ -37,7 +37,7 @@ namespace Services.HelperServices
             SeedMovies();
             SeedMovieRelationships();
             SeedShowtimes();
-            SeedShowtimeSeats();
+            //SeedShowtimeSeats();
             //SeedBookings();
             //SeedPayments();
             //SeedTickets();

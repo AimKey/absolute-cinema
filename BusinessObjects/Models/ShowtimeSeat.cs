@@ -14,7 +14,6 @@ public class ShowtimeSeat : IBaseModel
     // Foreign Key
     public Guid ShowtimeId { get; set; }
     public Guid SeatId { get; set; }
-    public Guid? TicketId { get; set; }
 
     // Navigation Properties
     public virtual Showtime Showtime { get; set; }

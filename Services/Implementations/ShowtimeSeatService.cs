@@ -1,4 +1,6 @@
 using BusinessObjects.Models;
+using Common.DTOs.SeatDTOs;
+using Microsoft.IdentityModel.Tokens;
 using Repositories;
 using Services.Interfaces;
 
@@ -11,6 +13,38 @@ public class ShowtimeSeatService : IShowtimeSeatService
     public ShowtimeSeatService(IShowtimeSeatRepository showtimeSeatRepository)
     {
         _showtimeSeatRepository = showtimeSeatRepository;
+    }
+
+    public void InsertShowtimeSeatFromDTO(List<ChosenSeatDTO> dtos)
+    {
+        if (dtos.IsNullOrEmpty())
+        {
+            throw new ArgumentException("The list of chosen seats cannot be null or empty.");
+        }
+
+        foreach (var dto in dtos)
+        {
+            if (dto == null)
+            {
+                throw new ArgumentException("Chosen seat DTO cannot be null.");
+            }
+
+            // Check if there is already a seat with the same ShowtimeId and SeatId
+            var existingSeat = _showtimeSeatRepository.Get()
+                .FirstOrDefault(ss => ss.ShowtimeId == dto.ShowtimeId && ss.SeatId == dto.SeatId);
+            if (existingSeat != null)
+            {
+                throw new Exception($"This showtime seat has already be booked by other user, please try again");
+            }
+            var seat = new ShowtimeSeat
+            {
+                Id = Guid.NewGuid(), // Assuming Id is generated here
+                ShowtimeId = dto.ShowtimeId,
+                SeatId = dto.SeatId,
+                CreatedAt = DateTime.UtcNow,
+            };
+            Add(seat);
+        }
     }
 
     public IEnumerable<ShowtimeSeat> GetAll()
@@ -46,4 +80,4 @@ public class ShowtimeSeatService : IShowtimeSeatService
         _showtimeSeatRepository.Delete(showtimeSeat);
         _showtimeSeatRepository.Save();
     }
-} 
+}

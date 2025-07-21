@@ -9,6 +9,7 @@ using Common.ViewModels;
 using Common.Constants;
 using Common.Filters.Movies;
 using Common.Mappers;
+using Common.ViewModels.MovieVMs;
 
 public class MoviesController : Controller
 {
@@ -75,7 +76,7 @@ public class MoviesController : Controller
     {
         MovieVM movie;
         // get movie by id
-        try 
+        try
         {
             movie = _movieService.GetMovieVMById(id);
         }
@@ -105,6 +106,29 @@ public class MoviesController : Controller
         return tags.Select(t => TagMapper.MaptoTagVM(t)).ToList();
     }
 
+    // Get movie information JSON
+    public IActionResult GetMovieInfo(Guid movieId)
+    {
+        try
+        {
+            var movieInfo = _movieService.GetById(movieId);
+            var movieDto = _movieService.MapMovieToDTO(movieInfo);
+            return Json(new
+            {
+                status = "ok",
+                msg = "ok",
+                movie = movieDto
+            });
+        }
+        catch (Exception e)
+        {
+            return Json(new
+            {
+                status = "error",
+                msg = e.Message
+            });
+        }
+    }
 }
 
 

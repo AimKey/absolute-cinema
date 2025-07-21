@@ -20,9 +20,9 @@ public class MovieService : IMovieService
 
 
     public MovieService(
-        IMovieRepository movieRepository, 
-        ITagRepository tagRepository, 
-        IActorRepository actorRepository, 
+        IMovieRepository movieRepository,
+        ITagRepository tagRepository,
+        IActorRepository actorRepository,
         IDirectorRepository directorRepository)
     {
         _movieRepository = movieRepository;
@@ -126,7 +126,7 @@ public class MovieService : IMovieService
             var sevenDaysAgo = DateTime.Now.AddDays(-7);
             movies = movies.Where(m => m.ReleaseDate >= sevenDaysAgo && m.ReleaseDate <= DateTime.Now);
         }
-            
+
 
         movies = criteria.Sort switch
         {
@@ -156,7 +156,7 @@ public class MovieService : IMovieService
     public MovieVM GetMovieVMById(Guid id)
     {
         var movie = _movieRepository.GetByID(id);
-        
+
         // if null
         if (movie == null)
         {
@@ -238,17 +238,17 @@ public class MovieService : IMovieService
         existingMovie.ImdbRating = updateMovieDTO.ImdbRating;
         existingMovie.AgeRestriction = updateMovieDTO.AgeRestriction switch
         {
-            "G" => 0,         
-            "PG" => 10,      
-            "PG-13" => 13,   
-            "R" => 17,         
-            "NC-17" => 18,    
-            _ => 0           
+            "G" => 0,
+            "PG" => 10,
+            "PG-13" => 13,
+            "R" => 17,
+            "NC-17" => 18,
+            _ => 0
         };
         existingMovie.Status = updateMovieDTO.Status;
         existingMovie.CreatedAt = updateMovieDTO.CreatedAt ?? DateTime.Now;
-        existingMovie.UpdatedAt = DateTime.Now; 
-        existingMovie.MovieTags.ToList().Clear(); 
+        existingMovie.UpdatedAt = DateTime.Now;
+        existingMovie.MovieTags.ToList().Clear();
         existingMovie.MovieActors.ToList().Clear();
         existingMovie.MovieDirectors.ToList().Clear();
 
@@ -283,5 +283,50 @@ public class MovieService : IMovieService
 
         // Add movie
         Update(existingMovie);
+    }
+
+    public List<Showtime> GetMovieFutureShowtime(Guid movieId)
+    {
+        return _movieRepository.Get()
+            .SelectMany(m => m.Showtimes)
+            .Where(s => s.StartTime > DateTime.Now)
+            .ToList();
+    }
+
+    public MovieDTO MapMovieToDTO(Movie m)
+    {
+        return new MovieDTO
+        {
+            Id = m.Id,
+            Title = m.Title,
+            OriginalTitle = m.OriginalTitle,
+            Description = m.Description,
+            Duration = m.Duration,
+            ReleaseDate = m.ReleaseDate,
+            Country = m.Country,
+            PosterURL = m.PosterURL,
+            BackgroundURL = m.BackgroundURL,
+            TrailerURL = m.TrailerURL,
+            ImdbRating = m.ImdbRating,
+            AgeRestriction = m.AgeRestriction.ToString(),
+            Status = m.Status,
+            Price = 10000, // Default or map from model if available
+            CreatedAt = m.CreatedAt,
+
+            // Flatten MovieTags to string list
+            Tags = m.MovieTags != null
+            ? m.MovieTags.Select(t => t.Tag.Name).ToList()
+            : new List<string>(),
+
+            // Flatten Director IDs
+            SelectedDirectorIds = m.MovieDirectors != null
+            ? m.MovieDirectors.Select(d => d.DirectorId).ToList()
+            : new List<Guid>(),
+
+            // Flatten Actor IDs
+            SelectedActorIds = m.MovieActors != null
+            ? m.MovieActors.Select(a => a.ActorId).ToList()
+            : new List<Guid>()
+        };
     }
 }
