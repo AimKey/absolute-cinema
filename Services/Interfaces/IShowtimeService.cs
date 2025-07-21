@@ -17,5 +17,8 @@ public interface IShowtimeService
     void Delete(Showtime showtime);
     List<PreviewRoomShowtimeVM> GetCurrentShowtimeOfRoomInADay(Guid roomId, DateTime date);
     bool IsShowtimeEditable(Guid showtimeId);
+    bool IsShowtimeBookedByAnyUser(Showtime st);
+    List<Showtime> GetAllShowtimesOfAMovieInDate(Guid movieId, DateTime date);
+    List<Showtime> GetAllShowtimesOfAMovieFromThisTime(Guid movieId, DateTime fromTime);
     void ExpireOutdatedShowtimes();
 }

@@ -61,7 +61,6 @@ public class ShowtimeService : IShowtimeService
         return vm;
     }
 
-
     public IEnumerable<Showtime> GetAll()
     {
         return _showtimeRepository.Get();
@@ -184,8 +183,7 @@ public class ShowtimeService : IShowtimeService
         // Check if this showtime is already booked by any user (Will be checked by front end)
         foreach (var sh in showtimes)
         {
-            var isBooked = sh.ShowtimeSeats.Any(ss => ss.Ticket != null);
-            if (isBooked)
+            if (IsShowtimeBookedByAnyUser(sh))
             {
                 throw new Exception($"This showtime is already booked by other user, unable to edit");
             }
@@ -211,8 +209,7 @@ public class ShowtimeService : IShowtimeService
         {
             throw new Exception("Showtime not found");
         }
-        // Check if the showtime is already booked by any user
-        var isBooked = st.ShowtimeSeats.Any(ss => ss.Ticket != null);
+        bool isBooked = IsShowtimeBookedByAnyUser(st);
         if (isBooked)
         {
             throw new Exception("This showtime is already booked by other user, cannot modfiy");
@@ -234,5 +231,24 @@ public class ShowtimeService : IShowtimeService
         }
         // Batch update
         _showtimeRepository.Save();
+    }
+
+    public bool IsShowtimeBookedByAnyUser(Showtime st)
+    {
+        return st.ShowtimeSeats.Any(ss => ss.Ticket != null);
+    }
+
+    public List<Showtime> GetAllShowtimesOfAMovieInDate(Guid movieId, DateTime date)
+    {
+        var list = _showtimeRepository.Get(m => m.Id == movieId &&
+            m.StartTime.Date == date.Date).ToList();
+        return list;
+    }
+
+    public List<Showtime> GetAllShowtimesOfAMovieFromThisTime(Guid movieId, DateTime fromTime)
+    {
+        var list = _showtimeRepository.Get(m => m.Id == movieId &&
+            m.StartTime >= fromTime).ToList();
+        return list;
     }
 }
