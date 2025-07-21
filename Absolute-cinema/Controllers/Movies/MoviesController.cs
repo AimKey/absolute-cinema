@@ -76,7 +76,7 @@ public class MoviesController : Controller
     {
         MovieVM movie;
         // get movie by id
-        try
+        try 
         {
             movie = _movieService.GetMovieVMById(id);
         }

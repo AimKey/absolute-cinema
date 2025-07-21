@@ -14,7 +14,7 @@ namespace DataAccessObjects.Configurations
         public void Configure(EntityTypeBuilder<Ticket> builder)
         {
             builder.HasKey(t => t.Id);
-
+            
             // Ticket - Showtime? seat
             builder.HasOne(t => t.ShowtimeSeat)
                 .WithOne(st => st.Ticket)

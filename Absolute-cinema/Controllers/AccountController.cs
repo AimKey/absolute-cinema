@@ -1,6 +1,10 @@
 using Absolute_cinema.Models.ViewModels;
+using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Absolute_cinema.Controllers
 {
@@ -22,16 +26,49 @@ namespace Absolute_cinema.Controllers
         // POST: Account/Login
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public IActionResult Login(LoginViewModel model)
+        public async Task<IActionResult> Login(LoginViewModel model)
         {
             if (ModelState.IsValid)
             {
-                // This is just for demonstration
-                return RedirectToAction("Index", "Home");
+                var user = _userService.GetUserByUserName(model.Username);
+
+                if (user != null)
+                {
+                    // Kiểm tra mật khẩu người dùng nhập có khớp với mật khẩu đã hash
+                    var isPasswordCorrect = _userService.VerifyPassword(model.Password, user.Password);
+
+                    if (isPasswordCorrect)
+                    {
+                        // Ghi session
+                        HttpContext.Session.SetString("Username", user.Username);
+                        HttpContext.Session.SetString("UserId", user.Id.ToString());
+                        HttpContext.Session.SetString("Role", user.Role ?? "User");
+
+                        // Thêm xác thực Cookie
+                        var claims = new List<Claim>
+                {
+                    new Claim(ClaimTypes.Name, user.Username),
+                    new Claim(ClaimTypes.Role, user.Role ?? "User"),
+                    new Claim("UserId", user.Id.ToString())
+                };
+
+                        var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                        var principal = new ClaimsPrincipal(identity);
+                        await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+                        TempData["SuccessMessage"] = "Đăng nhập thành công!";
+                        return RedirectToAction("Index", "Home");
+                    }
+                }
+
+                // Nếu sai username hoặc mật khẩu
+                ModelState.AddModelError("", "Thông tin đăng nhập không đúng.");
             }
 
+            // Luôn return view nếu có lỗi
             return View(model);
         }
+
 
         // GET: Account/Register
         public IActionResult Register()
@@ -118,11 +155,13 @@ namespace Absolute_cinema.Controllers
         }
 
         // GET: Account/Logout
-        public IActionResult Logout()
+        public async Task<IActionResult> Logout()
         {
-            // TODO: Implement logout logic here
-            return RedirectToAction("Index", "Home");
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            HttpContext.Session.Clear();
+            return RedirectToAction("Login", "Account");
         }
+
 
         // GET: Account/ForgotPassword
         public IActionResult ForgotPassword()

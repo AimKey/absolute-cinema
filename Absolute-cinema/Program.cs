@@ -1,4 +1,4 @@
-using DataAccessObjects;
+﻿using DataAccessObjects;
 using Repositories;
 using Services;
 using Services.Interfaces;
@@ -8,7 +8,7 @@ using Services.HelperServices;
 using Services.BackgroundServices.Showtimes;
 using Common.Models;
 using Common.DTOs.CloudinaryDTOs;
-
+using Microsoft.AspNetCore.Authentication.Cookies;
 namespace Absolute_cinema
 {
     public class Program
@@ -53,10 +53,21 @@ namespace Absolute_cinema
             builder.Services.AddSession(options =>
             {
                 options.IdleTimeout = System.TimeSpan.FromMinutes(60);
-                options.Cookie.HttpOnly = false;
+                options.Cookie.HttpOnly = true;
                 options.Cookie.IsEssential = true;
             });
-            
+            // Configure authentication with cookies
+            // Cookie Authentication setup
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.LoginPath = "/Account/Login"; // chuyển hướng khi chưa đăng nhập
+                    options.AccessDeniedPath = "/Account/Login"; // chuyển hướng khi không đủ quyền
+                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+                });
+
+
+
             var app = builder.Build();
 
             // Seed data
@@ -87,7 +98,7 @@ namespace Absolute_cinema
 
             app.UseSession();
             app.UseRouting();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

@@ -10,6 +10,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="~/css/Layout/layout.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/Absolute_cinema.styles.css" asp-append-version="true" />
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -150,34 +152,40 @@
                     @if (User.Identity.IsAuthenticated)
                     {
                         <!-- User Menu for Authenticated Users -->
-                        <div class="group relative">
-                            <button class="flex items-center space-x-2 text-white transition-all duration-300 hover:scale-105 hover:text-red-500">
-                                <i class="fas fa-user-circle animate-pulse-slow text-xl"></i>
-                                <span>@User.Identity.Name</span>
-                                <i class="fas fa-chevron-down transform text-xs transition-transform duration-300 group-hover:rotate-180"></i>
-                </button>
-                            <div class="user-menu animate-slide-in invisible absolute top-full right-0 mt-2 w-48 rounded-lg border border-gray-700 bg-gray-800/95 opacity-0 shadow-2xl backdrop-blur-md transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                                <div class="p-2">
-                                    <a asp-area="" asp-controller="Account" asp-action="Profile"
-                                       class="dropdown-item flex items-center space-x-2 rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                        <i class="fas fa-user"></i><span>Hồ sơ</span>
-                                    </a>
-                                    <a asp-area="" asp-controller="Account" asp-action="Settings"
-                                       class="dropdown-item flex items-center space-x-2 rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                        <i class="fas fa-cog"></i><span>Cài đặt</span>
-                                    </a>
-                                    <a asp-area="" asp-controller="Movie" asp-action="Favorites"
-                                       class="dropdown-item flex items-center space-x-2 rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                        <i class="fas fa-heart animate-pulse"></i><span>Yêu thích</span>
-                                    </a>
-                                    <hr class="my-2 border-gray-600">
-                                    <a asp-area="" asp-controller="Account" asp-action="Logout"
-                                       class="dropdown-item flex items-center space-x-2 rounded p-2 text-sm text-red-400 no-underline transition-all duration-300 hover:text-red-300">
-                                        <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
-                                    </a>
-                                </div>
-                            </div>
-                        </div>
+                      <div x-data="{ open: false }" class="relative">
+    <button @@click="open = !open" class="flex items-center space-x-2 text-white transition-all duration-300 hover:scale-105 hover:text-red-500">
+        <i class="fas fa-user-circle animate-pulse-slow text-xl"></i>
+        <span>@User.Identity.Name</span>
+        <i class="fas fa-chevron-down transform text-xs transition-transform duration-300" :class="{ 'rotate-180': open }"></i>
+    </button>
+
+    <!-- Dropdown -->
+    <div x-show="open" @@click.outside="open = false"
+         x-transition
+         class="absolute top-full right-0 mt-2 w-48 rounded-lg border border-gray-700 bg-gray-800/95 shadow-2xl backdrop-blur-md z-50">
+        <div class="p-2">
+            <a asp-area="" asp-controller="Account" asp-action="Profile"
+               class="flex items-center space-x-2 rounded p-2 text-sm text-gray-300 hover:text-white">
+                <i class="fas fa-user"></i><span>Hồ sơ</span>
+            </a>
+            <a asp-area="" asp-controller="Account" asp-action="Settings"
+               class="flex items-center space-x-2 rounded p-2 text-sm text-gray-300 hover:text-white">
+                <i class="fas fa-cog"></i><span>Cài đặt</span>
+            </a>
+            <a asp-area="" asp-controller="Movie" asp-action="Favorites"
+               class="flex items-center space-x-2 rounded p-2 text-sm text-gray-300 hover:text-white">
+                <i class="fas fa-heart animate-pulse"></i><span>Yêu thích</span>
+            </a>
+            <hr class="my-2 border-gray-600">
+            <a asp-area="" asp-controller="Account" asp-action="Logout"
+               class="flex items-center space-x-2 rounded p-2 text-sm text-red-400 hover:text-red-300">
+                <i class="fas fa-sign-out-alt"></i><span>Đăng xuất</span>
+            </a>
+        </div>
+    </div>
+</div>
+
+
                     }
                     else
                     {

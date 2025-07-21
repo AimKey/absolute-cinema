@@ -1,0 +1,66 @@
+﻿@using BusinessObjects.Models
+@model List<Showtime>
+
+@{
+    var morningShowtimes = Model.Where(s => s.StartTime.Hour < 12).ToList();
+    var afternoonShowtimes = Model.Where(s => s.StartTime.Hour >= 12 && s.StartTime.Hour < 18).ToList();
+    var eveningShowtimes = Model.Where(s => s.StartTime.Hour >= 18).ToList();
+}
+
+@if (Model.Any())
+{
+    <h1>This movie is not available yet, stay tuned for more !</h1>
+}
+else
+{
+    <section class="px-6 py-7 text-white">
+        @if (morningShowtimes.Any())
+        {
+            <h2 class="text-center text-xl font-bold">Morning</h2>
+            <div>
+                @foreach (var showtime in morningShowtimes)
+                {
+                    var cssClass = showtime.Status
+                    ? "rounded bg-yellow-500 px-3 py-4 transition hover:bg-yellow-400"
+                    : "pointer-events-none rounded bg-gray-500 px-3 py-4 transition hover:bg-gray-400";
+
+                    <div class="@cssClass">
+                        @showtime.StartTime.ToString("hh:mm") - @showtime.EndTime.ToString("hh:mm")
+                    </div>
+                }
+            </div>
+        }
+        else if (afternoonShowtimes.Any())
+        {
+            <h2 class="text-center text-xl font-bold">Morning</h2>
+            <div>
+                @foreach (var showtime in morningShowtimes)
+                {
+                    var cssClass = showtime.Status
+                    ? "rounded bg-yellow-500 px-3 py-4 transition hover:bg-yellow-400"
+                    : "pointer-events-none rounded bg-gray-500 px-3 py-4 transition hover:bg-gray-400";
+
+                    <div class="@cssClass">
+                        @showtime.StartTime.ToString("hh:mm") - @showtime.EndTime.ToString("hh:mm")
+                    </div>
+                }
+            </div>
+        }
+        else
+        {
+            <h2 class="text-center text-xl font-bold">Morning</h2>
+            <div>
+                @foreach (var showtime in morningShowtimes)
+                {
+                    var cssClass = showtime.Status
+                    ? "rounded bg-yellow-500 px-3 py-4 transition hover:bg-yellow-400"
+                    : "pointer-events-none rounded bg-gray-500 px-3 py-4 transition hover:bg-gray-400";
+
+                    <div class="@cssClass">
+                        @showtime.StartTime.ToString("hh:mm") - @showtime.EndTime.ToString("hh:mm")
+                    </div>
+                }
+            </div>
+        }
+    </section>
+}

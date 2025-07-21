@@ -4,6 +4,7 @@ using DataAccessObjects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessObjects.Migrations
 {
     [DbContext(typeof(AbsoluteCinemaContext))]
-    partial class AbsoluteCinemaContextModelSnapshot : ModelSnapshot
+    [Migration("20250721122206_themy")]
+    partial class themy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -721,9 +724,6 @@ namespace DataAccessObjects.Migrations
                     b.Property<Guid?>("RemovedBy")
                         .HasColumnType("uniqueidentifier");
 
-                    b.Property<Guid>("ShowtimeSeatId")
-                        .HasColumnType("uniqueidentifier");
-
                     b.Property<string>("TicketCode")
                         .HasColumnType("nvarchar(max)");
 
@@ -736,9 +736,6 @@ namespace DataAccessObjects.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("BookingId");
-
-                    b.HasIndex("ShowtimeSeatId")
-                        .IsUnique();
 
                     b.ToTable("Tickets");
                 });
@@ -995,15 +992,7 @@ namespace DataAccessObjects.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("BusinessObjects.Models.ShowtimeSeat", "ShowtimeSeat")
-                        .WithOne("Ticket")
-                        .HasForeignKey("BusinessObjects.Models.Ticket", "ShowtimeSeatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.Navigation("Booking");
-
-                    b.Navigation("ShowtimeSeat");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.UserDetail", b =>
@@ -1069,14 +1058,14 @@ namespace DataAccessObjects.Migrations
                     b.Navigation("ShowtimeSeats");
                 });
 
-            modelBuilder.Entity("BusinessObjects.Models.ShowtimeSeat", b =>
-                {
-                    b.Navigation("Ticket");
-                });
-
             modelBuilder.Entity("BusinessObjects.Models.Tag", b =>
                 {
                     b.Navigation("MovieTags");
+                });
+
+            modelBuilder.Entity("BusinessObjects.Models.Ticket", b =>
+                {
+                    b.Navigation("ShowtimeSeat");
                 });
 
             modelBuilder.Entity("BusinessObjects.Models.User", b =>

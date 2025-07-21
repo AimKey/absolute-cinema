@@ -21,6 +21,17 @@ namespace Absolute_cinema.Controllers
 
         public IActionResult Index()
         {
+            var username = HttpContext.Session.GetString("Username");
+            var role = HttpContext.Session.GetString("Role");
+
+            if (string.IsNullOrEmpty(username))
+            {
+                // N?u ch?a có session thì chuy?n v? login
+                return RedirectToAction("Login", "Account");
+            }
+
+            ViewBag.Username = username;
+            ViewBag.Role = role;
             return View();
         }
 
