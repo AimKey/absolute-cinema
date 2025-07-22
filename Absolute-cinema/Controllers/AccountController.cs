@@ -56,7 +56,7 @@ namespace Absolute_cinema.Controllers
                         var principal = new ClaimsPrincipal(identity);
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                        TempData["SuccessMessage"] = "Đăng nhập thành công!";
+                        TempData["SuccessMessage"] = "Login successfully !!!";
                         return RedirectToAction("Index", "Home");
                     }
                 }
@@ -113,7 +113,7 @@ namespace Absolute_cinema.Controllers
 
                 if (result)
                 {
-                    TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng kiểm tra email để xác thực tài khoản.";
+                    TempData["SuccessMessage"] = "Register successfully !!! Check mail to active account";
                     return RedirectToAction("RegisterSuccess");
                 }
                 else

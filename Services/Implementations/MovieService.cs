@@ -295,7 +295,8 @@ public class MovieService : IMovieService
     {
         return _movieRepository.Get()
             .SelectMany(m => m.Showtimes)
-            .Where(s => s.StartTime > DateTime.Now && s.Movie.Id == movieId)
+            .Where(s => s.StartTime > DateTime.Now)
+            .Where(s => s.Movie.Id == movieId)
             .ToList();
     }
 

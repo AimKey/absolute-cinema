@@ -25,14 +25,14 @@ namespace Common.Mappers
             };
         }
 
-        public static SeatWithStatusVM MapToSeatWithStatusVM(Seat seat, ShowtimeSeat showtimeSeat)
+        public static SeatWithStatusVM MapToSeatWithStatusVM(Seat seat, List<ShowtimeSeat> showtimeSeat, Guid showtimeId)
         {
             bool isBooked = false;
 
             if (showtimeSeat != null)
             {
                 // IF there is a showtimeSeat associated with the showtime for this seat, it is booked
-                isBooked = seat.ShowtimeSeats.Any(ss => ss.ShowtimeId == showtimeSeat.ShowtimeId);
+                isBooked = showtimeSeat.Any(ss => ss.ShowtimeId == showtimeId);
             }
 
             return new SeatWithStatusVM
