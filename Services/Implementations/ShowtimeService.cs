@@ -45,16 +45,17 @@ public class ShowtimeService : IShowtimeService
         {
             searchContext.SetStrategy(searchByRoomNameStrategy);
             list = searchContext.Search(list.ToList(), vm.Query);
-        } else
+        }
+        else
         {
             searchContext.SetStrategy(defaultSearchStrategy);
             list = searchContext.Search(list.ToList(), vm.Query);
         }
 
-            //var roomQuery = string.IsNullOrEmpty(vm?.RoomName) ? string.Empty : vm.RoomName;
-            //var movieQuery = string.IsNullOrEmpty(vm?.MovieName) ? string.Empty : vm.MovieName;
+        //var roomQuery = string.IsNullOrEmpty(vm?.RoomName) ? string.Empty : vm.RoomName;
+        //var movieQuery = string.IsNullOrEmpty(vm?.MovieName) ? string.Empty : vm.MovieName;
 
-            var startTime = vm.FromDate ?? DateTime.MinValue;
+        var startTime = vm.FromDate ?? DateTime.MinValue;
         var endTime = vm.ToDate ?? DateTime.MaxValue;
         // Filter by date range
         list = list.Where(st =>
@@ -69,7 +70,7 @@ public class ShowtimeService : IShowtimeService
         else
         {
             list = list.OrderBy(st => st.StartTime).ToList();
-    }
+        }
 
         // Pagination
         var totalItems = list.Count();
@@ -280,4 +281,4 @@ public class ShowtimeService : IShowtimeService
         return list;
     }
 
-} 
+}
