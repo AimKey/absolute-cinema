@@ -15,5 +15,6 @@ public interface IBookingService
     Booking CalculateBookingForUser(Guid bookingId, Guid userId);
     ReviewBookingVM GetReviewBookingVM(Guid bookingId, Guid userId);
     void UpdateBookingJobCancellationId(Guid bookingId, string jobId);
-    void BookingFinished(Guid bookingId);
+    void BookingFinished(Guid bookingId, Guid paymentId);
+    List<Booking> GetBookingsByUserId(Guid id);
 } 

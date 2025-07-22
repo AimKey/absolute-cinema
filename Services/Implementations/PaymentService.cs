@@ -1,4 +1,5 @@
 using BusinessObjects.Models;
+using Common.DTOs.PaymentDTOs;
 using Repositories;
 using Services.Interfaces;
 
@@ -11,6 +12,28 @@ public class PaymentService : IPaymentService
     public PaymentService(IPaymentRepository paymentRepository)
     {
         _paymentRepository = paymentRepository;
+    }
+
+    public Payment CreatePaymentFromDTO(VNPayPaymentDTO dto)
+    {
+        if (dto == null)
+        {
+            throw new ArgumentNullException(nameof(dto), "Payment DTO cannot be null");
+        }
+        var payment = new Payment
+        {
+            Id = Guid.NewGuid(),
+            BookingId = dto.BookingId,
+            Amount = (int)(dto.Amount * 100), // Assuming Amount is in VND and needs to be in cents
+            OrderCode = 1, // TODO: Implement a method to generate unique order codes
+            Description = $"Payment for {dto.MovieTitle} - {dto.TicketsCount} tickets",
+            TransactionDateTime = DateTime.UtcNow,
+            PaymentMethod = "Online banking",
+            Status = "Success",
+            Currency = "VND" // Assuming VND as the currency
+        };
+        Add(payment);
+        return payment;
     }
 
     public IEnumerable<Payment> GetAll()

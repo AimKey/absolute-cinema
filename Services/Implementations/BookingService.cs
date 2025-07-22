@@ -1,4 +1,5 @@
 using BusinessObjects.Models;
+using Common.DTOs.VNPay;
 using Common.ViewModels.BookingVMs;
 using Hangfire;
 using Repositories;
@@ -12,16 +13,18 @@ public class BookingService : IBookingService
     private readonly IUserService _userService;
     private readonly IShowtimeSeatService _showTimeSeatService;
     private readonly ITicketService _ticketService;
+    private readonly IPaymentService paymentService;
 
-    public BookingService(IBookingRepository bookingRepository, IUserService userService, IShowtimeSeatService showTimeSeatService, ITicketService ticketService)
+    public BookingService(IBookingRepository bookingRepository, IUserService userService, IShowtimeSeatService showTimeSeatService, ITicketService ticketService, IPaymentService paymentService)
     {
         _bookingRepository = bookingRepository;
         _userService = userService;
         _showTimeSeatService = showTimeSeatService;
         _ticketService = ticketService;
+        this.paymentService = paymentService;
     }
 
-    public void BookingFinished(Guid bookingId)
+    public void BookingFinished(Guid bookingId, Guid paymentId)
     {
         var booking = GetById(bookingId);
         if (booking == null)
@@ -34,6 +37,16 @@ public class BookingService : IBookingService
             BackgroundJob.Delete(jobId);
         }
         booking.CancellationJobId = null; // Clear the job ID since booking is finished
+
+        // Add a payment to this booking
+        var payment = paymentService.GetById(paymentId);
+        if (payment == null)
+        {
+            throw new ArgumentException("Payment not found", nameof(paymentId));
+        }
+        payment.BookingId = bookingId;
+
+        paymentService.Update(payment);
         Update(booking);
     }
 
@@ -97,15 +110,24 @@ public class BookingService : IBookingService
     {
         var booking = GetById(bookingId);
         var user = _userService.GetById(userId);
+        var desc = $"{bookingId},{userId},{booking.Tickets.Count()},{booking.Tickets.FirstOrDefault()?.ShowtimeSeat.Showtime.Movie.Title}";
         var reviewBooking = new ReviewBookingVM
         {
             BookingId = booking.Id,
+            BookingDate = booking.BookingDate,
             Showtime = booking.Tickets.FirstOrDefault()?.ShowtimeSeat?.Showtime,
             BookedSeat = booking.Tickets.Select(t => t.ShowtimeSeat.Seat).ToList(),
             Tickets = booking.Tickets.ToList(),
             TotalBookingCost = booking.TotalPrice,
             Payment = booking.Payment,
-            UserInfo = user
+            UserInfo = user,
+            PaymentInformationModel = new PaymentInformationModel
+            {
+                Amount = (double)booking.TotalPrice,
+                Name = "",
+                OrderDescription = desc,
+                OrderType = "Online banking",
+            }
         };
         return reviewBooking;
     }
@@ -142,5 +164,11 @@ public class BookingService : IBookingService
     {
         _bookingRepository.Delete(booking);
         _bookingRepository.Save();
+    }
+
+    public List<Booking> GetBookingsByUserId(Guid id)
+    {
+        var bookings = _bookingRepository.Get(b => b.UserId == id).ToList();
+        return bookings;
     }
 }

@@ -193,7 +193,7 @@ namespace Absolute_cinema.Controllers
             }
         }
 
-        [HttpPost("DeleteConfirmed/{id}")]
+        [HttpPost("DeleteConfirmed")]
         [ValidateAntiForgeryToken]
         public IActionResult DeleteConfirmed(Guid id)
         {

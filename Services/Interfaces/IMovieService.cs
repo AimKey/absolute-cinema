@@ -23,5 +23,5 @@ public interface IMovieService
     void AddNewMovie(MovieDTO movie);
     void UpdateMovie(UpdateMovieDTO updateMovieDTO);
     List<Showtime> GetMovieFutureShowtime(Guid movieId);
-    MovieDTO MapMovieToDTO(Movie m);
+    MovieDTO MapMovieToDTO(Movie movieInfo);
 }

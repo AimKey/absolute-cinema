@@ -17,10 +17,11 @@ public interface IUserService
     Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime dateOfBirth, string baseUrl);
     bool VerifyEmail(string email, string token);
     void UpdateUser(User user);
-    
+
+    bool VerifyPassword(string providedPassword, string existingPassword);
+
     // Forgot Password methods
     Task<bool> SendOtpAsync(string email);
     bool VerifyOtp(string email, string otp);
     Task<bool> ResetPasswordAsync(string email, string otp, string newPassword);
-    bool VerifyPassword(string providedPassword, string hashedPassword);
 }

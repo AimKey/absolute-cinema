@@ -10,18 +10,28 @@
 
 <div class="container mx-auto py-10">
     <!-- Countdown Timer -->
-    <div class="flex justify-center mb-6">
-        <div class="bg-red-700 text-white px-6 py-3 rounded-full shadow text-xl font-bold flex items-center gap-2">
+    <div class="mb-6 flex justify-center">
+        <div class="flex items-center gap-2 rounded-full bg-red-700 px-6 py-3 text-xl font-bold text-white shadow">
             <span class="mr-2">Time left to complete payment:</span>
             <span id="countdownTimer" class="font-mono">05:00</span>
         </div>
     </div>
-    <div class="bg-gray-800 rounded-2xl shadow-2xl p-8 max-w-3xl mx-auto">
-        <h1 class="text-3xl font-bold text-white mb-6 text-center">Review Your Reservation</h1>
-        <!-- Showtime & User Info -->
-        <div class="flex flex-col md:flex-row md:justify-between gap-6 mb-8">
+    <div class="mx-auto max-w-3xl rounded-2xl bg-gray-800 p-8 shadow-2xl">
+        <h1 class="mb-6 text-center text-3xl font-bold text-white">Review Your Reservation</h1>
+        <!-- Booking Info -->
+        <div class="mb-6 flex flex-col gap-6 md:flex-row md:justify-between">
             <div class="flex-1">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">Showtime Information</h2>
+                <h2 class="mb-2 text-xl font-semibold text-gray-200">Booking Information</h2>
+                <div class="text-gray-300">
+                    <div><span class="font-semibold">Booking Date:</span> @Model.BookingDate.ToString("dd/MM/yyyy HH:mm")</div>
+                    <div><span class="font-semibold">Booking ID:</span> @Model.BookingId</div>
+                </div>
+            </div>
+        </div>
+        <!-- Showtime & User Info -->
+        <div class="mb-8 flex flex-col gap-6 md:flex-row md:justify-between">
+            <div class="flex-1">
+                <h2 class="mb-2 text-xl font-semibold text-gray-200">Showtime Information</h2>
                 <div class="text-gray-300">
                     <div><span class="font-semibold">Movie:</span> @showtime.Movie?.Title</div>
                     <div><span class="font-semibold">Room:</span> @showtime.Room?.Name</div>
@@ -30,7 +40,7 @@
                 </div>
             </div>
             <div class="flex-1">
-                <h2 class="text-xl font-semibold text-gray-200 mb-2">Your Information</h2>
+                <h2 class="mb-2 text-xl font-semibold text-gray-200">Your Information</h2>
                 <div class="text-gray-300">
                     <div><span class="font-semibold">Name:</span> @user?.UserDetail?.FullName</div>
                     <div><span class="font-semibold">Email:</span> @user?.Email</div>
@@ -39,9 +49,9 @@
             </div>
         </div>
         <!-- Ticket Table -->
-        <div class="bg-gray-900 rounded-xl shadow p-6 mb-8">
-            <h2 class="text-lg font-semibold text-white mb-4">Your Tickets</h2>
-            <table class="w-full text-gray-200 text-sm">
+        <div class="mb-8 rounded-xl bg-gray-900 p-6 shadow">
+            <h2 class="mb-4 text-lg font-semibold text-white">Your Tickets</h2>
+            <table class="w-full text-sm text-gray-200">
                 <thead>
                     <tr class="border-b border-gray-700">
                         <th class="py-2 text-left">#</th>
@@ -67,13 +77,16 @@
             </table>
         </div>
         <!-- Total & Continue Button -->
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mt-6">
+        <div class="mt-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
             <div class="text-xl font-bold text-white">
                 Total: <span class="text-green-400">@total.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) ₫</span>
             </div>
-            <form asp-action="Payment" asp-controller="Bookings" method="post">
-                <input type="hidden" name="bookingId" value="@Model.BookingId" />
-                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-bold py-3 px-8 rounded-full shadow transition-all duration-200 text-lg">
+            <form asp-action="CreatePaymentUrlVnpay" asp-controller="Payment" method="post">
+                <input type="hidden" name="OrderType" value="@Model.PaymentInformationModel.OrderType" />
+                <input type="hidden" name="Amount" value="@Model.PaymentInformationModel.Amount" />
+                <input type="hidden" name="OrderDescription" value="@Model.PaymentInformationModel.OrderDescription" />
+                <input type="hidden" name="Name" value="@Model.PaymentInformationModel.Name" />
+                <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700">
                     Continue to Payment
                 </button>
             </form>
@@ -83,8 +96,8 @@
 
 @section Scripts {
     <script>
-        // 5 minute countdown
-        let countdown = 5 * 60; // seconds
+        // 5 minute countdown (seconds)
+        let countdown = 5 * 60;
         const timerDisplay = document.getElementById('countdownTimer');
         let timerInterval = setInterval(function() {
             const min = Math.floor(countdown / 60).toString().padStart(2, '0');

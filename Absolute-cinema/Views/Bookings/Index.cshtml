@@ -1,0 +1,41 @@
+﻿@model IEnumerable<BusinessObjects.Models.Booking>
+
+@{
+    ViewData["Title"] = "Bookings";
+}
+
+<div class="container mx-auto py-10">
+    <div class="mx-auto max-w-5xl rounded-2xl bg-gray-800 p-8 shadow-2xl">
+        <div class="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+            <h1 class="text-3xl font-bold text-white">Bookings</h1>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="min-w-full overflow-hidden rounded-xl bg-gray-900 text-sm text-gray-200">
+                <thead>
+                    <tr class="bg-gray-700 text-gray-100">
+                        <th class="px-4 py-3 text-left">Booking Date</th>
+                        <th class="px-4 py-3 text-left">Tickets</th>
+                        <th class="px-4 py-3 text-left">Total Price</th>
+                        <th class="px-4 py-3 text-left">User</th>
+                        <th class="px-4 py-3 text-left">Created At</th>
+                        <th class="px-4 py-3 text-center">View</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model) {
+                        <tr class="border-b border-gray-700 transition hover:bg-gray-800/60">
+                            <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.BookingDate)</td>
+                            <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.NumberOfTickets)</td>
+                            <td class="px-4 py-2">@item.TotalPrice.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) ₫</td>
+                            <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.User.Email)</td>
+                            <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                            <td class="px-4 py-2 text-center">
+                                <a asp-action="BookingDetails" asp-route-bookingId="@item.Id" class="rounded-full bg-blue-600 px-4 py-1 font-bold text-white shadow transition-all duration-200 hover:bg-blue-700">View</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

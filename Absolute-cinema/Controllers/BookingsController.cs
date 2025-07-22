@@ -15,12 +15,44 @@ namespace Absolute_cinema.Controllers
             _bookingService = bookingService;
         }
 
+        [HttpGet]
         public IActionResult Index()
         {
-            return View();
+            // List all bookings of user
+            var user = GetCurrentUser();
+            if (user == null)
+            {
+                TempData["Message"] = "You need to log in to view your bookings.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Login", "Account");
+            }
+            var bookings = _bookingService.GetBookingsByUserId(user.Id);
+            return View(bookings);
         }
 
-        public IActionResult Details(Guid bookingId, Guid? userId = null)
+        [HttpGet]
+        public IActionResult BookingDetails(Guid bookingId)
+        {
+            // Get booking details by bookingId
+            var booking = _bookingService.GetById(bookingId);
+            if (booking == null)
+            {
+                TempData["Message"] = "Booking not found.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Index");
+            }
+            var curUser = GetCurrentUser();
+            if (curUser == null || curUser.Id != booking.UserId)
+            {
+                TempData["Message"] = "You do not have permission to view this booking.";
+                TempData["MessageType"] = "error";
+                return RedirectToAction("Index");
+            }
+            var reviewBooking = _bookingService.GetReviewBookingVM(bookingId, curUser.Id);
+            return View(reviewBooking);
+        }
+
+        public IActionResult ReviewBooking(Guid bookingId, Guid? userId = null)
         {
             User curUser;
             if (userId == null)

@@ -55,8 +55,8 @@ namespace Absolute_cinema.Controllers.Tickets
                 // Locking seat temporary for 5 minutes. For test I will leave at 10 secs
                 string jobId = BackgroundJob.Schedule<BookingService>(
                     service => service.CancelUnpaidBooking(bookingId),
-                    //TimeSpan.FromMinutes(5)
-                    TimeSpan.FromSeconds(10)
+                    TimeSpan.FromMinutes(5)
+                    //TimeSpan.FromSeconds(10)
                 );
 
                 // Update the job Id in the booking
@@ -64,7 +64,7 @@ namespace Absolute_cinema.Controllers.Tickets
 
                 // Redirect to booking controller to view the booking details
                 return RedirectToAction(
-                    "Details", "Bookings", new { bookingId = booking.Id, userId = curUser.Id,  });
+                    "ReviewBooking", "Bookings", new { bookingId = booking.Id, userId = curUser.Id,  });
             }
             catch (Exception e)
             {
