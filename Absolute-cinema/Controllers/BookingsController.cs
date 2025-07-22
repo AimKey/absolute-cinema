@@ -27,6 +27,7 @@ namespace Absolute_cinema.Controllers
                 return RedirectToAction("Login", "Account");
             }
             var bookings = _bookingService.GetBookingsByUserId(user.Id);
+            bookings = bookings.OrderByDescending(b => b.BookingDate).ToList();
             return View(bookings);
         }
 

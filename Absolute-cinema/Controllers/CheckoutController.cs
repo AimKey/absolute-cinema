@@ -1,4 +1,5 @@
 ﻿using Common.DTOs.PaymentDTOs;
+using Common.DTOs.VNPay;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using Services.VNPay;
@@ -44,15 +45,14 @@ namespace Absolute_cinema.Controllers
                 MovieTitle = movieTitle,
                 Amount = amount
             };
-            var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
-            _bookingService.BookingFinished(bookingId, payment.Id);
-
             if (response.VnPayResponseCode == "00") {
-                return View("PaymentSuccess", response);
+                var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
+                _bookingService.BookingFinished(bookingId, payment.Id);
+                return View("~/Views/Payments/PaymentSuccess.cshtml", response);
             }
             else
             {
-                return View("PaymentFailed", response);
+                return View("~/Views/Payments/PaymentError.cshtml", response);
             }
         }
     }
