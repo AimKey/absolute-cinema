@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Common.DTOs.VNPay;
+using Microsoft.AspNetCore.Mvc;
 using Services.VNPay;
 
 namespace Absolute_cinema.Controllers
@@ -16,7 +17,6 @@ namespace Absolute_cinema.Controllers
         public IActionResult PaymentCallbackVnpay()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
-
             return Json(response);
         }
     }
