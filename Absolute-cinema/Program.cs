@@ -76,8 +76,8 @@ namespace Absolute_cinema
             // Seed data
             using (var scope = app.Services.CreateScope())
             {
-                var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
-                initializer.Seed();
+                //var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+                //initializer.Seed();
             }
 
             // Expose the Hangfire Dashboard at /hangfire (be sure to secure this in production).
@@ -168,7 +168,7 @@ namespace Absolute_cinema
             // Password services
             builder.Services.AddScoped<IHashPasswordService, HashPasswordService>();
             // Db init services
-            builder.Services.AddScoped<DbInitializer>();
+            //builder.Services.AddScoped<DbInitializer>();
             // Facade
             builder.Services.AddScoped<IDashboardFacade, DashboardFacade>();
         }

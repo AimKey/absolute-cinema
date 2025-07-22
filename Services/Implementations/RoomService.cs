@@ -86,9 +86,9 @@ public class RoomService : IRoomService
         // Start mapping each seat to its status
         foreach (var seat in r.Seats)
         {
-            var showtimeSeat = seat.ShowtimeSeats
-                .FirstOrDefault(ss => ss.ShowtimeId == showtimeId);
-            var vm = RoomSeatMapper.MapToSeatWithStatusVM(seat, showtimeSeat);
+            var showtimeSeats = seat.ShowtimeSeats.ToList();
+               
+            var vm = RoomSeatMapper.MapToSeatWithStatusVM(seat, showtimeSeats, showtimeId);
             seatsWithStatus.Add(vm);
         }
 
