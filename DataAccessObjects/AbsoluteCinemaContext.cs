@@ -50,7 +50,9 @@ namespace DataAccessObjects
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
 
+       
         // Configure the relationships
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
