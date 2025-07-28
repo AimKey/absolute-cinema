@@ -30,6 +30,7 @@ namespace Absolute_cinema.Controllers
             var response = _vnPayService.PaymentExecute(Request.Query);
             List<string> strings = response.OrderDescription.Split(",").ToList();
 
+            //bookingId,.....movieTitle 13000
             Guid bookingId = new Guid(strings[0]);
             Guid userId = new Guid(strings[1]);
             int ticketsCount = Int32.Parse((strings[2])); 
