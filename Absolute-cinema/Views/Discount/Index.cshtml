@@ -1,59 +1,116 @@
-@model IEnumerable<BusinessObjects.Models.Discount>
-
+﻿@model IEnumerable<BusinessObjects.Models.Discount> 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Quản lý Mã Giảm Giá";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml"; 
 }
 
-<h1>Index</h1>
+<div class="container mx-auto py-8">
+    <h1 class="text-4xl font-bold text-white mb-8">Quản lý Mã Giảm Giá</h1>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Code)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Percentage)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.StartDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.EndDate)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.IsActive)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Code)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Percentage)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.StartDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.EndDate)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.IsActive)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
-            </td>
-        </tr>
+    <div class="flex justify-end mb-6">
+        <a asp-action="Create" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg">
+            <i class="fas fa-plus mr-2"></i>
+            Thêm Mã Giảm Giá Mới
+        </a>
+    </div>
+
+    @if (Model.Any())
+    {
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <div class="overflow-x-auto"> @* Thêm overflow-x-auto để bảng cuộn ngang trên màn hình nhỏ *@
+                <table class="min-w-full divide-y divide-gray-700">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Mã
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Phần trăm (%)
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Ngày bắt đầu
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Ngày kết thúc
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Hoạt động
+                            </th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-300 uppercase tracking-wider">
+                                Hành động
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-gray-800 divide-y divide-gray-700">
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-white">
+                                    @item.Code
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    @item.Percentage
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    @item.StartDate
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    @item.EndDate
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    @item.IsActive
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <a asp-action="Edit" asp-route-id="@item.Id" class="text-blue-500 hover:text-blue-700 mr-4">Sửa</a>
+                                    <a asp-action="Details" asp-route-id="@item.Id" class="text-green-500 hover:text-green-700 mr-4">Chi tiết</a>
+                                    <button type="button" onclick="confirmDelete('@item.Id')" class="text-red-500 hover:text-red-700">Xóa</button>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    }
+    else
+    {
+        <p class="text-gray-400 text-center text-lg">Chưa có mã giảm giá nào được tạo.</p>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        function confirmDelete(id) {
+            Swal.fire({
+                title: 'Bạn có chắc chắn muốn xóa?',
+                text: "Bạn sẽ không thể hoàn tác hành động này!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Có, xóa nó!',
+                cancelButtonText: 'Hủy bỏ',
+                background: '#1F2937', // gray-800
+                color: '#D1D5DB' // gray-300
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Tạo một form ẩn và submit nó
+                    const form = document.createElement('form');
+                    form.method = 'post';
+                    // Đảm bảo đường dẫn action đúng với controller và area của bạn
+                    form.action = '@Url.Action("Delete", "Discounts", new { area = "Admin" })/' + id;
+                    form.style.display = 'none';
+
+                    const antiForgeryInput = document.createElement('input');
+                    antiForgeryInput.type = 'hidden';
+                    antiForgeryInput.name = '__RequestVerificationToken';
+                    antiForgeryInput.value = '@Html.AntiForgeryToken()'; // Lấy token chống giả mạo
+                    form.appendChild(antiForgeryInput);
+
+                    document.body.appendChild(form);
+                    form.submit();
+                }
+            });
+        }
+    </script>
 }
-    </tbody>
-</table>

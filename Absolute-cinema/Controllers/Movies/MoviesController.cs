@@ -9,7 +9,9 @@ using Common.Filters.Movies;
 using Common.Mappers;
 using Common.ViewModels.MovieVMs;
 using Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
+[AllowAnonymous]
 public class MoviesController : Controller
 {
     // Dependency injection for services

@@ -10,6 +10,8 @@ using Common.Models;
 using Common.DTOs.CloudinaryDTOs;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Services.VNPay;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc.Authorization;
 
 namespace Absolute_cinema
 {
@@ -68,6 +70,16 @@ namespace Absolute_cinema
                     options.AccessDeniedPath = "/Account/Login"; // chuyển hướng khi không đủ quyền
                     options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
                 });
+
+            // auth path
+            builder.Services.AddControllersWithViews(options =>
+            {
+                var policy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+
+                options.Filters.Add(new AuthorizeFilter(policy));
+            });
 
 
 
