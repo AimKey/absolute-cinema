@@ -214,7 +214,9 @@ namespace Services.HelperServices
                         Email = "admin@gmail.com",
                         Password = _hasher.HashPassword("123123"),
                         Role = RoleConstants.Admin,
-                        CreatedAt = DateTime.Now
+                        CreatedAt = DateTime.Now,
+                        IsVerify = true,
+                        IsActive = true,
                     },
                     new User
                     {
@@ -222,8 +224,10 @@ namespace Services.HelperServices
                         Username = "user1",
                         Email = "user@gmail.com",
                         Password = _hasher.HashPassword("123123"),
-                        Role = RoleConstants.Customer,
-                        CreatedAt = DateTime.Now
+                        Role = RoleConstants.User,
+                        CreatedAt = DateTime.Now,
+                        IsVerify = true,
+                        IsActive = true,
                     },
                     new User
                     {
@@ -231,8 +235,21 @@ namespace Services.HelperServices
                         Username = "user2",
                         Email = "user2@gmail.com",
                         Password = _hasher.HashPassword("123123"),
-                        Role = RoleConstants.Customer,
-                        CreatedAt = DateTime.Now
+                        Role = RoleConstants.User,
+                        CreatedAt = DateTime.Now,
+                        IsVerify = false,
+                        IsActive = true,
+                    },
+                    new User
+                    {
+                        Id = Guid.NewGuid(),
+                        Username = "user3",
+                        Email = "user3@gmail.com",
+                        Password = _hasher.HashPassword("123123"),
+                        Role = RoleConstants.User,
+                        CreatedAt = DateTime.Now,
+                        IsVerify = true,
+                        IsActive = false,
                     }
                 };
                 _context.Users.AddRange(users);
@@ -576,7 +593,7 @@ namespace Services.HelperServices
         {
             if (_context.Bookings.Any()) return;
 
-            var users = _context.Users.Where(u => u.Role == RoleConstants.Customer).ToList();
+            var users = _context.Users.Where(u => u.Role == RoleConstants.User).ToList();
             var showtimes = _context.Showtimes.Take(3).ToList(); // Use first 3 showtimes
             var bookings = new List<Booking>();
 
@@ -659,7 +676,7 @@ namespace Services.HelperServices
         {
             if (_context.Reviews.Any()) return;
 
-            var users = _context.Users.Where(u => u.Role == RoleConstants.Customer).ToList();
+            var users = _context.Users.Where(u => u.Role == RoleConstants.User).ToList();
             var movies = _context.Movies.Take(3).ToList(); // Use first 3 movies
             var reviews = new List<Review>();
 

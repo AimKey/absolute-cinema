@@ -1,0 +1,640 @@
+@using Common.Constants
+@model Common.ViewModels.UserVMs.ManageUsersVm
+@{
+    ViewData["Title"] = "Quản lý Người dùng - Admin";
+    Layout = "~/Views/Shared/Admin/_AdminLayout.cshtml";
+    var currentPage = Model.Users.CurrentPage;
+    var totalPages = Model.Users.TotalPages;
+    var totalCount = Model.Users.TotalCount;
+    var pageSize = Model.Users.PageSize;
+    var startItem = (currentPage - 1) * pageSize + 1;
+    var endItem = Math.Min(currentPage * pageSize, totalCount);
+}
+
+<!-- Admin Hero Section with Search -->
+<section class="relative bg-gradient-to-r from-gray-800 via-purple-900 to-gray-800 py-16">
+    <div class="absolute inset-0 bg-black/40"></div>
+    <div class="relative container mx-auto px-4 text-center">
+        <h1 class="text-4xl font-bold text-white mb-4 animate-fade-in">
+            <i class="fas fa-users text-purple-400 mr-3"></i>
+            Quản Lý Người Dùng
+        </h1>
+        <p class="text-lg text-gray-300 mb-8 animate-pulse">
+            Quản lý toàn bộ người dùng trong hệ thống - Tổng cộng @totalCount người dùng
+        </p>
+
+        <!-- Admin Search Bar -->
+        <div class="max-w-3xl mx-auto">
+            <form method="get" class="flex items-center space-x-4" id="quickSearchForm">
+                <div class="flex-1 relative">
+                    <input type="text" asp-for="Query" value="@Model.Query"
+                           placeholder="Tìm kiếm theo tên, email, username..."
+                           class="w-full px-6 py-4 bg-black/30 backdrop-blur-md text-white rounded-full border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 text-lg">
+                    <button type="submit"
+                            class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-purple-500 transition-all duration-300 hover:scale-110">
+                        <i class="fas fa-search text-xl"></i>
+                    </button>
+                </div>
+
+                <!-- Filter Toggle Button -->
+                <button type="button" id="filterToggle"
+                        class="bg-gray-800/50 backdrop-blur-md hover:bg-purple-500/20 text-white px-6 py-4 rounded-full border border-gray-600 hover:border-purple-500 transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                    <i class="fas fa-sliders-h"></i>
+                    <span class="hidden md:inline">Bộ lọc</span>
+                    <span class="bg-purple-500 text-white text-xs px-2 py-1 rounded-full ml-2
+                        @(!string.IsNullOrEmpty(Model.Query) || Model.StatusFilter != "all" || Model.RoleFilter != "all" ? "" : "hidden")"
+                          id="filterCount">
+                        @(
+                        (!string.IsNullOrEmpty(Model.Query) ? 1 : 0) +
+                        (Model.StatusFilter != "all" ? 1 : 0) +
+                        (Model.RoleFilter != "all" ? 1 : 0)
+                        )
+                    </span>
+                </button>
+                @* Hidden input to preserve search filter *@
+                <input asp-for="StatusFilter" hidden/>
+                <input asp-for="RoleFilter" hidden/>
+                <input asp-for="SortBy" hidden/>
+                <input asp-for="SortDescending" hidden/>
+            </form>
+        </div>
+    </div>
+</section>
+
+<!-- Advanced Filter Panel (Hidden by default) -->
+<section id="filterPanel"
+         class="fixed top-0 left-0 right-0 z-30 bg-gray-800 border-t border-gray-700 transform -translate-y-full opacity-0 invisible transition-all duration-500 ease-in-out overflow-hidden shadow-2xl">
+    <div class="container mx-auto px-4 py-8">
+        <form method="get" id="advancedSearchForm">
+            <!-- Preserve search term -->
+            <input type="hidden" name="search" value="@Model.Query">
+            <div class="space-y-8">
+                <!-- Filter Header -->
+                <div class="flex items-center justify-between">
+                    <h3 class="text-2xl font-bold text-white flex items-center">
+                        <i class="fas fa-filter text-purple-500 mr-3"></i>
+                        Bộ Lọc Nâng Cao
+                    </h3>
+                    <div class="flex items-center space-x-4">
+                        <button type="button" id="clearFilters"
+                                class="text-gray-400 hover:text-purple-400 transition-colors duration-300">
+                            <i class="fas fa-times mr-2"></i>Xóa tất cả
+                        </button>
+                        <button type="button" id="closeFilter"
+                                class="text-gray-400 hover:text-white transition-colors duration-300">
+                            <i class="fas fa-chevron-up text-xl"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters Row -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <!-- Status Filter -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-user-check text-green-500 mr-2"></i>
+                            Trạng Thái
+                        </h4>
+                        <select name="statusFilter"
+                                class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-green-500 focus:ring-2 focus:ring-green-500/20 transition-all duration-300">
+                            <option value="@ManageUserFilterConstants.All"
+                                    selected="@(Model.StatusFilter == ManageUserFilterConstants.All)">Tất cả trạng thái
+                            </option>
+                            <option value="@ManageUserFilterConstants.Active"
+                                    selected="@(Model.StatusFilter == ManageUserFilterConstants.Active)">🟢 Đang hoạt
+                                động
+                            </option>
+                            <option value="@ManageUserFilterConstants.Inactive"
+                                    selected="@(Model.StatusFilter == ManageUserFilterConstants.Inactive)">🔴 Đã bị cấm
+                            </option>
+                        </select>
+                    </div>
+
+                    <!-- Role Filter -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-user-tag text-blue-500 mr-2"></i>
+                            Vai Trò
+                        </h4>
+                        <select name="roleFilter"
+                                class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300">
+                            <option value="@ManageUserFilterConstants.All"
+                                    selected="@(Model.RoleFilter == ManageUserFilterConstants.All)">Tất cả vai trò
+                            </option>
+                            <option value="@RoleConstants.Admin" selected="@(Model.RoleFilter == RoleConstants.Admin)">
+                                👑 Admin
+                            </option>
+                            <option value="@RoleConstants.User" selected="@(Model.RoleFilter == RoleConstants.User)">👤
+                                User
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-sort text-yellow-500 mr-2"></i>
+                            Sắp Xếp
+                        </h4>
+                        <select asp-for="SortBy"
+                                class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-yellow-500 focus:ring-2 focus:ring-yellow-500/20 transition-all duration-300">
+                            <option value="createdAt" selected="@(Model.SortBy == "createdAt")">📅 Ngày tạo</option>
+                        </select>
+                    </div>
+
+                    <!-- Sort Order -->
+                    <div class="filter-section">
+                        <h4 class="text-lg font-semibold text-white mb-3 flex items-center">
+                            <i class="fas fa-sort-amount-down text-purple-500 mr-2"></i>
+                            Thứ tự
+                        </h4>
+                        <select asp-for="SortDescending"
+                                class="w-full px-4 py-3 bg-gray-700 text-white rounded-lg border border-gray-600 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300">
+                            <option value="false" selected="@(!Model.SortDescending)">🔼 Cũ nhất trước</option>
+                            <option value="true" selected="@Model.SortDescending">🔽 Mới nhất trước</option>
+                        </select>
+                    </div>
+
+                    @* Hidden input to add the search query *@
+                    <input asp-for="Query" hidden />
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="flex items-center justify-center space-x-4 pt-6 border-t border-gray-700">
+                    <button type="submit"
+                            class="bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 hover:shadow-lg flex items-center space-x-2">
+                        <i class="fas fa-search"></i>
+                        <span>Áp Dụng Bộ Lọc</span>
+                    </button>
+                    <button type="button" id="resetFilters"
+                            class="bg-gray-600 hover:bg-gray-500 text-white px-8 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105 flex items-center space-x-2">
+                        <i class="fas fa-undo"></i>
+                        <span>Đặt Lại</span>
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- Active Filters Display -->
+@if (!string.IsNullOrEmpty(Model.Query) || Model.StatusFilter != "all" || Model.RoleFilter != "all" || Model.SortDescending == false)
+{
+    <section class="bg-gray-800 py-4 border-b border-gray-700">
+        <div class="container mx-auto px-4">
+            <div class="flex flex-wrap items-center gap-3">
+                <span class="text-gray-300 font-medium flex items-center">
+                    <i class="fas fa-filter mr-2"></i>Đang lọc:
+                </span>
+                @if (!string.IsNullOrEmpty(Model.Query))
+                {
+                    <span
+                        class="filter-tag bg-purple-500/20 text-purple-300 px-3 py-2 rounded-full text-sm border border-purple-500/30 flex items-center space-x-2 hover:bg-purple-500/30 transition-colors duration-300">
+                        <i class="fas fa-search"></i>
+                        <span>"@Model.Query"</span>
+                        <a href="@Url.Action("ManageUsers", new { statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter, sortBy = Model.SortBy, SortDescending = Model.SortDescending })"
+                           class="hover:text-white transition-colors duration-300 ml-1">×</a>
+                    </span>
+                }
+                @if (Model.StatusFilter != "all")
+                {
+                    <span
+                        class="filter-tag bg-green-500/20 text-green-300 px-3 py-2 rounded-full text-sm border border-green-500/30 flex items-center space-x-2 hover:bg-green-500/30 transition-colors duration-300">
+                        <i class="fas fa-user-check"></i>
+                        <span>@(Model.StatusFilter == "active" ? "Đang hoạt động" : "Đã bị cấm")</span>
+                        <a href="@Url.Action("ManageUsers", new { search = Model.Query, roleFilter = Model.RoleFilter, sortBy = Model.SortBy, SortDescending = Model.SortDescending })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+                @if (Model.RoleFilter != "all")
+                {
+                    <span
+                        class="filter-tag bg-blue-500/20 text-blue-300 px-3 py-2 rounded-full text-sm border border-blue-500/30 flex items-center space-x-2 hover:bg-blue-500/30 transition-colors duration-300">
+                        <i class="fas fa-user-tag"></i>
+                        <span>@Model.RoleFilter</span>
+                        <a href="@Url.Action("ManageUsers", new { search = Model.Query, statusFilter = Model.StatusFilter, sortBy = Model.SortBy, SortDescending = Model.SortDescending })"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+                @if (!Model.SortDescending)
+                {
+                    <span
+                        class="filter-tag bg-yellow-500/20 text-yellow-300 px-3 py-2 rounded-full text-sm border border-yellow-500/30 flex items-center space-x-2 hover:bg-yellow-500/30 transition-colors duration-300">
+                        <i class="fas fa-sort"></i>
+                        <span>@(Model.SortDescending ? "Mới nhất trước" : "Cũ nhất trước")</span>
+                        <a href="@Url.Action("ManageUsers", new { search = Model.Query, statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter})"
+                           class="hover:text-white transition-colors duration-300">×</a>
+                    </span>
+                }
+                <a href="@Url.Action("ManageUsers")"
+                   class="text-gray-400 hover:text-purple-400 text-sm transition-colors duration-300 flex items-center space-x-1 ml-2">
+                    <i class="fas fa-times"></i>
+                    <span>Xóa tất cả</span>
+                </a>
+            </div>
+        </div>
+    </section>
+}
+
+<!-- Stats Cards -->
+<section class="py-8 bg-gray-900">
+    <div class="container mx-auto px-4">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-purple-600/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-users text-2xl text-purple-400"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-400">Tổng người dùng</p>
+                    <p class="text-3xl font-semibold text-white">@totalCount</p>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-green-600/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-check text-2xl text-green-400"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-400">Đang hoạt động</p>
+                    <p class="text-3xl font-semibold text-white">@Model.Users.Items.Count(u => u.IsActive)</p>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-red-600/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-slash text-2xl text-red-400"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-400">Đã bị cấm</p>
+                    <p class="text-3xl font-semibold text-white">@Model.Users.Items.Count(u => !u.IsActive)</p>
+                </div>
+            </div>
+            <div class="bg-gray-800 rounded-lg shadow-xl border border-gray-700 p-6 flex items-center space-x-4">
+                <div class="flex-shrink-0 w-12 h-12 bg-blue-600/20 rounded-full flex items-center justify-center">
+                    <i class="fas fa-user-shield text-2xl text-blue-400"></i>
+                </div>
+                <div>
+                    <p class="text-sm font-medium text-gray-400">Đã xác thực</p>
+                    <p class="text-3xl font-semibold text-white">@Model.Users.Items.Count(u => u.IsVerify)</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Admin Users Table Section -->
+<section class="py-8 bg-gray-900 min-h-screen">
+    <div class="container mx-auto px-4">
+        <!-- Results Info and Quick Actions -->
+        <div class="flex flex-col lg:flex-row lg:justify-between lg:items-center mb-8 space-y-4 lg:space-y-0">
+            <div>
+                <h2 class="text-2xl font-bold text-white flex items-center">
+                    <i class="fas fa-database text-purple-500 mr-3"></i>
+                    <span>@totalCount người dùng trong hệ thống</span>
+                    @if (!string.IsNullOrEmpty(Model.Query) || Model.StatusFilter != "all" || Model.RoleFilter != "all")
+                    {
+                        <span class="text-gray-400 text-lg ml-2">(@Model.Users.Items.Count() phù hợp)</span>
+                    }
+                </h2>
+                <p class="text-gray-400 mt-1">
+                    Hiển thị @startItem - @endItem / @totalCount kết quả
+                </p>
+            </div>
+
+            <!-- Quick Actions -->
+            <div class="flex flex-wrap items-center gap-3">
+                <!-- Quick Sort -->
+                <div class="flex items-center space-x-2">
+                    <span class="text-gray-400 text-sm">Sắp xếp:</span>
+                    <div class="flex space-x-1">
+                        <a href="@Url.Action("ManageUsers", new { search = Model.Query, statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter, sortBy = "createdAt", sortOrder = !Model.SortDescending })"
+                           class="px-3 py-1 bg-gray-700 hover:bg-purple-500 text-white rounded text-sm transition-all duration-300 @(Model.SortBy == "createdAt" && Model.SortDescending == true ? "bg-purple-500" : "")">
+                            Mới nhất
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        @if (Model.Users.Items.Any())
+        {
+            <!-- Admin Users Table -->
+            <div class="bg-gray-800 rounded-lg shadow-2xl overflow-hidden border border-gray-700">
+                <div class="overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-700">
+                        <thead class="bg-gray-900">
+                        <tr>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Người Dùng
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Thông Tin
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Trạng Thái
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Vai Trò
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-left text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Ngày Tạo
+                            </th>
+                            <th scope="col"
+                                class="px-6 py-4 text-right text-xs font-medium text-gray-400 uppercase tracking-wider">
+                                Hành Động
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody class="bg-gray-800 divide-y divide-gray-700">
+                        @foreach (var user in Model.Users.Items)
+                        {
+                            <tr class="hover:bg-gray-700/50 transition-colors duration-200">
+                                <!-- User Info -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0 h-12 w-12">
+                                            <div
+                                                class="h-12 w-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 flex items-center justify-center text-white font-bold text-lg">
+                                                @* Avatar here *@
+                                                @(user.Username.Substring(0, 1).ToUpper())
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <div class="text-sm font-medium text-white">
+                                                @user.Username
+                                            </div>
+                                            <div class="text-sm text-gray-400">
+                                                @user.Email
+                                            </div>
+                                            <div class="text-xs text-gray-500 mt-1">
+                                                @(user.UserDetail?.FullName ?? "Chưa cập nhật")
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Additional Info -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="text-sm text-gray-300 space-y-1">
+                                        <div class="flex items-center">
+                                            <i class="fas fa-phone text-blue-400 mr-2 w-4"></i>
+                                            <span>@(user.UserDetail?.Phone ?? "Chưa cập nhật")</span>
+                                        </div>
+                                        <div class="flex items-center">
+                                            <i class="fas fa-venus-mars text-pink-400 mr-2 w-4"></i>
+                                            <span>@(user.UserDetail?.Gender ?? "Chưa cập nhật")</span>
+                                        </div>
+                                        @if (user.UserDetail?.Dob.HasValue == true)
+                                        {
+                                            <div class="flex items-center">
+                                                <i class="fas fa-birthday-cake text-yellow-400 mr-2 w-4"></i>
+                                                <span
+                                                    class="text-xs text-gray-500">@user.UserDetail.Dob.Value.ToString("dd/MM/yyyy")</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </td>
+
+                                <!-- Status -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="space-y-2">
+                                            <span
+                                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @(user.IsActive ? "bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200" : "bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200")">
+                                                <i class="fas fa-circle mr-1 text-xs"></i>
+                                                @(user.IsActive ? "Đang hoạt động" : "Đã bị cấm")
+                                            </span>
+                                        <div class="flex flex-wrap gap-1">
+                                            @if (user.IsVerify)
+                                            {
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-blue-100 text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+                                                        <i class="fas fa-check-circle mr-1"></i>Đã xác thực
+                                                    </span>
+                                            }
+                                            else
+                                            {
+                                                <span
+                                                    class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200">
+                                                        <i class="fas fa-clock mr-1"></i>Chưa xác thực
+                                                    </span>
+                                            }
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <!-- Role -->
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                        <span
+                                            class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium @(user.Role == "Admin" ? "bg-purple-100 text-purple-800 dark:bg-purple-900 dark:text-purple-200" : "bg-gray-100 text-gray-800 dark:bg-gray-900 dark:text-gray-200")">
+                                            <i class="fas @(user.Role == "Admin" ? "fa-crown" : "fa-user") mr-1"></i>
+                                            @user.Role
+                                        </span>
+                                </td>
+
+                                <!-- Created Date -->
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">
+                                    <div class="flex items-center">
+                                        <i class="fas fa-calendar text-gray-400 mr-2"></i>
+                                        <span>@(user.CreatedAt?.ToString("dd/MM/yyyy HH:mm") ?? "N/A")</span>
+                                    </div>
+                                </td>
+
+                                <!-- Actions -->
+                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                    <div class="flex items-center justify-end space-x-2">
+                                        <!-- Toggle Status Button -->
+                                        <form method="post" asp-action="ToggleUserStatus" style="display: inline;">
+                                            <input type="hidden" name="userId" value="@user.Id"/>
+                                            <button type="submit"
+                                                    class="@(user.IsActive ? "text-red-400 hover:text-red-300" : "text-green-400 hover:text-green-300") transition-colors duration-200 p-2 hover:bg-gray-700 rounded"
+                                                    title="@(user.IsActive ? "Cấm người dùng" : "Kích hoạt người dùng")"
+                                                    onclick="return confirm('Bạn có chắc chắn muốn @(user.IsActive ? "cấm" : "kích hoạt") người dùng này?')">
+                                                <i class="fas @(user.IsActive ? "fa-ban" : "fa-check")"></i>
+                                            </button>
+                                        </form>
+
+                                        <!-- View Details -->
+                                        <a href="#"
+                                           class="text-gray-400 hover:text-purple-400 transition-colors duration-200 p-2 hover:bg-gray-700 rounded"
+                                           title="Xem chi tiết">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+        else
+        {
+            <!-- No Results -->
+            <div class="text-center py-20 bg-gray-800 rounded-lg">
+                <div class="text-6xl text-gray-600 mb-4">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-2xl font-bold text-white mb-4">Không tìm thấy người dùng nào</h3>
+                <p class="text-gray-400 mb-8">Thử thay đổi từ khóa tìm kiếm hoặc bộ lọc của bạn</p>
+                <div class="flex justify-center space-x-4">
+                    <a href="@Url.Action("ManageUsers")"
+                       class="bg-purple-500 hover:bg-purple-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-refresh mr-2"></i>Xem tất cả người dùng
+                    </a>
+                    <button id="openFilterFromEmpty"
+                            class="bg-gray-600 hover:bg-gray-500 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-filter mr-2"></i>Mở bộ lọc
+                    </button>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+
+<!-- Pagination -->
+@if (totalPages > 1)
+{
+    <section class="bg-gray-800 py-8">
+        <div class="container mx-auto px-4">
+            <div class="flex justify-center items-center space-x-2">
+                <!-- Previous Button -->
+                @if (currentPage > 1)
+                {
+                    <a href="@Url.Action("ManageUsers", new { search = Model.Query, statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter, sortBy = Model.SortBy, sortOrder = Model.SortDescending, page = currentPage - 1 })"
+                       class="bg-gray-700 hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                }
+
+                <!-- Page Numbers -->
+                @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                {
+                    @if (i == currentPage)
+                    {
+                        <span class="bg-purple-500 text-white px-4 py-2 rounded-lg font-semibold">@i</span>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("ManageUsers", new { Query = Model.Query, statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter, sortBy = Model.SortBy, SortDescending = Model.SortDescending, page = i })"
+                           class="bg-gray-700 hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">@i</a>
+                    }
+                }
+
+                <!-- Next Button -->
+                @if (currentPage < totalPages)
+                {
+                    <a href="@Url.Action("ManageUsers", new { Query = Model.Query, statusFilter = Model.StatusFilter, roleFilter = Model.RoleFilter, sortBy = Model.SortBy, SortDescending = Model.SortDescending, page = ViewBag.CurrentPage + 1 })"
+                       class="bg-gray-700 hover:bg-purple-500 text-white px-4 py-2 rounded-lg transition-all duration-300 hover:scale-105">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                }
+            </div>
+
+            <!-- Page Info -->
+            <div class="text-center mt-4 text-gray-400">
+                Trang @currentPage / @totalPages
+            </div>
+        </div>
+    </section>
+}
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const filterToggle = document.getElementById('filterToggle');
+            const filterPanel = document.getElementById('filterPanel');
+            const closeFilter = document.getElementById('closeFilter');
+            const clearFilters = document.getElementById('clearFilters');
+            const resetFilters = document.getElementById('resetFilters');
+            const openFilterFromEmpty = document.getElementById('openFilterFromEmpty');
+
+            // Toggle filter panel
+            function toggleFilterPanel() {
+                const isVisible = !filterPanel.classList.contains('invisible');
+                if (isVisible) {
+                    // Hide
+                    filterPanel.classList.add('-translate-y-full', 'opacity-0');
+                    setTimeout(() => {
+                        filterPanel.classList.add('invisible');
+                    }, 500);
+                } else {
+                    // Show - position below header
+                    const navbar = document.querySelector('header');
+                    const navbarHeight = navbar ? navbar.offsetHeight : 80;
+                    filterPanel.style.top = navbarHeight + 'px';
+                    filterPanel.classList.remove('invisible');
+                    setTimeout(() => {
+                        filterPanel.classList.remove('-translate-y-full', 'opacity-0');
+                    }, 10);
+                }
+            }
+
+            filterToggle?.addEventListener('click', toggleFilterPanel);
+            closeFilter?.addEventListener('click', toggleFilterPanel);
+            openFilterFromEmpty?.addEventListener('click', toggleFilterPanel);
+
+            // Clear all filters
+            clearFilters?.addEventListener('click', function () {
+                window.location.href = '@Url.Action("ManageUsers")';
+            });
+
+            // Reset filters form
+            resetFilters?.addEventListener('click', function () {
+                const form = document.getElementById('advancedSearchForm');
+                form.reset();
+                const searchInput = form.querySelector('input[name="search"]');
+                if (searchInput) {
+                    searchInput.value = '@Model.Query';
+                }
+                updateFilterCount();
+            });
+
+            // Update filter count
+            function updateFilterCount() {
+                const filterCount = document.getElementById('filterCount');
+                const searchTerm = document.querySelector('input[name="search"]')?.value || '';
+                const statusFilter = document.querySelector('select[name="statusFilter"]')?.value || 'all';
+                const roleFilter = document.querySelector('select[name="roleFilter"]')?.value || 'all';
+
+                const total = (searchTerm ? 1 : 0) + (statusFilter !== 'all' ? 1 : 0) + (roleFilter !== 'all' ? 1 : 0);
+
+                if (total > 0) {
+                    filterCount.textContent = total;
+                    filterCount.classList.remove('hidden');
+                } else {
+                    filterCount.classList.add('hidden');
+                }
+            }
+
+            // Auto-update filter count on form changes
+            const form = document.getElementById('advancedSearchForm');
+            if (form) {
+                form.addEventListener('change', updateFilterCount);
+                updateFilterCount(); // Initial count
+            }
+
+            // Close filter panel when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!filterPanel.contains(e.target) && !filterToggle.contains(e.target) && !filterPanel.classList.contains('invisible')) {
+                    if (!e.target.closest('#filterPanel') && !e.target.closest('#filterToggle')) {
+                        toggleFilterPanel();
+                    }
+                }
+            });
+
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && !filterPanel.classList.contains('invisible')) {
+                    toggleFilterPanel();
+                }
+                if (e.ctrlKey && e.key === 'f') {
+                    e.preventDefault();
+                    toggleFilterPanel();
+                }
+            });
+        });
+    </script>
+}

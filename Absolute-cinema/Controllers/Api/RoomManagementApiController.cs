@@ -17,8 +17,6 @@ public class RoomManagementApiController : ControllerBase
         _context = context;
     }
 
-
-
     // GET: api/RoomManagementApi/seattype/all
     [HttpGet("seattype/all")]
     public IActionResult GetAllSeatTypes()

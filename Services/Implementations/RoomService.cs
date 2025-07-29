@@ -97,6 +97,7 @@ public class RoomService : IRoomService
             Id = st.Id,
             Name = st.Name,
             PriceMutiplier = st.PriceMutiplier,
+            ColorHex = st.ColorHex,
         }).ToList();
 
         RoomSeatsVM roomSeatsVM = RoomSeatMapper.MapToRoomSeatVM(r, seatTypeVMs, seatsWithStatus, showtime);

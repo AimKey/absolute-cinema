@@ -7,9 +7,12 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using BusinessObjects.Models;
 using DataAccessObjects;
+using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Absolute_cinema.Controllers
 {
+    [Authorize(Roles = RoleConstants.Admin)]
     public class DiscountController : Controller
     {
         private readonly AbsoluteCinemaContext _context;

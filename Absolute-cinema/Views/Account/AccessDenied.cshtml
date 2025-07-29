@@ -1,0 +1,33 @@
+﻿
+@{
+    ViewData["Title"] = "Access Denied";
+    Layout = "_Layout";
+}
+
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-900 text-white px-4 py-8">
+    <div class="text-center">
+        <i class="fas fa-ban text-red-500 text-8xl mb-6 animate-pulse-slow"></i>
+        <h1 class="text-6xl font-bold text-red-500 mb-4">403</h1>
+        <h2 class="text-3xl font-semibold text-gray-200 mb-4">Truy cập bị từ chối</h2>
+        <p class="text-lg text-gray-400 mb-8 max-w-md mx-auto">
+            Rất tiếc, bạn không có quyền truy cập vào trang này. Vui lòng liên hệ quản trị viên nếu bạn tin rằng đây là lỗi.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <a href="/" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg hover:scale-105">
+                <i class="fas fa-home mr-2"></i>
+                Về trang chủ
+            </a>
+            <a href="javascript:history.back()" class="inline-flex items-center px-6 py-3 rounded-full bg-gray-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-gray-700 hover:shadow-lg hover:scale-105">
+                <i class="fas fa-arrow-left mr-2"></i>
+                Quay lại
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+    .animate-pulse-slow {
+        animation: pulse-slow 2s infinite ease-in-out;
+    }
+</style>
+

@@ -1,129 +1,137 @@
 ﻿<footer class="bg-black py-14 mt-16">
     <div class="container mx-auto px-5">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <!-- Logo & About -->
             <div class="animate-fade-in">
                 <div class="flex items-center space-x-3 mb-4 group cursor-pointer">
-                    <i class="fas fa-film text-red-501 text-2xl animate-float group-hover:animate-spin-slow"></i>
-                    <h2 class="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Absolute Cinema</h3>
+                    <i class="fas fa-film text-red-500 text-2xl animate-float group-hover:animate-spin-slow"></i>
+                    <h2 class="text-xl font-bold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">Absolute Cinema</h2>
                 </div>
-                <p class="text-gray-401 mb-4">
+                <p class="text-gray-400 mb-4">
                     Trang web xem phim trực tuyến hàng đầu với chất lượng cao và cập nhật liên tục.
                 </p>
                 <div class="flex space-x-5">
-                    <a href="#" class="social-icon text-gray-401 hover:text-blue-500 transition-all duration-300">
+                    <a href="#" class="social-icon text-gray-400 hover:text-blue-500 transition-all duration-300">
                         <i class="fab fa-facebook text-xl"></i>
                     </a>
-                    <a href="#" class="social-icon text-gray-401 hover:text-blue-400 transition-all duration-300">
+                    <a href="#" class="social-icon text-gray-400 hover:text-blue-400 transition-all duration-300">
                         <i class="fab fa-twitter text-xl"></i>
                     </a>
-                    <a href="#" class="social-icon text-gray-401 hover:text-pink-500 transition-all duration-300">
+                    <a href="#" class="social-icon text-gray-400 hover:text-pink-500 transition-all duration-300">
                         <i class="fab fa-instagram text-xl"></i>
                     </a>
-                    <a href="#" class="social-icon text-gray-401 hover:text-red-500 transition-all duration-300">
+                    <a href="#" class="social-icon text-gray-400 hover:text-red-500 transition-all duration-300">
                         <i class="fab fa-youtube text-xl"></i>
                     </a>
                 </div>
             </div>
 
+            <!-- Thể Loại -->
             <div class="animate-slide-up">
                 <h3 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                    Thể Loại</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li>
-                            <a asp-area="" asp-controller="Genre" asp-action="Action"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hành Động
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Genre" asp-action="Romance"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Tình Cảm
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Genre" asp-action="Horror"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Kinh Dị
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Genre" asp-action="Animation"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hoạt Hình
-                            </a>
-                        </li>
-                    </ul>
+                    Thể Loại
+                </h3>
+                <ul class="space-y-3 text-gray-400">
+                    <li>
+                        <a asp-area="" asp-controller="Genre" asp-action="Action"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hành Động
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Genre" asp-action="Romance"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Tình Cảm
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Genre" asp-action="Horror"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Kinh Dị
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Genre" asp-action="Animation"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hoạt Hình
+                        </a>
+                    </li>
+                </ul>
             </div>
 
+            <!-- Quốc Gia -->
             <div class="animate-slide-up" style="animation-delay: -1.1s;">
                 <h3 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                    Quốc Gia</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li>
-                            <a asp-area="" asp-controller="Country" asp-action="Vietnam"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Việt Nam
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Country" asp-action="Korea"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hàn Quốc
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Country" asp-action="China"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Trung Quốc
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Country" asp-action="USA"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Âu Mỹ
-                            </a>
-                        </li>
-                    </ul>
+                    Quốc Gia
+                </h3>
+                <ul class="space-y-3 text-gray-400">
+                    <li>
+                        <a asp-area="" asp-controller="Country" asp-action="Vietnam"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Việt Nam
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Country" asp-action="Korea"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Hàn Quốc
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Country" asp-action="China"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Trung Quốc
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Country" asp-action="USA"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Phim Âu Mỹ
+                        </a>
+                    </li>
+                </ul>
             </div>
 
+            <!-- Hỗ Trợ -->
             <div class="animate-slide-up" style="animation-delay: -1.2s;">
                 <h3 class="font-semibold mb-4 bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent">
-                    Hỗ Trợ</h4>
-                    <ul class="space-y-3 text-gray-400">
-                        <li>
-                            <a asp-area="" asp-controller="Home" asp-action="Contact"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Liên Hệ
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Home" asp-action="Terms"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Điều Khoản
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Home" asp-action="Privacy"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Chính Sách
-                            </a>
-                        </li>
-                        <li>
-                            <a asp-area="" asp-controller="Home" asp-action="DMCA"
-                               class="footer-link hover:text-white no-underline transition-all duration-301 group">
-                                <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>DMCA
-                            </a>
-                        </li>
-                    </ul>
+                    Hỗ Trợ
+                </h3>
+                <ul class="space-y-3 text-gray-400">
+                    <li>
+                        <a asp-area="" asp-controller="Home" asp-action="Contact"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Liên Hệ
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Home" asp-action="Terms"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Điều Khoản
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Home" asp-action="Privacy"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>Chính Sách
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-area="" asp-controller="Home" asp-action="DMCA"
+                           class="footer-link hover:text-white no-underline transition-all duration-300 group">
+                            <i class="fas fa-chevron-right mr-3 text-xs group-hover:animate-bounce"></i>DMCA
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
 
-        <div class="border-t border-gray-801 mt-8 pt-8 text-center text-gray-400">
+        <!-- Footer bottom -->
+        <div class="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
             <p class="animate-pulse-slow">
                 &copy; 2024 - <span class="bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent font-semibold">Absolute Cinema</span> -
                 <a asp-area="" asp-controller="Home" asp-action="Privacy"
-                   class="hover:text-red-501 no-underline transition-all duration-300 hover:scale-105">
+                   class="hover:text-red-500 no-underline transition-all duration-300 hover:scale-105">
                     Chính sách bảo mật
                 </a>
             </p>

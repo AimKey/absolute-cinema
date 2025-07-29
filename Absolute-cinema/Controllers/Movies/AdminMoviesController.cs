@@ -1,14 +1,17 @@
 ﻿using BusinessObjects.Models;
 using Common;
+using Common.Constants;
 using Common.DTOs.MovieDTOs;
 using Common.Filters.Movies;
 using Common.Mappers;
 using Common.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers.Movies;
 
+[Authorize(Roles = RoleConstants.Admin)]
 [Route("Admin/Movies")]
 public class AdminMoviesController : Controller
 {
