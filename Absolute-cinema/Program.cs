@@ -79,15 +79,6 @@ namespace Absolute_cinema
                     options.CallbackPath = "/Account/signin-google";
                 });
 
-            // auth path
-            //   builder.Services.AddControllersWithViews(options =>
-            //  {
-            //       var policy = new AuthorizationPolicyBuilder()
-            //           .RequireAuthenticatedUser()
-            //           .Build();
-            //          options.Filters.Add(new AuthorizeFilter(policy));
-            //    });
-
             var app = builder.Build();
 
             // Seed data
