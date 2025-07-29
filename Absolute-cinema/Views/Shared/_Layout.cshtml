@@ -91,48 +91,15 @@
                        class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
                         <span>Phim lẻ</span>
                     </a>
-                    <a asp-area="" asp-controller="Movie" asp-action="Index"
+                    <a asp-area="" asp-controller="Movies" asp-action="Index"
                        class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
                         <span>Phim bộ</span>
                     </a>
-                    <a asp-area="" asp-controller="Movie" asp-action="Index"
+                    <a asp-area="" asp-controller="Movies" asp-action="Index"
                        class="nav-link-hover py-2 text-white no-underline transition-all duration-300 hover:text-red-500">
                         <span>Phim chiếu rạp</span>
                     </a>
-                    <div class="group relative">
-                        <button class="nav-link-hover py-2 text-white transition-all duration-300 hover:text-red-500">
-                            <span>Thể loại</span>
-                            <i class="fas fa-chevron-down ml-1 transform text-xs transition-transform duration-300 group-hover:rotate-180"></i>
-                        </button>
-                        <div class="dropdown-menu animate-slide-in invisible absolute top-full left-0 mt-2 w-64 rounded-lg border border-gray-700 bg-gray-800/95 opacity-0 shadow-2xl backdrop-blur-md transition-all duration-300 group-hover:visible group-hover:opacity-100">
-                            <div class="grid grid-cols-2 gap-2 p-4">
-                                <a asp-area="" asp-controller="Genre" asp-action="Action"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-fist-raised mr-2 group-hover:animate-bounce"></i>Hành động
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Horror"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-ghost mr-2 group-hover:animate-bounce"></i>Kinh dị
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Comedy"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-laugh mr-2 group-hover:animate-bounce"></i>Hài hước
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Romance"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-heart mr-2 group-hover:animate-bounce"></i>Tình cảm
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="SciFi"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-rocket mr-2 group-hover:animate-bounce"></i>Khoa học
-                                </a>
-                                <a asp-area="" asp-controller="Genre" asp-action="Adventure"
-                                   class="dropdown-item group rounded p-2 text-sm text-gray-300 no-underline transition-all duration-300 hover:text-white">
-                                    <i class="fas fa-map mr-2 group-hover:animate-bounce"></i>Phiêu lưu
-                                </a>
-                            </div>
-                        </div>
-                    </div>
+                    
                 </div>
 
                 <!-- Search Bar & User Actions -->

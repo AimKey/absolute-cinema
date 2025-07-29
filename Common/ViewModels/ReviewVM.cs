@@ -13,7 +13,7 @@ public class ReviewVM
     public Guid Id { get; set; }
     public int Rating { get; set; }
     public string Content { get; set; }
-    public DateTime ReviewDate { get; set; } = DateTime.Now;
+    public DateTime ReviewDate { get; set; }
     public User User { get; set; }
     public DateTime? CreatedAt { get; set; }
 }

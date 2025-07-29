@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models;
+using Common.ViewModels.BookingVMs;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
@@ -8,11 +9,13 @@ namespace Absolute_cinema.Controllers
     {
         private readonly IBookingService _bookingService;
         private readonly IUserService _userService;
+        private readonly IReviewService _reviewService;
 
-        public BookingsController(IUserService userService, IBookingService bookingService)
+        public BookingsController(IUserService userService, IBookingService bookingService, IReviewService reviewService)
         {
             _userService = userService;
             _bookingService = bookingService;
+            _reviewService = reviewService;
         }
 
         [HttpGet]
@@ -27,8 +30,26 @@ namespace Absolute_cinema.Controllers
                 return RedirectToAction("Login", "Account");
             }
             var bookings = _bookingService.GetBookingsByUserId(user.Id);
-            bookings = bookings.OrderByDescending(b => b.BookingDate).ToList();
-            return View(bookings);
+            var allReviews = _reviewService.GetAll();
+
+            var bookingViewModels = bookings
+                .OrderByDescending(b => b.BookingDate)
+                .Select(b =>
+                {
+                    var movieId = b.Tickets.FirstOrDefault()?.ShowtimeSeat?.Showtime?.MovieId;
+                    var hasFeedback = allReviews.Any(r => r.UserId == GetCurrentUser().Id && r.MovieId == movieId);
+
+                    return new BookingViewModel
+                    {
+                        Booking = b,
+                        MovieId = movieId,
+                        HasFeedback = hasFeedback
+                    };
+                })
+                .ToList();
+
+
+            return View(bookingViewModels);
         }
 
         [HttpGet]

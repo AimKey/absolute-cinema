@@ -2,12 +2,14 @@ using System.Diagnostics;
 using Absolute_cinema.Models;
 using Absolute_cinema.Models.ViewModels;
 using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services;
 using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -21,17 +23,17 @@ namespace Absolute_cinema.Controllers
 
         public IActionResult Index()
         {
-            var username = HttpContext.Session.GetString("Username");
-            var role = HttpContext.Session.GetString("Role");
+            //var username = HttpContext.Session.GetString("Username");
+            //var role = HttpContext.Session.GetString("Role");
 
-            if (string.IsNullOrEmpty(username))
-            {
-                // N?u ch?a có session thì chuy?n v? login
-                return RedirectToAction("Login", "Account");
-            }
+            //if (string.IsNullOrEmpty(username))
+            //{
+            //    // N?u ch?a có session thì chuy?n v? login
+            //    return RedirectToAction("Login", "Account");
+            //}
 
-            ViewBag.Username = username;
-            ViewBag.Role = role;
+            //ViewBag.Username = username;
+            //ViewBag.Role = role;
             return View();
         }
 
