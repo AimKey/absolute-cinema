@@ -64,9 +64,9 @@ public class RoomManagementApiController : ControllerBase
             Description = vm.Description,
             SeatTypeId = vm.SeatTypeId,
             RoomId = roomId,
-            CreatedAt = DateTime.UtcNow,
+            CreatedAt = DateTime.Now,
             CreatedBy = null, 
-            UpdatedAt = DateTime.UtcNow, 
+            UpdatedAt = DateTime.Now, 
             UpdatedBy = null
         }).ToList();
 

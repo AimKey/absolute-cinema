@@ -81,7 +81,7 @@ public class TicketService : ITicketService
                 Price = ticketPrice,
                 BookingId = bookingId,
                 ShowtimeSeatId = showtimeSeat.Id,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
                 CreatedBy = userId
             };
             Add(ticket);

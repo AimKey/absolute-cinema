@@ -18,7 +18,19 @@
             }
             else
             {
-                <span class="rounded-full bg-yellow-500 px-6 py-2 text-lg font-bold text-gray-900 shadow">Payment Status: Pending</span>
+                <div class="flex flex-column gap-6">
+                    <span class="rounded-full bg-yellow-500 px-6 py-2 text-lg font-bold text-gray-900 shadow">Payment Status: Pending</span>
+                    <form asp-action="CreatePaymentUrlVnpay" asp-controller="Payment" method="post">
+                        <input type="hidden" name="OrderType" value="@Model.PaymentInformationModel.OrderType" />
+                        <input type="hidden" name="Amount" value="@Model.PaymentInformationModel.Amount" />
+                        <input type="hidden" name="OrderDescription" value="@Model.PaymentInformationModel.OrderDescription" />
+                        <input type="hidden" name="Name" value="@Model.PaymentInformationModel.Name" />
+                        <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700" id="paymentBtn">
+                            Continue to Payment
+                        </button>
+                    </form>
+
+                </div>
             }
         </div>
         <h1 class="mb-6 text-center text-3xl font-bold text-white">Booking Details</h1>

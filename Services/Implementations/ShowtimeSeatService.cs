@@ -38,10 +38,10 @@ public class ShowtimeSeatService : IShowtimeSeatService
             }
             var seat = new ShowtimeSeat
             {
-                Id = Guid.NewGuid(), // Assuming Id is generated here
+                Id = Guid.NewGuid(),
                 ShowtimeId = dto.ShowtimeId,
                 SeatId = dto.SeatId,
-                CreatedAt = DateTime.UtcNow,
+                CreatedAt = DateTime.Now,
             };
             Add(seat);
         }
