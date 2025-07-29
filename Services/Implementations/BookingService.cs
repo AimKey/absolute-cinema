@@ -112,11 +112,6 @@ public class BookingService : IBookingService
         var user = _userService.GetById(userId);
         //var desc = $"{bookingId},{userId},{booking.Tickets.Count()},{booking.Tickets.FirstOrDefault()?.ShowtimeSeat.Showtime.Movie.Title}";
         string movieTitle = booking.Tickets.FirstOrDefault()?.ShowtimeSeat.Showtime.Movie.Title.Replace(" ", "_");
-        string desc = String.Join(",",
-                                  bookingId,
-                                  userId,
-                                  booking.Tickets.Count(),
-                                  booking.Tickets.FirstOrDefault()?.ShowtimeSeat.Showtime.Movie.Title);
         var reviewBooking = new ReviewBookingVM
         {
             BookingId = booking.Id,
@@ -131,7 +126,7 @@ public class BookingService : IBookingService
             {
                 Amount = (double)booking.TotalPrice,
                 Name = "",
-                OrderDescription = desc,
+                OrderDescription = booking.Id.ToString(),
                 OrderType = "Online banking",
             }
         };

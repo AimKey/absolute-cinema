@@ -10,7 +10,7 @@ namespace Common.Mappers
 {
     public class SeatTypeMapper
     {
-        public SeatTypeVM MapSeatToSeatTypeVM(Seat s)
+        public static SeatTypeVM MapSeatToSeatTypeVM(Seat s)
         {
             if (s == null)
             {
@@ -20,7 +20,8 @@ namespace Common.Mappers
             {
                 Id = s.SeatType.Id,
                 Name = s.SeatType.Name,
-                PriceMutiplier = s.SeatType.PriceMutiplier
+                PriceMutiplier = s.SeatType.PriceMutiplier,
+                ColorHex = s.SeatType.ColorHex,
             };
         }
     }

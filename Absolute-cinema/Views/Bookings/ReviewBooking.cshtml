@@ -86,7 +86,7 @@
                 <input type="hidden" name="Amount" value="@Model.PaymentInformationModel.Amount" />
                 <input type="hidden" name="OrderDescription" value="@Model.PaymentInformationModel.OrderDescription" />
                 <input type="hidden" name="Name" value="@Model.PaymentInformationModel.Name" />
-                <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700">
+                <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700" id="paymentBtn">
                     Continue to Payment
                 </button>
             </form>
@@ -113,14 +113,22 @@
 
         // Warn user if they try to close or reload the page
         window.onbeforeunload = function (e) {
+            console.log("Warning user")
             e = e || window.event;
-            // For modern browsers
-            if (e) {
-                e.returnValue = 'If you leave, your booking will be canceled.';
-            }
-            // For old browsers
+            e.returnValue = 'If you leave, your booking will be canceled.';
             return 'If you leave, your booking will be canceled.';
         };
+
+        document.querySelector('#paymentBtn').addEventListener('click', function (e) {
+            e.preventDefault();
+            console.log("Preventing from telling user");
+
+            window.onbeforeunload = null;
+
+            setTimeout(() => {
+                this.closest('form').submit();
+            }, 50); // small delay ensures event is cleared
+        });
     </script>
 }
 

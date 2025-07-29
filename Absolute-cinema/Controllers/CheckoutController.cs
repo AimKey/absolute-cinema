@@ -1,4 +1,5 @@
-﻿using Common.DTOs.PaymentDTOs;
+﻿using BusinessObjects.Models;
+using Common.DTOs.PaymentDTOs;
 using Common.DTOs.VNPay;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -30,24 +31,27 @@ namespace Absolute_cinema.Controllers
         public IActionResult PaymentCallbackVnpay()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);
-            List<string> strings = response.OrderDescription.Split(",").ToList();
+            List<string> responses = response.OrderDescription.Trim().Split(" ").ToList();
 
-            //bookingId,.....movieTitle 13000
-            Guid bookingId = new Guid(strings[0]);
-            Guid userId = new Guid(strings[1]);
-            int ticketsCount = Int32.Parse((strings[2])); 
-            List<string> finalString = strings[3].Split(" ").ToList();
-            string movieTitle = finalString[0];
-            decimal amount = Decimal.Parse(finalString[1]);
+            string bookingInfoString = responses[0];
+            string amountString = responses[1];
+
+            Guid bookingId = new Guid(bookingInfoString);
+            decimal amount = Decimal.Parse(amountString);
+
+            Booking booking = _bookingService.GetById(bookingId);
+            User u = booking.User;
+            int ticketsCount = booking.NumberOfTickets;
 
             var paymentDto = new VNPayPaymentDTO
             {
                 BookingId = bookingId,
-                UserId = userId,
+                UserId = u.Id,
                 TicketsCount = ticketsCount,
-                MovieTitle = movieTitle,
+                MovieTitle = booking.Tickets.FirstOrDefault().ShowtimeSeat.Showtime.Movie.Title,
                 Amount = amount
             };
+
             if (response.VnPayResponseCode == "00") {
                 var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
                 _bookingService.BookingFinished(bookingId, payment.Id);

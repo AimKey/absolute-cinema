@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessObjects.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -12,5 +13,6 @@ namespace Common.ViewModels.SeatTypeVMs
         public Guid Id { get; set; }
         public string Name { get; set; } 
         public decimal PriceMutiplier { get; set; }
+        public string ColorHex { get; set; }
     }
 }

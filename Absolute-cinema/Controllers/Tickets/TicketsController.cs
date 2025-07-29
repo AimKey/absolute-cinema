@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models;
+using Common;
 using Common.DTOs.TicketDTOs;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
@@ -52,7 +53,7 @@ namespace Absolute_cinema.Controllers.Tickets
                 var bookingId = _bookingService.CreateTemporaryBookingForUser(curUser.Id);
                 // Create the tickets for the booking
                 _ticketService.CreateTicketsForUserBookingFromDto(dto, bookingId, curUser.Id);
-                // Calculate the booking for user
+                // Calculate the booking for user (And update anything else necessary)
                 Booking booking = _bookingService.CalculateBookingForUser(bookingId, curUser.Id);
                 // Locking seat temporary for 5 minutes. For test I will leave at 10 secs
                 string jobId = BackgroundJob.Schedule<BookingService>(
@@ -70,8 +71,9 @@ namespace Absolute_cinema.Controllers.Tickets
             }
             catch (Exception e)
             {
-
-                throw;
+                TempData[StatusConstants.Message] = e.Message;
+                TempData[StatusConstants.MessageType] = StatusConstants.Error;
+                return RedirectToAction("Index", "Home");
             }
         }
 

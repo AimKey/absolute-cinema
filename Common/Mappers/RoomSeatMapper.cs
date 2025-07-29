@@ -41,7 +41,8 @@ namespace Common.Mappers
                 SeatRow = seat.SeatRow,
                 SeatNumber = seat.SeatNumber,
                 Description = seat.Description,
-                IsAvailable = !isBooked
+                IsAvailable = !isBooked,
+                SeatType = seat.SeatType,
             };
         }
     }

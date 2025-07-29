@@ -1,4 +1,5 @@
-﻿using System;
+﻿using BusinessObjects.Models;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -14,5 +15,6 @@ namespace Common.ViewModels.SeatVMs
         public int SeatNumber { get; set; }                             // e.g., 1, 2, 3, etc.
         public string Description { get; set; }
         public bool IsAvailable { get; set; }                     // Indicates if the seat is available for booking
+        public virtual SeatType SeatType { get; set; }
     }
 }
