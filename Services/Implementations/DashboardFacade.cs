@@ -31,18 +31,35 @@ namespace Services.Implementations
         {
             var viewModel = new DashboardViewModel();
 
+            var today = DateTime.Today;
+            var now = DateTime.Now;
+
             viewModel.TotalMovies = _movieService.GetAll().Count();
-            viewModel.MoviesToday = _movieService.GetAll().Where(m => m.Showtimes.Any(s => s.StartTime.Equals(DateTime.Now))).Count();
-            viewModel.NewUsers = _userService.GetAll().Where(u => u.CreatedAt >= DateTime.UtcNow.AddDays(-7)).Count();
+
+            viewModel.MoviesToday = _movieService.GetAll()
+                .Where(m => m.Showtimes.Any(s => s.StartTime.Date == today))
+                .Count();
+
+            viewModel.NewUsers = _userService.GetAll()
+                .Where(u => u.CreatedAt >= now.AddDays(-7))
+                .Count();
+
             viewModel.TotalUsers = _userService.GetAll().Count();
             viewModel.TotalScreenings = _showtimeService.GetAll().Count();
             viewModel.TotalCinemaRooms = _roomService.GetAll().Count();
             viewModel.TotalGenres = _tagService.GetAll().Count();
 
             viewModel.TotalRevenue = _bookingService.GetAll().Sum(b => b.TotalPrice);
-            viewModel.RevenueToday = _bookingService.GetAll().Where(b => b.CreatedAt.Equals(DateTime.Now)).Sum(b => b.TotalPrice);
+
+            viewModel.RevenueToday = _bookingService.GetAll()
+                .Where(b => b.CreatedAt?.Date == today)
+                .Sum(b => b.TotalPrice);
+
             viewModel.TotalTicketsSold = _ticketService.GetAll().Count();
-            viewModel.TicketsSoldToday = _ticketService.GetAll().Where(t => t.CreatedAt.Equals(DateTime.Now)).Count();
+
+            viewModel.TicketsSoldToday = _ticketService.GetAll()
+                .Where(t => t.CreatedAt?.Date == today)
+                .Count();
 
             return viewModel;
         }

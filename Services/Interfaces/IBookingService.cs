@@ -17,4 +17,5 @@ public interface IBookingService
     void UpdateBookingJobCancellationId(Guid bookingId, string jobId);
     void BookingFinished(Guid bookingId, Guid paymentId);
     List<Booking> GetBookingsByUserId(Guid id);
+    void CancelBooking(Guid bookingId);
 } 

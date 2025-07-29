@@ -27,7 +27,7 @@ public class PaymentService : IPaymentService
             Amount = (int)(dto.Amount * 100), // Assuming Amount is in VND and needs to be in cents
             OrderCode = 1, // TODO: Implement a method to generate unique order codes
             Description = $"Payment for {dto.MovieTitle} - {dto.TicketsCount} tickets",
-            TransactionDateTime = DateTime.UtcNow,
+            TransactionDateTime = DateTime.Now,
             PaymentMethod = "Online banking",
             Status = "Success",
             Currency = "VND" // Assuming VND as the currency

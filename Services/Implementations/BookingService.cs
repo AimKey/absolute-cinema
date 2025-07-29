@@ -50,6 +50,24 @@ public class BookingService : IBookingService
         Update(booking);
     }
 
+    public void CancelBooking(Guid bookingId)
+    {
+        // Delete the background job if it exists
+        var booking = GetById(bookingId);
+        if (booking == null)
+        {
+            throw new ArgumentException("Booking not found", nameof(bookingId));
+        }
+        var jobId = booking.CancellationJobId;
+        if (!string.IsNullOrEmpty(jobId))
+        {
+            BackgroundJob.Delete(jobId);
+        }
+        booking.CancellationJobId = null; // Clear the job ID since booking is canceled
+        // Run the cancellation logic immediately
+        CancelUnpaidBooking(bookingId);
+    }
+
     public void UpdateBookingJobCancellationId(Guid bookingId, string jobId)
     {
         var booking = GetById(bookingId);
@@ -86,8 +104,8 @@ public class BookingService : IBookingService
         {
             Id = Guid.NewGuid(),
             UserId = userId,
-            BookingDate = DateTime.UtcNow,
-            CreatedAt = DateTime.UtcNow,
+            BookingDate = DateTime.Now,
+            CreatedAt = DateTime.Now,
             CreatedBy = userId
         };
         Add(booking);

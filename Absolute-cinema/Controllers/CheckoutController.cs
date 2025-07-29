@@ -1,4 +1,5 @@
 ﻿using BusinessObjects.Models;
+using Common;
 using Common.DTOs.PaymentDTOs;
 using Common.DTOs.VNPay;
 using Microsoft.AspNetCore.Authorization;
@@ -42,25 +43,40 @@ namespace Absolute_cinema.Controllers
             Booking booking = _bookingService.GetById(bookingId);
             User u = booking.User;
             int ticketsCount = booking.NumberOfTickets;
+            string movieTitle = booking.Tickets.FirstOrDefault().ShowtimeSeat.Showtime.Movie.Title;
 
             var paymentDto = new VNPayPaymentDTO
             {
                 BookingId = bookingId,
                 UserId = u.Id,
                 TicketsCount = ticketsCount,
-                MovieTitle = booking.Tickets.FirstOrDefault().ShowtimeSeat.Showtime.Movie.Title,
+                MovieTitle = movieTitle,
                 Amount = amount
             };
 
-            if (response.VnPayResponseCode == "00") {
-                var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
-                _bookingService.BookingFinished(bookingId, payment.Id);
-                return View("~/Views/Payments/PaymentSuccess.cshtml", response);
-            }
-            else
+            try
             {
+                response.OrderDescription = $"{ticketsCount} for {movieTitle}. Total amount: {amount}";
+                if (response.VnPayResponseCode == "00")
+                {
+                    var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
+                    _bookingService.BookingFinished(bookingId, payment.Id);
+                    return View("~/Views/Payments/PaymentSuccess.cshtml", response);
+                }
+                else
+                {
+                    _bookingService.CancelBooking(bookingId);
+                    return View("~/Views/Payments/PaymentError.cshtml", response);
+                }
+
+            }
+            catch (Exception e)
+            {
+                TempData["msg"] = $"An error has occured: {e.Message}";
+                TempData["msgType"] = StatusConstants.Error;
+                _bookingService.CancelBooking(bookingId);
                 return View("~/Views/Payments/PaymentError.cshtml", response);
             }
         }
     }
-} 
+}
