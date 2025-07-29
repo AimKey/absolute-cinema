@@ -299,5 +299,10 @@ namespace Absolute_cinema.Controllers
                 return Json(new { success = false, message = "Có lỗi xảy ra khi gửi OTP. Vui lòng thử lại." });
             }
         }
+
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
     }
 }

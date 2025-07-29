@@ -4,16 +4,16 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using Services.Interfaces; 
+using Services.Interfaces;
+using Common.Constants;
 
 namespace Absolute_cinema.Controllers
 {
-
-    public class LoginGoogle : Controller
+    public class LoginGoogleController : Controller
     {
         private readonly IUserService _userService;
 
-        public LoginGoogle(IUserService userService)
+        public LoginGoogleController(IUserService userService)
         {
             _userService = userService;
         }
@@ -47,6 +47,7 @@ namespace Absolute_cinema.Controllers
 
             //  Kiểm tra xem user đã tồn tại chưa
             var user = _userService.GetUserByEmail(email);
+            bool accountExist = user != null;
             if (user == null)
             {
                 // Nếu chưa có, tạo user mới
@@ -63,13 +64,29 @@ namespace Absolute_cinema.Controllers
                 user = _userService.GetUserByEmail(email); // lấy lại user sau khi thêm
             }
 
+            // Kiểm tra xem user xác thực hay chưa
+            if (accountExist)
+            {
+                if (user.IsActive == false)
+                {
+                    TempData["ErrorMessage"] = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.";
+                    return RedirectToAction("Login", "Account");
+                }
+
+                if (user.IsVerify == false)
+                {
+                    TempData["ErrorMessage"] = "Tài khoản của bạn chưa được xác thực. Vui lòng kiểm tra email để xác thực tài khoản.";
+                    return RedirectToAction("Login", "Account");
+                }
+            }
+
             // Tạo claims và đăng nhập vào hệ thống
             var claimsIdentity = new ClaimsIdentity(new[]
             {
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.Email, user.Email),
-                new Claim(ClaimTypes.Role, user.Role ?? "Customer")
+                new Claim(ClaimTypes.Role, user.Role ?? RoleConstants.User)
 
             }, CookieAuthenticationDefaults.AuthenticationScheme);
 
@@ -77,10 +94,10 @@ namespace Absolute_cinema.Controllers
             await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
             HttpContext.Session.SetString("Username", user.Username);
-            HttpContext.Session.SetString("Role", user.Role ?? "Customer");
+            HttpContext.Session.SetString("Role", user.Role ?? RoleConstants.User);
 
 
-            TempData["SuccessMessage"] = $"Xin chào {user.Username}!";
+            TempData["msg"] = $"Xin chào {user.Username}!";
             return RedirectToAction("Index", "Home");
         }
     }
