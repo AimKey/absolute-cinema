@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Services.VNPay;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Microsoft.AspNetCore.Authentication.Google;
+
 
 namespace Absolute_cinema
 {
@@ -63,23 +65,34 @@ namespace Absolute_cinema
             });
             // Configure authentication with cookies
             // Cookie Authentication setup
-            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(options =>
-                {
-                    options.LoginPath = "/Account/Login"; // chuyển hướng khi chưa đăng nhập
-                    options.AccessDeniedPath = "/Account/Login"; // chuyển hướng khi không đủ quyền
-                    options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-                });
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+            }).AddCookie(options =>
+            {
+                options.LoginPath = "/Account/Login"; // chuyển hướng khi chưa đăng nhập
+                options.AccessDeniedPath = "/Account/Login"; // chuyển hướng khi không đủ quyền
+                options.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+            })
+            .AddGoogle(options =>
+            {
+                options.ClientId = builder.Configuration["Authentication:Google:ClientId"];
+                options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
+                options.CallbackPath = "/Account/signin-google";
+            });
 
             // auth path
-            builder.Services.AddControllersWithViews(options =>
-            {
-                var policy = new AuthorizationPolicyBuilder()
-                    .RequireAuthenticatedUser()
-                    .Build();
+         //   builder.Services.AddControllersWithViews(options =>
+          //  {
+         //       var policy = new AuthorizationPolicyBuilder()
+         //           .RequireAuthenticatedUser()
+         //           .Build();
 
-                options.Filters.Add(new AuthorizeFilter(policy));
-            });
+        //          options.Filters.Add(new AuthorizeFilter(policy));
+               
+
+        //    });
 
 
 

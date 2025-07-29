@@ -1,0 +1,87 @@
+﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using System.Threading.Tasks;
+using Services.Interfaces; 
+
+namespace Absolute_cinema.Controllers
+{
+
+    public class LoginGoogle : Controller
+    {
+        private readonly IUserService _userService;
+
+        public LoginGoogle(IUserService userService)
+        {
+            _userService = userService;
+        }
+
+        [HttpGet]
+        public IActionResult GoogleLogin()
+        {
+            var redirectUrl = Url.Action("GoogleResponse", "LoginGoogle");
+            var properties = new AuthenticationProperties
+            {
+                RedirectUri = redirectUrl
+            };
+
+            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GoogleResponse()
+        {
+            var result = await HttpContext.AuthenticateAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            var claims = result.Principal?.Identities.FirstOrDefault()?.Claims;
+
+            var email = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value;
+            var name = claims?.FirstOrDefault(c => c.Type == ClaimTypes.Name)?.Value;
+
+            if (email == null)
+            {
+                TempData["ErrorMessage"] = "Google login failed.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            //  Kiểm tra xem user đã tồn tại chưa
+            var user = _userService.GetUserByEmail(email);
+            if (user == null)
+            {
+                // Nếu chưa có, tạo user mới
+                await _userService.RegisterUserAsync(
+                    username: email.Split('@')[0],
+                    email: email,
+                    password: "Google_OAuth", // bạn có thể dùng placeholder
+                    fullName: name ?? email,
+                    phone: null,
+                    gender: null,
+                    dateOfBirth: null,
+                    baseUrl: $"{Request.Scheme}://{Request.Host}"
+                );
+                user = _userService.GetUserByEmail(email); // lấy lại user sau khi thêm
+            }
+
+            // Tạo claims và đăng nhập vào hệ thống
+            var claimsIdentity = new ClaimsIdentity(new[]
+            {
+                new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                new Claim(ClaimTypes.Name, user.Username),
+                new Claim(ClaimTypes.Email, user.Email),
+                new Claim(ClaimTypes.Role, user.Role ?? "Customer")
+
+            }, CookieAuthenticationDefaults.AuthenticationScheme);
+
+            var principal = new ClaimsPrincipal(claimsIdentity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
+
+            HttpContext.Session.SetString("Username", user.Username);
+            HttpContext.Session.SetString("Role", user.Role ?? "Customer");
+
+
+            TempData["SuccessMessage"] = $"Xin chào {user.Username}!";
+            return RedirectToAction("Index", "Home");
+        }
+    }
+}
