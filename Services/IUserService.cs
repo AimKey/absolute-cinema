@@ -14,7 +14,7 @@ public interface IUserService
     User? GetUserByEmail(string email);
     bool IsUsernameExists(string username);
     bool IsEmailExists(string email);
-    Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime dateOfBirth, string baseUrl);
+    Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime? dateOfBirth, string baseUrl);
     bool VerifyEmail(string email, string token);
     void UpdateUser(User user);
 

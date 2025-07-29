@@ -78,7 +78,7 @@ public class UserService : IUserService
         _userDetailRepository.Save();
     }
 
-    public async Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime dateOfBirth, string baseUrl)
+    public async Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime? dateOfBirth, string baseUrl)
     {
         try
         {
@@ -114,7 +114,7 @@ public class UserService : IUserService
                 FullName = fullName,
                 Phone = phone,
                 Gender = gender,
-                Dob = DateOnly.FromDateTime(dateOfBirth),
+                Dob = dateOfBirth.HasValue ? DateOnly.FromDateTime(dateOfBirth.Value) : null,
                 CreatedAt = DateTime.Now
             };
 
