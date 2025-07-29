@@ -37,5 +37,62 @@
                 </tbody>
             </table>
         </div>
+        
+        <!-- Simple Pagination -->
+        @if (ViewBag.TotalPages > 1)
+        {
+            <div class="mt-6 flex items-center justify-center space-x-2">
+                <!-- Previous Button -->
+                @if (ViewBag.CurrentPage > 1)
+                {
+                    <a asp-action="Index" asp-route-page="@(ViewBag.CurrentPage - 1)" asp-route-pageSize="@ViewBag.PageSize"
+                       class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                        <i class="fas fa-chevron-left mr-1"></i>Previous
+                    </a>
+                }
+                else
+                {
+                    <span class="px-4 py-2 bg-gray-600 text-gray-400 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-chevron-left mr-1"></i>Previous
+                    </span>
+                }
+                
+                <!-- Page Numbers -->
+                <div class="flex space-x-1">
+                    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+                    {
+                        if (i == ViewBag.CurrentPage)
+                        {
+                            <span class="px-3 py-2 bg-red-600 text-white rounded-lg font-semibold">@i</span>
+                        }
+                        else
+                        {
+                            <a asp-action="Index" asp-route-page="@i" asp-route-pageSize="@ViewBag.PageSize"
+                               class="px-3 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">@i</a>
+                        }
+                    }
+                </div>
+                
+                <!-- Next Button -->
+                @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+                {
+                    <a asp-action="Index" asp-route-page="@(ViewBag.CurrentPage + 1)" asp-route-pageSize="@ViewBag.PageSize"
+                       class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors">
+                        Next<i class="fas fa-chevron-right ml-1"></i>
+                    </a>
+                }
+                else
+                {
+                    <span class="px-4 py-2 bg-gray-600 text-gray-400 rounded-lg cursor-not-allowed">
+                        Next<i class="fas fa-chevron-right ml-1"></i>
+                    </span>
+                }
+            </div>
+            
+            <!-- Page Info -->
+            <div class="mt-4 text-center text-gray-400 text-sm">
+                Showing @(((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1) to @Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalItems) of @ViewBag.TotalItems bookings
+            </div>
+        }
     </div>
 </div>
