@@ -1,6 +1,7 @@
 ﻿using BusinessObjects.Models;
 using Common.DTOs.TicketDTOs;
 using Hangfire;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Services.Implementations;
@@ -8,6 +9,7 @@ using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers.Tickets
 {
+    [Authorize]
     public class TicketsController : Controller
     {
         private readonly IUserService _userService;

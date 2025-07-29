@@ -5,153 +5,166 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Đăng Ký - Absolute Cinema</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="~/css/register-simple.css?v=1.2" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+          rel="stylesheet">
+    <link href="~/css/register-simple.css?v=1.2" rel="stylesheet"/>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
 </head>
 <body>
-    <div class="register-container">
-        <div class="register-info">
-            <div class="cinema-logo"><i class="fas fa-film"></i> Absolute Cinema</div>
-            <div class="cinema-tagline">Trải nghiệm điện ảnh tuyệt đối với chất lượng hình ảnh và âm thanh hoàn hảo</div>
-            <ul class="cinema-features">
-                <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Hệ thống âm thanh Dolby Atmos</li>
-                <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Màn hình IMAX chất lượng cao</li>
-                <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Ghế ngồi cao cấp và thoải mái</li>
-                <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Đặt vé online tiện lợi</li>
-                <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Ưu đãi thành viên hấp dẫn</li>
-            </ul>
-        </div>
-
-        <div class="register-form">
-            <div class="form-header">
-                <h1 class="form-title">Tạo Tài Khoản</h1>
-                <p class="form-subtitle">Tham gia cộng đồng yêu phim của chúng tôi</p>
-            </div>
-
-            <form asp-action="Register" method="post" class="register-form-inner" id="registerForm">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display: none;"></div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label asp-for="FirstName" class="form-label"><i class="fas fa-user"></i> Họ</label>
-                        <input asp-for="FirstName" class="form-control" placeholder="Nhập họ của bạn" />
-                        <span asp-validation-for="FirstName" class="text-danger validation-message"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="LastName" class="form-label"><i class="fas fa-user"></i> Tên</label>
-                        <input asp-for="LastName" class="form-control" placeholder="Nhập tên của bạn" />
-                        <span asp-validation-for="LastName" class="text-danger validation-message"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Username" class="form-label"><i class="fas fa-at"></i> Tên đăng nhập</label>
-                    <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập" />
-                    <span asp-validation-for="Username" class="text-danger validation-message"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
-                    <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com" />
-                    <span asp-validation-for="Email" class="text-danger validation-message"></span>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label asp-for="Password" class="form-label"><i class="fas fa-lock"></i> Mật khẩu</label>
-                        <div class="password-field">
-                            <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu" />
-                            <button type="button" class="password-toggle" onclick="togglePassword('Password')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <span asp-validation-for="Password" class="text-danger validation-message"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label asp-for="ConfirmPassword" class="form-label"><i class="fas fa-lock"></i> Xác nhận mật khẩu</label>
-                        <div class="password-field">
-                            <input asp-for="ConfirmPassword" type="password" class="form-control" placeholder="Nhập lại mật khẩu" />
-                            <button type="button" class="password-toggle" onclick="togglePassword('ConfirmPassword')">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                        </div>
-                        <span asp-validation-for="ConfirmPassword" class="text-danger validation-message"></span>
-                    </div>
-                </div>
-
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label asp-for="Phone" class="form-label"><i class="fas fa-phone"></i> Số điện thoại</label>
-                        <input asp-for="Phone" type="tel" class="form-control" placeholder="0123456789" />
-                        <span asp-validation-for="Phone" class="text-danger validation-message"></span>
-                    </div>
-                    <div class="form-group">
-                        <label asp-for="Gender" class="form-label"><i class="fas fa-venus-mars"></i> Giới tính</label>
-                        <select asp-for="Gender" class="form-control">
-                            <option value="">Chọn giới tính</option>
-                            <option value="Male">Nam</option>
-                            <option value="Female">Nữ</option>
-                            <option value="Other">Khác</option>
-                        </select>
-                        <span asp-validation-for="Gender" class="text-danger validation-message"></span>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="DateOfBirth" class="form-label"><i class="fas fa-calendar"></i> Ngày sinh</label>
-                    <input asp-for="DateOfBirth" type="date" class="form-control" />
-                    <span asp-validation-for="DateOfBirth" class="text-danger validation-message"></span>
-                </div>
-
-                <div class="form-group">
-                    <label asp-for="Address" class="form-label"><i class="fas fa-map-marker-alt"></i> Địa chỉ</label>
-                    <textarea asp-for="Address" class="form-control" rows="3" placeholder="Nhập địa chỉ của bạn"></textarea>
-                    <span asp-validation-for="Address" class="text-danger validation-message"></span>
-                </div>
-
-                <div class="form-group checkbox-group">
-                    <label class="checkbox-container">
-                        <input type="checkbox" id="agreeTerms" />
-                        <span class="checkmark"></span>
-                        Tôi đồng ý với <a href="#" class="terms-link">Điều khoản sử dụng</a> và <a href="#" class="terms-link">Chính sách bảo mật</a>
-                    </label>
-                </div>
-
-                <button type="submit" class="btn btn-primary btn-register">
-                    <i class="fas fa-user-plus"></i> Đăng Ký
-                </button>
-
-                <div class="login-link">
-                    Đã có tài khoản? <a asp-action="Login" class="link-primary">Đăng nhập ngay</a>
-                </div>
-            </form>
-        </div>
+<div class="register-container">
+    <div class="register-info">
+        <div class="cinema-logo"><i class="fas fa-film"></i> Absolute Cinema</div>
+        <div class="cinema-tagline">Trải nghiệm điện ảnh tuyệt đối với chất lượng hình ảnh và âm thanh hoàn hảo</div>
+        <ul class="cinema-features">
+            <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Hệ thống âm thanh Dolby
+                Atmos
+            </li>
+            <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Màn hình IMAX chất lượng
+                cao
+            </li>
+            <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Ghế ngồi cao cấp và
+                thoải mái
+            </li>
+            <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Đặt vé online tiện lợi
+            </li>
+            <li><i class="fas fa-check-circle" style="margin-right: 10px; color: #4CAF50;"></i> Ưu đãi thành viên hấp
+                dẫn
+            </li>
+        </ul>
     </div>
 
-    <script src="~/js/register-simple.js?v=1.5"></script>
-    <script>
-        function togglePassword(fieldName) {
-            const field = document.querySelector(`input[name="${fieldName}"]`);
-            const icon = field.nextElementSibling.querySelector('i');
-            if (field.type === 'password') {
-                field.type = 'text';
-                icon.classList.remove('fa-eye');
-                icon.classList.add('fa-eye-slash');
-            } else {
-                field.type = 'password';
-                icon.classList.remove('fa-eye-slash');
-                icon.classList.add('fa-eye');
-            }
-        }
-    </script>
+    <div class="register-form">
+        <div class="form-header">
+            <h1 class="form-title">Tạo Tài Khoản</h1>
+            <p class="form-subtitle">Tham gia cộng đồng yêu phim của chúng tôi</p>
+        </div>
 
-    @section Scripts {
-        @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+        <form asp-action="Register" method="post" class="register-form-inner" id="registerForm">
+            <div asp-validation-summary="ModelOnly" class="alert alert-danger" style="display: none;"></div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="FirstName" class="form-label"><i class="fas fa-user"></i> Họ</label>
+                    <input asp-for="FirstName" class="form-control" placeholder="Nhập họ của bạn"/>
+                    <span asp-validation-for="FirstName" class="text-danger validation-message"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="LastName" class="form-label"><i class="fas fa-user"></i> Tên</label>
+                    <input asp-for="LastName" class="form-control" placeholder="Nhập tên của bạn"/>
+                    <span asp-validation-for="LastName" class="text-danger validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Username" class="form-label"><i class="fas fa-at"></i> Tên đăng nhập</label>
+                <input asp-for="Username" class="form-control" placeholder="Nhập tên đăng nhập"/>
+                <span asp-validation-for="Username" class="text-danger validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Email" class="form-label"><i class="fas fa-envelope"></i> Email</label>
+                <input asp-for="Email" type="email" class="form-control" placeholder="example@email.com"/>
+                <span asp-validation-for="Email" class="text-danger validation-message"></span>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="Password" class="form-label"><i class="fas fa-lock"></i> Mật khẩu</label>
+                    <div class="password-field">
+                        <input asp-for="Password" type="password" class="form-control" placeholder="Nhập mật khẩu"/>
+                        <button type="button" class="password-toggle" onclick="togglePassword('Password')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="text-danger validation-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="form-label"><i class="fas fa-lock"></i> Xác nhận mật
+                        khẩu</label>
+                    <div class="password-field">
+                        <input asp-for="ConfirmPassword" type="password" class="form-control"
+                               placeholder="Nhập lại mật khẩu"/>
+                        <button type="button" class="password-toggle" onclick="togglePassword('ConfirmPassword')">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-grid">
+                <div class="form-group">
+                    <label asp-for="Phone" class="form-label"><i class="fas fa-phone"></i> Số điện thoại</label>
+                    <input asp-for="Phone" type="tel" class="form-control" placeholder="0123456789"/>
+                    <span asp-validation-for="Phone" class="text-danger validation-message"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Gender" class="form-label"><i class="fas fa-venus-mars"></i> Giới tính</label>
+                    <select asp-for="Gender" class="form-control">
+                        <option value="">Chọn giới tính</option>
+                        <option value="Male">Nam</option>
+                        <option value="Female">Nữ</option>
+                        <option value="Other">Khác</option>
+                    </select>
+                    <span asp-validation-for="Gender" class="text-danger validation-message"></span>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="DateOfBirth" class="form-label"><i class="fas fa-calendar"></i> Ngày sinh</label>
+                <input asp-for="DateOfBirth" type="date" class="form-control"/>
+                <span asp-validation-for="DateOfBirth" class="text-danger validation-message"></span>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="Address" class="form-label"><i class="fas fa-map-marker-alt"></i> Địa chỉ</label>
+                <textarea asp-for="Address" class="form-control" rows="3" placeholder="Nhập địa chỉ của bạn"></textarea>
+                <span asp-validation-for="Address" class="text-danger validation-message"></span>
+            </div>
+
+            <div class="form-group checkbox-group">
+                <label class="checkbox-container">
+                    <input type="checkbox" id="agreeTerms"/>
+                    <span class="checkmark"></span>
+                    Tôi đồng ý với <a href="#" class="terms-link">Điều khoản sử dụng</a> và <a href="#"
+                                                                                               class="terms-link">Chính
+                        sách bảo mật</a>
+                </label>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-register">
+                <i class="fas fa-user-plus"></i> Đăng Ký
+            </button>
+
+            <div class="login-link">
+                Đã có tài khoản? <a asp-action="Login" class="link-primary">Đăng nhập ngay</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script src="~/js/register-simple.js?v=1.5"></script>
+<script>
+    function togglePassword(fieldName) {
+        const field = document.querySelector(`input[name="${fieldName}"]`);
+        const icon = field.nextElementSibling.querySelector('i');
+        if (field.type === 'password') {
+            field.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            field.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
     }
+</script>
+
+@{ await Html.RenderPartialAsync("_ValidationScriptsPartial"); }
+
 </body>
 </html>

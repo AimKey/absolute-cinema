@@ -25,7 +25,6 @@ public class MoviesController : Controller
         _tagService = tagService;
     }
 
-
     // Index action to display the list of movies with filters and sorting
     public IActionResult Index(
             string search = "",

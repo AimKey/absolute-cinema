@@ -1,4 +1,5 @@
 ﻿using Common.ViewModels;
+using Common.ViewModels.UserVMs;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
@@ -43,6 +44,14 @@ namespace Services.Implementations
             viewModel.TotalTicketsSold = _ticketService.GetAll().Count();
             viewModel.TicketsSoldToday = _ticketService.GetAll().Where(t => t.CreatedAt.Equals(DateTime.Now)).Count();
 
+            return viewModel;
+        }
+
+        public ManageUsersVm GetManageUsersViewModel()
+        {
+            ManageUsersVm viewModel = new ManageUsersVm
+            {
+            };
             return viewModel;
         }
     }

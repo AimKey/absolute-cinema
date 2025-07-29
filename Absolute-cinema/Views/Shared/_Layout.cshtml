@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿@using System.Security.Claims
+@using Common.Constants
+<!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="utf-8" />
@@ -149,7 +151,7 @@
                     </form>
 
                     <!-- User Authentication Area -->
-                    @if (User.Identity.IsAuthenticated)
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
                     {
                         <!-- User Menu for Authenticated Users -->
                         <div x-data="{ open: false }" class="relative">
@@ -164,6 +166,13 @@
                                  x-transition
                                  class="absolute top-full right-0 z-50 mt-2 w-48 rounded-lg border border-gray-700 bg-gray-800/95 shadow-2xl backdrop-blur-md">
                                 <div class="p-2">
+                                    @if (User.FindFirstValue(ClaimTypes.Role) == RoleConstants.Admin)
+                                    {
+                                        <a asp-controller="Admin" asp-action="Index"
+                                           class="flex items-center space-x-2 rounded p-2 text-sm text-gray-300 hover:text-white">
+                                            <i class="fas fa-user-tie"></i><span>Quản lý</span>
+                                        </a>
+                                    }
                                     <a asp-area="" asp-controller="Account" asp-action="Profile"
                                        class="flex items-center space-x-2 rounded p-2 text-sm text-gray-300 hover:text-white">
                                         <i class="fas fa-user"></i><span>Hồ sơ</span>

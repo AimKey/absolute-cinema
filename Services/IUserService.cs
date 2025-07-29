@@ -1,5 +1,6 @@
 using BusinessObjects.Models;
 using Common.DTOs.TicketDTOs;
+using Common.ViewModels.UserVMs;
 
 namespace Services.Interfaces;
 
@@ -24,4 +25,5 @@ public interface IUserService
     Task<bool> SendOtpAsync(string email);
     bool VerifyOtp(string email, string otp);
     Task<bool> ResetPasswordAsync(string email, string otp, string newPassword);
+    ManageUsersVm GetManageUsersViewModel(ManageUsersVm vm);
 }

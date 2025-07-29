@@ -13,9 +13,11 @@ using Common.Constants;
 using Common;
 using Common.DTOs.ShowtimeDTOs;
 using Services.HelperServices;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Absolute_cinema.Controllers
 {
+    [Authorize(Roles = RoleConstants.Admin)]
     [Route("Admin/Showtimes")]
     public class ShowtimesController : Controller
     {

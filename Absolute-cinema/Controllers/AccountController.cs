@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Common.Constants;
 
 namespace Absolute_cinema.Controllers
 {
@@ -36,6 +37,18 @@ namespace Absolute_cinema.Controllers
 
                 if (user != null)
                 {
+                    if (user.IsActive == false)
+                    {
+                        TempData["ErrorMessage"] = "Tài khoản của bạn đã bị khóa. Vui lòng liên hệ quản trị viên để biết thêm chi tiết.";
+                        return View(model);
+                    }
+
+                    if (user.IsVerify == false)
+                    {
+                        TempData["ErrorMessage"] = "Tài khoản của bạn chưa được xác thực. Vui lòng kiểm tra email để xác thực tài khoản.";
+                        return View(model);
+                    }
+
                     // Kiểm tra mật khẩu người dùng nhập có khớp với mật khẩu đã hash
                     var isPasswordCorrect = _userService.VerifyPassword(model.Password, user.Password);
 
@@ -48,23 +61,24 @@ namespace Absolute_cinema.Controllers
 
                         // Thêm xác thực Cookie
                         var claims = new List<Claim>
-                {
-                    new Claim(ClaimTypes.Name, user.Username),
-                    new Claim(ClaimTypes.Role, user.Role ?? "User"),
-                    new Claim("UserId", user.Id.ToString())
-                };
+                        {
+                            new Claim(ClaimTypes.Name, user.Username),
+                            new Claim(ClaimTypes.Role, user.Role ?? RoleConstants.User),
+                            new Claim("UserId", user.Id.ToString())
+                        };
 
                         var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
                         var principal = new ClaimsPrincipal(identity);
                         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
 
-                        TempData["SuccessMessage"] = "Login successfully !!!";
+                        TempData["ErrorMessage"] = null;
                         return RedirectToAction("Index", "Home");
                     }
                 }
 
                 // Nếu sai username hoặc mật khẩu
-                ModelState.AddModelError("", "Thông tin đăng nhập không đúng.");
+                // ModelState.AddModelError("", "Thông tin đăng nhập không đúng.");
+                TempData["ErrorMessage"] = "Thông tin đăng nhập không đúng. Vui lòng kiểm tra lại.";
             }
 
             // Luôn return view nếu có lỗi

@@ -5,6 +5,8 @@ using System.Security.Cryptography;
 using System.Text;
 using Common.Constants;
 using Common.DTOs.TicketDTOs;
+using Common.Pagination;
+using Common.ViewModels.UserVMs;
 using Services.HelperServices;
 
 namespace Services.Implementations;
@@ -96,7 +98,7 @@ public class UserService : IUserService
                 Username = username,
                 Email = email,
                 Password = _hashPasswordService.HashPassword(password),
-                Role = RoleConstants.Customer,
+                Role = RoleConstants.User,
                 IsActive = true,
                 IsVerify = false,
                 CreatedAt = DateTime.Now
@@ -330,5 +332,66 @@ public class UserService : IUserService
     public bool VerifyPassword(string providedPassword, string hashedPassword)
     {
         return _hashPasswordService.VerifyPassword(providedPassword, hashedPassword);
+    }
+    
+    public ManageUsersVm GetManageUsersViewModel(ManageUsersVm vm)
+    {
+        var pageSize = PageConstants.PageSize;
+        var users = GetAll();
+        string search = string.IsNullOrEmpty(vm.Query) ? string.Empty : vm.Query.Trim();
+        string statusFilter = string.IsNullOrEmpty(vm.StatusFilter) ? ManageUserFilterConstants.All : vm.StatusFilter;
+        string roleFilter = string.IsNullOrEmpty(vm.RoleFilter) ? ManageUserFilterConstants.All : vm.RoleFilter;
+        int page = vm.Page;
+        
+        // Apply filters
+        if (!string.IsNullOrEmpty(search))
+        {
+            users = users.Where(u => u.Username.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                     u.Email.Contains(search, StringComparison.OrdinalIgnoreCase) ||
+                                     u.UserDetail?.FullName?.Contains(search, StringComparison.OrdinalIgnoreCase) == true).ToList();
+        }
+        
+        if (statusFilter != ManageUserFilterConstants.All)
+        {
+            users = users.Where(u => statusFilter == ManageUserFilterConstants.Active ? u.IsActive : !u.IsActive)
+                .ToList();
+        }
+        
+        if (roleFilter != ManageUserFilterConstants.All)
+        {
+            users = users.Where(u => u.Role == roleFilter).ToList();
+        }
+        
+        // Apply sorting
+        if (vm.SortDescending)
+        {
+            users = users.OrderByDescending(u => u.CreatedAt).ToList();
+        }
+        else
+        {
+            users = users.OrderBy(u => u.CreatedAt).ToList();
+        }
+
+        // Pagination
+        var totalCount = users.Count;
+        var totalPages = (int)Math.Ceiling((double)totalCount / pageSize);
+        var pagedUsers = users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        
+        var viewModel = new ManageUsersVm
+        {
+            Users = new PagedResult<User>
+            {
+                Items = pagedUsers,
+                TotalCount = totalCount,
+                PageSize = pageSize,
+                CurrentPage = page
+            },
+            Query = search,
+            StatusFilter = statusFilter,
+            RoleFilter = roleFilter,
+            SortBy = vm.SortBy,
+            SortDescending = vm.SortDescending,
+        };
+        return viewModel;
     }
 }

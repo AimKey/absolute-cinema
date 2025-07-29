@@ -5,10 +5,12 @@ using Services.Interfaces;
 using Common.Filters.Tags;
 using Common.DTOs.TagDTOs;
 using Common;
+using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Absolute_cinema.Controllers.Tags;
 
-
+[Authorize(Roles = RoleConstants.Admin)]
 [Route("Admin/Tags")]
 public class TagsController : Controller
 {

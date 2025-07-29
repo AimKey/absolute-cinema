@@ -3,7 +3,8 @@
 }
 
 <!-- Hero Section -->
-<section class="relative h-screen bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+<section class="relative h-screen bg-cover bg-center"
+         style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
     <div class="hero-gradient absolute inset-0"></div>
     <div class="relative z-10 container mx-auto flex h-full items-center px-4">
         <div class="max-w-2xl">
@@ -14,9 +15,9 @@
                 @if (!string.IsNullOrEmpty(Model?.Role))
                 {
                     <span>
-                        @Model.Role
+                    @Model.Role
                         -
-                    </span>
+                </span>
                 }
                 PHIM HAY MỚI NHẤT 2025
             </h2>
@@ -28,11 +29,13 @@
                 <button class="rounded-full bg-red-600 px-8 py-3 font-semibold transition-colors hover:bg-red-700">
                     <i class="fas fa-play mr-2"></i>Xem phim ngay
                 </button>
-                <button class="rounded-full border border-white px-8 py-3 font-semibold transition-colors hover:bg-white hover:text-black">
+                <button
+                    class="rounded-full border border-white px-8 py-3 font-semibold transition-colors hover:bg-white hover:text-black">
                     <i class="fas fa-user mr-2"></i>Hồ sơ của tôi
                 </button>
             </div>
         </div>
+    </div>
 </section>
 
 <!-- User Info Section (Only show if user data exists) -->
@@ -46,15 +49,22 @@
         <div class="grid grid-cols-2 gap-6 md:grid-cols-4 lg:grid-cols-6">
             @for (int i = 1; i <= 6; i++)
             {
-                <div class="movie-card overflow-hidden rounded-lg bg-gray-800 shadow-lg transition-all duration-300 hover:shadow-2xl">
+                <div
+                    class="movie-card overflow-hidden rounded-lg bg-gray-800 shadow-lg transition-all duration-300 hover:shadow-2xl">
                     <div class="group relative">
-                        <img src="https://picsum.photos/200/300?random=@i" alt="Movie @i" class="h-64 w-full object-cover">
-                        <div class="absolute top-2 right-2 rounded bg-red-600 px-2 py-1 text-sm font-semibold text-white">HD</div>
+                        <img src="https://picsum.photos/200/300?random=@i" alt="Movie @i"
+                             class="h-64 w-full object-cover">
+                        <div
+                            class="absolute top-2 right-2 rounded bg-red-600 px-2 py-1 text-sm font-semibold text-white">
+                            HD
+                        </div>
                         <div class="absolute top-2 left-2 rounded bg-yellow-500 px-2 py-1 text-xs font-bold text-black">
                             <i class="fas fa-star mr-1"></i>@(8 + (i * 0.1))
                         </div>
-                        <div class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black opacity-0 transition-opacity group-hover:opacity-100">
-                            <button class="rounded-full bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700">
+                        <div
+                            class="bg-opacity-50 absolute inset-0 flex items-center justify-center bg-black opacity-0 transition-opacity group-hover:opacity-100">
+                            <button
+                                class="rounded-full bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700">
                                 <i class="fas fa-play mr-2"></i>Xem ngay
                             </button>
                         </div>
@@ -70,7 +80,8 @@
             }
         </div>
         <div class="mt-8 text-center">
-            <button class="rounded-full bg-red-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-red-700">
+            <button
+                class="rounded-full bg-red-600 px-8 py-3 font-semibold text-white transition-colors hover:bg-red-700">
                 <i class="fas fa-th mr-2"></i>Xem tất cả phim
             </button>
         </div>
@@ -85,32 +96,38 @@
             THỂ LOẠI PHIM
         </h2>
         <div class="grid grid-cols-2 gap-4 md:grid-cols-4 lg:grid-cols-6">
-            <a href="#" class="block rounded-lg bg-red-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-red-700">
+            <a href="#"
+               class="block rounded-lg bg-red-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-red-700">
                 <i class="fas fa-fist-raised mb-2 text-2xl"></i>
                 <p class="font-semibold">Hành Động</p>
                 <p class="text-xs opacity-75">1,234 phim</p>
             </a>
-            <a href="#" class="block rounded-lg bg-pink-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-pink-700">
+            <a href="#"
+               class="block rounded-lg bg-pink-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-pink-700">
                 <i class="fas fa-heart mb-2 text-2xl"></i>
                 <p class="font-semibold">Tình Cảm</p>
                 <p class="text-xs opacity-75">856 phim</p>
             </a>
-            <a href="#" class="block rounded-lg bg-purple-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-purple-700">
+            <a href="#"
+               class="block rounded-lg bg-purple-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-purple-700">
                 <i class="fas fa-ghost mb-2 text-2xl"></i>
                 <p class="font-semibold">Kinh Dị</p>
                 <p class="text-xs opacity-75">567 phim</p>
             </a>
-            <a href="#" class="block rounded-lg bg-blue-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-blue-700">
+            <a href="#"
+               class="block rounded-lg bg-blue-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-blue-700">
                 <i class="fas fa-rocket mb-2 text-2xl"></i>
                 <p class="font-semibold">Khoa Học</p>
                 <p class="text-xs opacity-75">432 phim</p>
             </a>
-            <a href="#" class="block rounded-lg bg-green-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-green-700">
+            <a href="#"
+               class="block rounded-lg bg-green-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-green-700">
                 <i class="fas fa-laugh mb-2 text-2xl"></i>
                 <p class="font-semibold">Hài Hước</p>
                 <p class="text-xs opacity-75">789 phim</p>
             </a>
-            <a href="#" class="block rounded-lg bg-yellow-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-yellow-700">
+            <a href="#"
+               class="block rounded-lg bg-yellow-600 p-6 text-center text-white no-underline transition-all duration-300 hover:scale-105 hover:bg-yellow-700">
                 <i class="fas fa-child mb-2 text-2xl"></i>
                 <p class="font-semibold">Hoạt Hình</p>
                 <p class="text-xs opacity-75">345 phim</p>
@@ -135,7 +152,8 @@
             @for (int i = 1; i <= 6; i++)
             {
                 <div class="flex overflow-hidden rounded-lg bg-gray-800 transition-colors hover:bg-gray-700">
-                    <img src="https://picsum.photos/100/140?random=@(i+10)" alt="Movie" class="h-32 w-24 object-cover">
+                    <img src="https://picsum.photos/100/140?random=@(i + 10)" alt="Movie"
+                         class="h-32 w-24 object-cover">
                     <div class="flex-1 p-4">
                         <h3 class="mb-2 font-semibold text-white">Phim Mới Số @i</h3>
                         <p class="mb-2 text-sm text-gray-400">2025 • Hành Động, Phiêu Lưu</p>

@@ -1,10 +1,12 @@
 ﻿
 using Common.DTOs.VNPay;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.VNPay;
 
 namespace Absolute_cinema.Controllers
 {
+    [Authorize]
     public class PaymentController : Controller
     {
         private readonly IVnPayService _vnPayService;

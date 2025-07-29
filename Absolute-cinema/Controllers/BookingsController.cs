@@ -1,9 +1,12 @@
 ﻿using BusinessObjects.Models;
+using Common.ViewModels.BookingVMs;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Services.Interfaces;
 
 namespace Absolute_cinema.Controllers
 {
+    [Authorize]
     public class BookingsController : Controller
     {
         private readonly IBookingService _bookingService;
@@ -64,7 +67,7 @@ namespace Absolute_cinema.Controllers
             {
                 curUser = _userService.GetById(userId.Value);
             }
-            var reviewBooking = _bookingService.GetReviewBookingVM(bookingId, curUser.Id);
+            ReviewBookingVM reviewBooking = _bookingService.GetReviewBookingVM(bookingId, curUser.Id);
 
             return View(reviewBooking);
         }
