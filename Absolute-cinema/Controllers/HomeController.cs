@@ -7,6 +7,11 @@ using Services;
 using Services.Interfaces;
 using System.IO;
 using Microsoft.AspNetCore.Http;
+using BusinessObjects.Models;
+using Microsoft.AspNet.Identity;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
 
 namespace Absolute_cinema.Controllers
 {
@@ -42,9 +47,9 @@ namespace Absolute_cinema.Controllers
         [HttpGet]
         public IActionResult UpdateProfile()
         {
-            // L?y user hi?n t?i, ví d? hardcode user ??u tiên
-            var user = _userService.GetAll().FirstOrDefault();
-            if (user == null) return NotFound();
+            var user = GetCurrentUser();
+            if (user == null)
+                return NotFound();
             var vm = new UpdateProfileVM
             {
                 FullName = user.UserDetail.FullName,
@@ -56,15 +61,27 @@ namespace Absolute_cinema.Controllers
             return View(vm);
         }
 
+        private User GetCurrentUser()
+        {
+            var userNameString = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(userNameString))
+            {
+                return null; // or handle the case where the user is not logged in
+            }
+            var user = _userService.GetUserByUserName(userNameString);
+            return user;
+        }
+
         [HttpPost]
-        public IActionResult UpdateProfile(UpdateProfileVM model)
+        public async Task<IActionResult> UpdateProfile(UpdateProfileVM model)
         {
             if (!ModelState.IsValid)
             {
                 return View(model);
             }
-            var user = _userService.GetAll().FirstOrDefault(); // L?y user hi?n t?i
-            if (user == null) return NotFound();
+            var user = GetCurrentUser();
+            if (user == null)
+                return NotFound();
             var userDetail = user.UserDetail;
             // X? lý upload avatar n?u có
             if (model.Avatar != null && model.Avatar.Length > 0)
@@ -85,7 +102,29 @@ namespace Absolute_cinema.Controllers
             userDetail.Dob = model.Dob;
             userDetail.Phone = model.Phone;
             _userService.Update(userDetail);
+
+            // Sign in again with new info
+            user = GetCurrentUser();
+            await RefreshUserData(user);
+
             return RedirectToAction("UpdateProfile");
+        }
+        public async Task RefreshUserData(User user)
+        {
+            // Sign out first
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+
+            // Re-fetch the user to ensure we have the latest data
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, string.IsNullOrEmpty(user.UserDetail.FullName) ? user.Username : user.UserDetail.FullName),
+                new Claim(ClaimTypes.Role, user.Role ?? RoleConstants.User),
+                new Claim("UserId", user.Id.ToString()),
+                new Claim("Avatar", user.UserDetail.AvatarURL ?? UserConstants.DEFAULT_AVA)
+            };
+            var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+            var principal = new ClaimsPrincipal(identity);
+            await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

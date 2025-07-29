@@ -1,6 +1,7 @@
 ﻿using BusinessObjects.Models;
 using Common;
 using Common.DTOs.TicketDTOs;
+using Common.ViewModels.ShowtimeVMs;
 using Hangfire;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -73,7 +74,8 @@ namespace Absolute_cinema.Controllers.Tickets
             {
                 TempData[StatusConstants.Message] = e.Message;
                 TempData[StatusConstants.MessageType] = StatusConstants.Error;
-                return RedirectToAction("Index", "Home");
+                var showtimeId = dto.ChosenSeats.FirstOrDefault().ShowtimeId;
+                return RedirectToAction("Index", "MovieRoom", new { showtimeId });
             }
         }
 

@@ -62,7 +62,7 @@ namespace Absolute_cinema.Controllers
                         // Thêm xác thực Cookie
                         var claims = new List<Claim>
                         {
-                            new Claim(ClaimTypes.Name, user.Username),
+                            new Claim(ClaimTypes.Name, string.IsNullOrEmpty(user.UserDetail.FullName) ? user.Username : user.UserDetail.FullName),
                             new Claim(ClaimTypes.Role, user.Role ?? RoleConstants.User),
                             new Claim("UserId", user.Id.ToString()),
                             new Claim("Avatar", user.UserDetail.AvatarURL ?? UserConstants.DEFAULT_AVA)
