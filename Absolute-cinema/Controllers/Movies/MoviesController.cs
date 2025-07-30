@@ -10,6 +10,7 @@ using Common.Mappers;
 using Common.ViewModels.MovieVMs;
 using Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
+using Common.Constants;
 
 [AllowAnonymous]
 public class MoviesController : Controller
@@ -81,6 +82,10 @@ public class MoviesController : Controller
         {
             // get movie by id
             movie = _movieService.GetMovieVMById(id);
+            if (movie.Status.Equals(MovieStatusConstant.NOT_SHOW_SHOWTIME))
+            {
+                ViewBag.showShowtime = false;
+            }
         }
         catch (KeyNotFoundException)
         {

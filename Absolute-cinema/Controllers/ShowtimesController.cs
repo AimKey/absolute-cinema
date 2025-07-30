@@ -59,13 +59,20 @@ namespace Absolute_cinema.Controllers
         }
 
         [HttpGet("Create")]
-        public IActionResult Create()
+        public IActionResult Create(Guid? movieId = null)
         {
             var movies = _movieService.GetAll();
             var rooms = _roomService.GetAll();
             ViewData["MovieId"] = new SelectList(movies, "Id", "Title");
             ViewData["RoomId"] = new SelectList(rooms, "Id", "Name");
-            return View();
+            
+            var createShowtimeDTO = new CreateShowtimeDTO();
+            if (movieId.HasValue)
+            {
+                createShowtimeDTO.MovieId = movieId.Value;
+            }
+            
+            return View(createShowtimeDTO);
         }
 
         [HttpPost("Create")]
@@ -265,6 +272,13 @@ namespace Absolute_cinema.Controllers
                 status = status,
                 message = msg
             });
+        }
+
+        [HttpGet("GetMoviesForSelection")]
+        public IActionResult GetMoviesForSelection()
+        {
+            var movies = _movieService.GetAll();
+            return PartialView("_MovieSelectionGrid", movies);
         }
 
     }
