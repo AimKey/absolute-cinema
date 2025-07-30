@@ -1,0 +1,248 @@
+﻿@{
+    ViewData["Title"] = "AI Assistant";
+}
+
+<div class="container mx-auto py-8 px-4">
+    <div class="max-w-4xl mx-auto">
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-white mb-4">
+                <i class="fas fa-robot text-red-500 mr-3"></i>
+                AI Assistant
+            </h1>
+            <p class="text-gray-300 text-lg">
+                Hỏi tôi bất cứ điều gì về phim, lịch chiếu, hoặc dịch vụ của chúng tôi!
+            </p>
+        </div>
+
+        <!-- Chat Container -->
+        <div class="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+            <!-- Chat Messages -->
+            <div id="chatMessages" class="h-96 overflow-y-auto p-6 space-y-4">
+                <!-- Welcome Message -->
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 max-w-md">
+                        <p class="text-gray-200">
+                            Xin chào! Tôi là AI Assistant của Absolute Cinema.
+                            Bạn có thể hỏi tôi về lịch chiếu phim, đề xuất phim, hoặc bất cứ điều gì khác!
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="border-t border-gray-700 p-4">
+                <div class="flex space-x-4">
+                    <input type="text"
+                           id="userInput"
+                           placeholder="Hỏi tôi bất cứ điều gì..."
+                           class="flex-1 px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500"
+                           onkeypress="handleKeyPress(event)">
+                    <button onclick="sendMessage()"
+                            id="sendButton"
+                            class="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors duration-200 flex items-center">
+                        <i class="fas fa-paper-plane mr-2"></i>
+                        Gửi
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick Suggestions -->
+        <div class="mt-6">
+            <h3 class="text-lg font-semibold text-white mb-4">Gợi ý nhanh:</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <button onclick="sendQuickMessage('Có phim gì hay đang chiếu không?')"
+                        class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors duration-200 text-left">
+                    <i class="fas fa-film text-red-500 mr-2"></i>
+                    Phim đang chiếu
+                </button>
+                <button onclick="sendQuickMessage('Đề xuất phim cho tôi')"
+                        class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors duration-200 text-left">
+                    <i class="fas fa-magic text-red-500 mr-2"></i>
+                    Đề xuất phim
+                </button>
+                <button onclick="sendQuickMessage('Lịch chiếu hôm nay như thế nào?')"
+                        class="bg-gray-700 hover:bg-gray-600 text-white p-4 rounded-lg transition-colors duration-200 text-left">
+                    <i class="fas fa-calendar text-red-500 mr-2"></i>
+                    Lịch chiếu hôm nay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        let isLoading = false;
+
+        function handleKeyPress(event) {
+            if (event.key === 'Enter' && !isLoading) {
+                sendMessage();
+            }
+        }
+
+        function sendQuickMessage(message) {
+            document.getElementById('userInput').value = message;
+            sendMessage();
+        }
+
+        async function sendMessage() {
+            const userInput = document.getElementById('userInput');
+            const sendButton = document.getElementById('sendButton');
+            const chatMessages = document.getElementById('chatMessages');
+
+            const message = userInput.value.trim();
+            if (!message || isLoading) return;
+
+            // Disable input and show loading
+            isLoading = true;
+            userInput.disabled = true;
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i>Đang xử lý...';
+
+            // Add user message
+            addMessage(message, 'user');
+            userInput.value = '';
+
+            try {
+                const response = await fetch('/AIAssistant/GetSuggestions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        userPrompt: message,
+                        context: 'cinema_website'
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    // Add AI response
+                    addMessage(data.responseText, 'ai');
+
+                    // Add suggestions
+                    if (data.suggestions && data.suggestions.length > 0) {
+                        addSuggestions(data.suggestions);
+                    }
+                } else {
+                    addMessage('Xin lỗi, tôi gặp sự cố khi xử lý yêu cầu của bạn: ' + data.errorMessage, 'ai');
+                }
+            } catch (error) {
+                addMessage('Xin lỗi, đã xảy ra lỗi kết nối. Vui lòng thử lại sau.', 'ai');
+            } finally {
+                // Re-enable input
+                isLoading = false;
+                userInput.disabled = false;
+                sendButton.disabled = false;
+                sendButton.innerHTML = '<i class="fas fa-paper-plane mr-2"></i>Gửi';
+                userInput.focus();
+            }
+        }
+
+        function addMessage(message, sender) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = 'flex items-start space-x-3';
+
+            if (sender === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex-1"></div>
+                    <div class="bg-red-600 rounded-lg p-4 max-w-md">
+                        <p class="text-white">${message}</p>
+                    </div>
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-gray-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-user text-white text-sm"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                messageDiv.innerHTML = `
+                    <div class="flex-shrink-0">
+                        <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                            <i class="fas fa-robot text-white text-sm"></i>
+                        </div>
+                    </div>
+                    <div class="bg-gray-700 rounded-lg p-4 max-w-md">
+                        <p class="text-gray-200">${message}</p>
+                    </div>
+                `;
+            }
+
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addSuggestions(suggestions) {
+            const chatMessages = document.getElementById('chatMessages');
+            const suggestionsDiv = document.createElement('div');
+            suggestionsDiv.className = 'flex items-start space-x-3';
+
+            let suggestionsHtml = `
+                <div class="flex-shrink-0">
+                    <div class="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-lightbulb text-white text-sm"></i>
+                    </div>
+                </div>
+                <div class="bg-blue-900 bg-opacity-50 rounded-lg p-4 max-w-2xl">
+                    <p class="text-blue-200 mb-3 font-semibold">Gợi ý hành động:</p>
+                    <div class="space-y-2">
+            `;
+
+            suggestions.forEach(suggestion => {
+                suggestionsHtml += `
+                    <button onclick="executeSuggestion('${suggestion.id}', '${suggestion.actionType}', '${suggestion.actionUrl}', ${JSON.stringify(suggestion.parameters).replace(/"/g, '&quot;')})"
+                            class="w-full text-left bg-blue-800 hover:bg-blue-700 rounded-lg p-3 transition-colors duration-200 flex items-center">
+                        <i class="${suggestion.iconClass} text-blue-300 mr-3"></i>
+                        <div>
+                            <div class="text-white font-medium">${suggestion.title}</div>
+                            <div class="text-blue-200 text-sm">${suggestion.description}</div>
+                        </div>
+                    </button>
+                `;
+            });
+
+            suggestionsHtml += `
+                    </div>
+                </div>
+            `;
+
+            suggestionsDiv.innerHTML = suggestionsHtml;
+            chatMessages.appendChild(suggestionsDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        async function executeSuggestion(id, actionType, actionUrl, parameters) {
+            try {
+                const response = await fetch('/AIAssistant/ExecuteAction', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        id: id,
+                        actionType: actionType,
+                        actionUrl: actionUrl,
+                        parameters: parameters
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.redirectUrl) {
+                    window.location.href = data.redirectUrl;
+                }
+            } catch (error) {
+                console.error('Error executing suggestion:', error);
+                addMessage('Xin lỗi, không thể thực hiện hành động này.', 'ai');
+            }
+        }
+    </script>
+}

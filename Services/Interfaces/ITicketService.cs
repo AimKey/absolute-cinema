@@ -1,4 +1,5 @@
 using BusinessObjects.Models;
+using Common.DTOs.TicketDTOs;
 
 namespace Services.Interfaces;
 
@@ -10,4 +11,5 @@ public interface ITicketService
     void Update(Ticket ticket);
     void Delete(Guid id);
     void Delete(Ticket ticket);
+    void CreateTicketsForUserBookingFromDto(BookingTicketDTO dto, Guid bookingId, Guid userId);
 } 

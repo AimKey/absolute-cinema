@@ -1,0 +1,55 @@
+@model IEnumerable<BusinessObjects.Models.Movie>
+
+<div class="bg-gray-800 p-6 rounded-lg">
+    <div class="mb-4">
+        <h3 class="text-xl font-semibold text-white mb-2">Select a Movie</h3>
+        <p class="text-gray-400 text-sm">Choose a movie to create a showtime for</p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-96 overflow-y-auto">
+        @foreach (var movie in Model)
+        {
+            <div class="movie-card bg-gray-700 rounded-lg p-4 cursor-pointer hover:bg-gray-600 transition-colors duration-200 border-2 border-transparent hover:border-blue-500"
+                 data-movie-id="@movie.Id" data-movie-title="@movie.Title">
+                <div class="flex items-start space-x-3">
+                    <div class="flex-shrink-0">
+                        @if (!string.IsNullOrEmpty(movie.PosterURL))
+                        {
+                            <img src="@movie.PosterURL" alt="@movie.Title" 
+                                 class="w-16 h-24 object-cover rounded-md" 
+                                 onerror="this.src='/image/defaultAva.jpg'">
+                        }
+                        else
+                        {
+                            <div class="w-16 h-24 bg-gray-600 rounded-md flex items-center justify-center">
+                                <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1l-.867 12.142A2 2 0 0118.138 21H5.862a2 2 0 01-1.995-1.858L3 5H2a1 1 0 110-2h4zM7 8a1 1 0 012 0v8a1 1 0 11-2 0V8zM13 8a1 1 0 112 0v8a1 1 0 11-2 0V8z"></path>
+                                </svg>
+                            </div>
+                        }
+                    </div>
+                    <div class="flex-1 min-w-0">
+                        <h4 class="text-sm font-medium text-white truncate" title="@movie.Title">@movie.Title</h4>
+                        <p class="text-xs text-gray-400 mt-1">@movie.Duration min</p>
+                        <div class="flex items-center mt-1">
+                            <span class="text-xs text-yellow-400">★</span>
+                            <span class="text-xs text-gray-300 ml-1">@movie.ImdbRating</span>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">@movie.ReleaseDate.ToString("yyyy")</p>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    @if (!Model.Any())
+    {
+        <div class="text-center py-8">
+            <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 4V2a1 1 0 011-1h8a1 1 0 011 1v2h4a1 1 0 110 2h-1l-.867 12.142A2 2 0 0118.138 21H5.862a2 2 0 01-1.995-1.858L3 5H2a1 1 0 110-2h4zM7 8a1 1 0 012 0v8a1 1 0 11-2 0V8zM13 8a1 1 0 112 0v8a1 1 0 11-2 0V8z"></path>
+            </svg>
+            <h3 class="mt-2 text-sm font-medium text-gray-300">No movies available</h3>
+            <p class="mt-1 text-sm text-gray-500">No active movies found.</p>
+        </div>
+    }
+</div> 

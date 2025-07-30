@@ -1,0 +1,38 @@
+﻿@model Common.DTOs.VNPay.PaymentResponseModel
+@{
+    ViewData["Title"] = "Thanh toán thất bại";
+}
+
+<partial name="_Notification" />
+<div class="flex flex-col items-center justify-center min-h-[calc(100vh-80px)] bg-gray-900 text-white px-4 py-8">
+    <div class="text-center bg-gray-800 rounded-lg shadow-lg p-8 max-w-2xl w-full">
+        <i class="fas fa-times-circle text-red-500 text-8xl mb-6 animate-pulse-slow"></i>
+        <h1 class="text-5xl font-bold text-red-500 mb-4">Thanh toán thất bại!</h1>
+        <p class="text-lg text-gray-300 mb-8">
+            Đã xảy ra lỗi trong quá trình xử lý giao dịch của bạn. Vui lòng thử lại.
+        </p>
+
+        <div class="text-left mb-8 space-y-2">
+            <p class="text-gray-400"><strong class="text-white">Mô tả đơn hàng:</strong> @Model.OrderDescription</p>
+            <p class="text-gray-400"><strong class="text-white">Mã giao dịch:</strong> @Model.TransactionId</p>
+            <p class="text-gray-400"><strong class="text-white">Mã đơn hàng:</strong> @Model.OrderId</p>
+            <p class="text-gray-400"><strong class="text-white">Phương thức thanh toán:</strong> @Model.PaymentMethod</p>
+            <p class="text-gray-400"><strong class="text-white">Mã thanh toán:</strong> @Model.PaymentId</p>
+            @if (!string.IsNullOrEmpty(Model.VnPayResponseCode))
+            {
+                <p class="text-gray-400"><strong class="text-white">Mã phản hồi VNPAY:</strong> @Model.VnPayResponseCode</p>
+            }
+        </div>
+
+        <a href="/" class="inline-flex items-center px-6 py-3 rounded-full bg-red-600 text-white font-semibold text-lg transition-all duration-300 hover:bg-red-700 hover:shadow-lg">
+            <i class="fas fa-home mr-2"></i>
+            Về trang chủ
+        </a>
+    </div>
+</div>
+
+<style>
+    .animate-pulse-slow {
+        animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+</style>

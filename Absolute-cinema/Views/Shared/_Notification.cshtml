@@ -1,0 +1,153 @@
+﻿@using Common
+@using System.Text.Encodings.Web
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (TempData["msg"] != null)
+{
+    var rawMsg = JavaScriptEncoder.Default.Encode(TempData["msg"]?.ToString() ?? "");
+    var msgType = TempData[StatusConstants.MessageType]?.ToString()?.ToLower();
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const message = '@Html.Raw(rawMsg)';
+            const type = '@msgType';
+
+            // Enhanced Toast configuration
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+                background: '#1f2937',
+                color: '#ffffff',
+                width: '400px',
+                padding: '1.25rem',
+                backdrop: false,
+                customClass: {
+                    popup: 'swal-toast-popup',
+                    title: 'swal-toast-title',
+                    htmlContainer: 'swal-toast-text',
+                    timerProgressBar: 'swal-toast-progress',
+                    icon: 'swal-toast-icon'
+                },
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer);
+                    toast.addEventListener('mouseleave', Swal.resumeTimer);
+
+                    // Enhanced slide-in animation
+                    toast.style.animation = 'slideInFromTop 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55)';
+
+                    // Add subtle bounce effect
+                    setTimeout(() => {
+                        toast.style.transform = 'scale(1.02)';
+                        setTimeout(() => {
+                            toast.style.transform = 'scale(1)';
+                        }, 100);
+                    }, 50);
+                },
+                willClose: (toast) => {
+                    toast.style.animation = 'slideOutToTop 0.3s ease-in';
+                }
+            });
+
+            let config = {
+                title: message,
+                icon: 'info',
+                iconColor: '#3b82f6',
+                showClass: {
+                    popup: 'animate__animated animate__fadeInDown'
+                },
+                hideClass: {
+                    popup: 'animate__animated animate__fadeOutUp'
+                }
+            };
+
+            // Enhanced customization based on message type
+            switch (type) {
+                case '@StatusConstants.Success':
+                    config.icon = 'success';
+                    config.iconColor = '#10b981';
+                    config.title = message;
+                    config.timer = 4000;
+                    config.background = '#064e3b';
+                    config.color = '#d1fae5';
+                    break;
+
+                case '@StatusConstants.Error':
+                    config.icon = 'error';
+                    config.iconColor = '#ef4444';
+                    config.title = message;
+                    config.timer = 7000; // Longer for errors
+                    config.background = '#7f1d1d';
+                    config.color = '#fecaca';
+                    break;
+
+                case '@StatusConstants.Warning':
+                    config.icon = 'warning';
+                    config.iconColor = '#f59e0b';
+                    config.title = message;
+                    config.timer = 5000;
+                    config.background = '#78350f';
+                    config.color = '#fef3c7';
+                    break;
+
+                case '@StatusConstants.Info':
+                    config.icon = 'info';
+                    config.iconColor = '#3b82f6';
+                    config.title = message;
+                    config.timer = 5000;
+                    config.background = '#1e3a8a';
+                    config.color = '#dbeafe';
+                    break;
+
+                default:
+                    config.title = message;
+                    config.background = '#1f2937';
+                    config.color = '#ffffff';
+                    break;
+            }
+
+            Toast.fire(config);
+        });
+
+    </script>
+}
+
+<style>
+    /* Enhanced toast styling */
+    .swal-toast-popup {
+        border-radius: 12px !important;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        backdrop-filter: blur(10px) !important;
+    }
+
+    .swal-toast-title {
+        font-weight: 600 !important;
+        font-size: 0.95rem !important;
+        line-height: 1.4 !important;
+        margin: 0 !important;
+    }
+
+    .swal-toast-icon {
+        margin-right: 0.75rem !important;
+    }
+
+    .swal-toast-progress {
+        background: linear-gradient(90deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.4)) !important;
+        border-radius: 2px !important;
+    }
+
+    /* Hover effects */
+    .swal-toast-popup:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.4) !important;
+        transition: all 0.3s ease !important;
+    }
+
+    }
+</style>
+
+<link rel="stylesheet" href="~/css/Layout/notification.css" />

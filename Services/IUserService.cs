@@ -1,4 +1,6 @@
 using BusinessObjects.Models;
+using Common.DTOs.TicketDTOs;
+using Common.ViewModels.UserVMs;
 
 namespace Services.Interfaces;
 
@@ -10,4 +12,18 @@ public interface IUserService
     void Update(UserDetail userDetail);
     void Delete(UserDetail userDetail);
     User GetUserByUserName(string username);
+    User? GetUserByEmail(string email);
+    bool IsUsernameExists(string username);
+    bool IsEmailExists(string email);
+    Task<bool> RegisterUserAsync(string username, string email, string password, string fullName, string phone, string gender, DateTime? dateOfBirth, string baseUrl);
+    bool VerifyEmail(string email, string token);
+    void UpdateUser(User user);
+
+    bool VerifyPassword(string providedPassword, string existingPassword);
+
+    // Forgot Password methods
+    Task<bool> SendOtpAsync(string email);
+    bool VerifyOtp(string email, string otp);
+    Task<bool> ResetPasswordAsync(string email, string otp, string newPassword);
+    ManageUsersVm GetManageUsersViewModel(ManageUsersVm vm);
 }

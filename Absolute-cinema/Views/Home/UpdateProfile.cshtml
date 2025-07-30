@@ -1,0 +1,110 @@
+@model Absolute_cinema.Models.ViewModels.UpdateProfileVM
+@{
+    ViewData["Title"] = "Cập nhật tài khoản";
+    Layout = "_Layout";
+}
+
+<div class="min-h-screen bg-gray-900 py-8 px-4">
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-white mb-2">Tài khoản</h2>
+            <p class="text-gray-400">Cập nhật thông tin cá nhân của bạn</p>
+        </div>
+
+        <!-- Form Card -->
+        <div class="bg-gray-800 rounded-lg shadow-xl p-8 border border-gray-700">
+            <form asp-action="UpdateProfile" method="post" enctype="multipart/form-data">
+                <!-- Avatar Section -->
+                <div class="flex flex-col items-center mb-8">
+                    <div class="relative group">
+                        <div class="w-36 h-36 rounded-full overflow-hidden border-4 border-red-500 shadow-lg">
+                            <img id="avatarPreview"
+                                 src="@(Model.AvatarURL ?? "/img/default-avatar.png")"
+                                 alt="avatar"
+                                 class="w-full h-full object-cover" />
+                        </div>
+                        <div class="absolute inset-0 bg-black bg-opacity-50 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <i class="fas fa-camera text-white text-2xl"></i>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <label class="inline-flex items-center px-6 py-3 bg-red-600 text-white font-semibold rounded-full cursor-pointer hover:bg-red-700 transition-colors duration-300 hover:scale-105">
+                            <i class="fas fa-upload mr-2"></i>
+                            Đổi ảnh đại diện
+                            <input type="file" name="Avatar" accept="image/*" hidden onchange="previewAvatar(event)" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Form Fields -->
+                <div class="space-y-6">
+                    <!-- Full Name -->
+                    <div>
+                        <label class="block text-white font-medium mb-2">Họ tên</label>
+                        <input asp-for="FullName"
+                               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                               placeholder="Nhập họ tên của bạn" />
+                    </div>
+
+                    <!-- Gender -->
+                    <div>
+                        <label class="block text-white font-medium mb-3">Giới tính</label>
+                        <div class="flex space-x-6">
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" asp-for="Gender" value="Nam" checked="@(Model.Gender=="Nam")"
+                                       class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" />
+                                <span class="ml-2 text-white">Nam</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" asp-for="Gender" value="Nữ" checked="@(Model.Gender=="Nữ")"
+                                       class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" />
+                                <span class="ml-2 text-white">Nữ</span>
+                            </label>
+                            <label class="flex items-center cursor-pointer">
+                                <input type="radio" asp-for="Gender" value="Khác" checked="@(Model.Gender=="Khác")"
+                                       class="w-4 h-4 text-red-600 bg-gray-700 border-gray-600 focus:ring-red-500 focus:ring-2" />
+                                <span class="ml-2 text-white">Khác</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Date of Birth -->
+                    <div>
+                        <label class="block text-white font-medium mb-2">Ngày sinh</label>
+                        <input asp-for="Dob" type="date"
+                               max="@DateTime.Today.ToString("yyyy-MM-dd")"
+                               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300" />
+                    </div>
+
+                    <!-- Phone -->
+                    <div>
+                        <label class="block text-white font-medium mb-2">Số điện thoại</label>
+                        <input asp-for="Phone"
+                               class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-300"
+                               placeholder="Nhập số điện thoại" />
+                    </div>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="text-center mt-8">
+                    <button type="submit"
+                            class="inline-flex items-center px-8 py-3 bg-red-600 text-white font-semibold rounded-full hover:bg-red-700 transition-all duration-300 hover:scale-105 hover:shadow-lg">
+                        <i class="fas fa-save mr-2"></i>
+                        Cập nhật
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function previewAvatar(event) {
+        const [file] = event.target.files;
+        if (file) {
+            document.getElementById('avatarPreview').src = URL.createObjectURL(file);
+        }
+    }
+</script> 

@@ -1,0 +1,41 @@
+﻿@using BusinessObjects.Models
+@model List<Showtime>
+
+@{
+    // Group showtimes by date (yyyy-MM-dd)
+    var grouped = Model
+        .OrderBy(s => s.StartTime)
+        .GroupBy(s => s.StartTime.Date)
+        .ToList();
+}
+
+@if (!Model.Any())
+{
+    <h2 class="my-8 text-center text-xl font-semibold text-gray-400">This movie is not available yet, stay tuned for more!</h2>
+}
+else
+{
+    <section class="space-y-8">
+        @foreach (var group in grouped)
+        {
+            <div class="rounded-xl bg-gray-800/60 p-4 shadow-md">
+                <h3 class="mb-3 flex items-center gap-2 text-lg font-bold text-yellow-400">
+                    <i class="fas fa-calendar-alt"></i>
+                    @group.Key.ToString("dddd, dd MMMM yyyy")
+                </h3>
+                <div class="flex flex-wrap gap-4">
+                    @foreach (var showtime in group)
+                    {
+                        var cssClass = showtime.Status
+                            ? "rounded bg-yellow-500 px-4 py-2 font-semibold text-gray-900 shadow transition hover:bg-yellow-400"
+                            : "pointer-events-none rounded bg-gray-500 px-4 py-2 text-gray-200 shadow";
+                        <a class="@cssClass" asp-action="Index" asp-controller="MovieRoom"
+                           asp-route-showtimeId="@showtime.Id">
+                            @showtime.StartTime.ToString("HH:mm") - @showtime.EndTime.ToString("HH:mm")
+                        </a>
+                    }
+                </div>
+            </div>
+        }
+    </section>
+}

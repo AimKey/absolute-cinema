@@ -17,7 +17,7 @@ namespace DataAccessObjects
         private string GetConnectionString()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Directory.GetCurrentDirectory())
+                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Absolute-cinema"))
                 .AddJsonFile("appsettings.json")
                 .Build();
             return configuration.GetConnectionString("DefaultConnection");
@@ -30,10 +30,12 @@ namespace DataAccessObjects
                 .UseSqlServer(GetConnectionString());
         }
 
+
         // DbSet properties for each model
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Booking> Bookings { get; set; }
         public DbSet<Director> Directors { get; set; }
+        public DbSet<MovieDirector> MovieDirectors { get; set; }
         public DbSet<Movie> Movies { get; set; }
         public DbSet<MovieActor> MovieActors {  get; set; }
         public DbSet<MovieTag> MovieTags {  get; set; }
@@ -48,7 +50,9 @@ namespace DataAccessObjects
         public DbSet<Ticket> Tickets { get; set; }
         public DbSet<User> Users { get; set; }
         public DbSet<UserDetail> UserDetails { get; set; }
+        public DbSet<Discount> Discounts { get; set; }
 
+       
         // Configure the relationships
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

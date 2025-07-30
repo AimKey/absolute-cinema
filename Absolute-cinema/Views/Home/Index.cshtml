@@ -1,25 +1,113 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Trang chủ";
 }
-@model Absolute_cinema.Models.ViewModels.TestUserVM
 
-<div class="text-center">
-    <div class="flex items-center justify-center h-32 bg-gradient-to-r from-yellow-200 via-pink-200 to-purple-200">
-        <h1 class="text-6xl font-extrabold text-gray-900 drop-shadow-md animate-bounce">
-            Animated with tailwind :D
-        </h1>
+<!-- Hero Section -->
+<section class="relative h-screen bg-cover bg-center" style="background-image: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1489599849927-2ee91cede3ba?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');">
+    <div class="hero-gradient absolute inset-0"></div>
+    <div class="relative z-10 container mx-auto flex h-full items-center px-4">
+        <div class="max-w-2xl">
+            <h1 class="mb-4 text-5xl font-bold md:text-7xl">
+                Chào mừng
+            </h1>
+            <h2 class="mb-6 text-2xl text-yellow-400 md:text-3xl">
+                @if (!string.IsNullOrEmpty(Model?.Role))
+                {
+                    <span>
+                        @Model.Role
+                        -
+                    </span>
+                }
+                PHIM HAY MỚI NHẤT 2025
+            </h2>
+            <p class="mb-8 text-lg text-gray-300">
+                Khám phá thế giới điện ảnh với hàng ngàn bộ phim chất lượng cao.
+                Từ phim hành động, tình cảm đến kinh dị, tất cả đều có tại đây.
+            </p>
+            <div class="flex flex-col space-y-4 sm:flex-row sm:space-y-0 sm:space-x-4">
+                <button class="rounded-full bg-red-600 px-8 py-3 font-semibold transition-colors hover:bg-red-700">
+                    <i class="fas fa-play mr-2"></i>Xem phim ngay
+                </button>
+                <button class="rounded-full border border-white px-8 py-3 font-semibold transition-colors hover:bg-white hover:text-black">
+                    <i class="fas fa-user mr-2"></i>Hồ sơ của tôi
+                </button>
+            </div>
+        </div>
+</section>
+
+<!-- About Us Section -->
+<section class="bg-gray-900 py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="mb-8 text-center text-3xl font-bold">
+            <i class="fas fa-info-circle mr-2 text-blue-500"></i>
+            VỀ CHÚNG TÔI
+        </h2>
+        <div class="max-w-3xl mx-auto text-center text-gray-300 leading-relaxed">
+            <p class="mb-4">
+                Absolute Cinema là điểm đến lý tưởng cho những người yêu điện ảnh.
+                Chúng tôi cam kết mang đến trải nghiệm xem phim tuyệt vời nhất với
+                hệ thống rạp chiếu hiện đại, âm thanh sống động và hình ảnh sắc nét.
+            </p>
+            <p class="mb-4">
+                Với sứ mệnh kết nối khán giả với những tác phẩm điện ảnh đỉnh cao,
+                chúng tôi không ngừng cập nhật các bộ phim mới nhất từ khắp nơi trên thế giới,
+                cùng với các chương trình khuyến mãi hấp dẫn và dịch vụ khách hàng tận tâm.
+            </p>
+            <p>
+                Hãy đến với Absolute Cinema để tận hưởng những khoảnh khắc giải trí
+                đáng nhớ cùng gia đình và bạn bè!
+            </p>
+        </div>
     </div>
-    <div class="h-32 from-blue-300 via-orange-300 to-green-300 bg-gradient-to-r flex items-center justify-center">
-        <h2 class="mt-12 animate-pulse text-blue-600 text-center text-shadow-2xs text-xl">I love Tailwind!</h2>
+</section>
+
+<!-- Our Team Section -->
+<section class="bg-gray-800 py-16">
+    <div class="container mx-auto px-4">
+        <h2 class="mb-8 text-center text-3xl font-bold">
+            <i class="fas fa-users mr-2 text-green-500"></i>
+            ĐỘI NGŨ PHÁT TRIỂN
+        </h2>
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            <!-- Member 1 -->
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.pinimg.com/736x/e5/e8/32/e5e83230edb1f387f80074520ba5fe53.jpg" alt="Member 1" class="mb-4 h-32 w-32 rounded-full object-cover border-4 border-red-500 shadow-lg">
+                <h3 class="text-xl font-semibold text-white">Phạm Minh Kiệt</h3>
+                <p class="text-gray-400 text-sm">Trưởng nhóm</p>
+            </div>
+            <!-- Member 2 -->
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.pinimg.com/736x/e5/e8/32/e5e83230edb1f387f80074520ba5fe53.jpg" alt="Member 2" class="mb-4 h-32 w-32 rounded-full object-cover border-4 border-red-500 shadow-lg">
+                <h3 class="text-xl font-semibold text-white">Châu Thành Đạt</h3>
+                <p class="text-gray-400 text-sm">Thành viên</p>
+            </div>
+            <!-- Member 3 -->
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.pinimg.com/736x/e5/e8/32/e5e83230edb1f387f80074520ba5fe53.jpg" alt="Member 3" class="mb-4 h-32 w-32 rounded-full object-cover border-4 border-red-500 shadow-lg">
+                <h3 class="text-xl font-semibold text-white">Nhật Nguyễn</h3>
+                <p class="text-gray-400 text-sm">Thành viên</p>
+            </div>
+            <!-- Member 4 -->
+            <div class="flex flex-col items-center text-center">
+                <img src="https://i.pinimg.com/736x/e5/e8/32/e5e83230edb1f387f80074520ba5fe53.jpg" alt="Member 4" class="mb-4 h-32 w-32 rounded-full object-cover border-4 border-red-500 shadow-lg">
+                <h3 class="text-xl font-semibold text-white">Thế Mỹ</h3>
+                <p class="text-gray-400 text-sm">Thành viên</p>
+            </div>
+        </div>
     </div>
+</section>
 
 
-    <p>Test first user get from db</p>
-    
-    <p>Name: @Model.Username</p>
-    <p>Role: @Model.Role</p>
-    <p>Fullname (Get from navigations): @Model.UserDetail.FullName</p>
-    <p>Gender: @Model.UserDetail.Gender</p>
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!-- Welcome Message for Development -->
+@if (Model != null)
+{
+    <section class="bg-gray-700 py-8">
+        <div class="container mx-auto px-4 text-center">
+            <div class="inline-block rounded-lg bg-green-600 p-4 text-white">
+                <i class="fas fa-check-circle mr-2"></i>
+                <strong>Kết nối database thành công!</strong>
+                Dữ liệu user đã được load từ database và hiển thị trên trang.
+            </div>
+        </div>
+    </section>
+}

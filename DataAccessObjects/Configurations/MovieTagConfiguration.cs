@@ -13,6 +13,6 @@ public class MovieTagConfiguration:IEntityTypeConfiguration<MovieTag>
         // MovieTag - Tag
         builder.HasOne(mt => mt.Tag)
             .WithMany(t => t.MovieTags)
-            .HasForeignKey(mt => mt.MovieId);
+            .HasForeignKey(mt => mt.TagId);
     }
 }

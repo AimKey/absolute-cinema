@@ -1,0 +1,197 @@
+﻿@using Common.Constants
+@model Common.ViewModels.RoomSeatsVM
+@{
+    ViewData["Title"] = $"Select seat - {Model.Room.Name}";
+    var seatTypes = Model.SeatTypes;
+    var seats = Model.Seats;
+    var ticketBasePrice = Model.TicketBasePrice;
+    // Group seats by row for Razor rendering
+    var seatsByRow = seats
+        .GroupBy(s => s.SeatRow)
+        .OrderBy(g => g.Key)
+        .ToDictionary(g => g.Key, g => g.OrderBy(s => s.SeatNumber).ToList());
+}
+
+<div class="container mx-auto py-8">
+    <h1 class="mb-8 text-3xl font-bold text-white">Select seat for room: @Model.Room.Name</h1>
+    <div class="mb-8 rounded-lg bg-gray-800 p-6 shadow-lg">
+        <h2 class="mb-4 text-2xl font-semibold text-white">Room layout</h2>
+        <div class="flex flex-col items-center justify-center">
+            <!-- Screen -->
+            <div class="mb-8 w-full max-w-3xl rounded-t-lg border-b-4 border-red-500 bg-gray-700 py-4 text-center text-xl font-semibold text-white shadow-inner">
+                SCREEN
+            </div>
+            <!-- Seat Grid Container -->
+            <div id="seatGridContainer" class="relative mx-auto flex min-h-[300px] w-full max-w-4xl flex-col items-start overflow-auto rounded-lg border border-gray-700 bg-gray-900 p-4">
+                @if (!seatsByRow.Any())
+                {
+                    <p class="w-full py-10 text-center text-gray-400">There are no seats in this room.</p>
+                }
+                else
+                {
+                    foreach (var row in seatsByRow)
+                    {
+                        <div class="my-2 flex w-full items-center" data-row="@row.Key">
+                            <span class="mr-4 w-8 flex-shrink-0 text-left font-bold text-gray-400">@row.Key</span>
+                            <div class="flex flex-grow flex-wrap justify-center">
+                                @foreach (var seat in row.Value)
+                                {
+                                    // Try to get seat type by matching description or fallback to Standard
+                                    @* var seatType = seatTypes.FirstOrDefault(st => st.Name == seat.Description) ?? seatTypes.FirstOrDefault(st => st.Name == "Standard"); *@
+                                    var seatType = seat.SeatType;
+                                    var seatColor = seatType != null ? seatType.ColorHex : SeatTypeConstants.UNAVAILABLE_COLOR;
+                                    var isCoupleSeat = seatType != null && seatType.Name == "Couple";
+                                    var isAvailable = seat.IsAvailable;
+                                    var seatTooltip = $"Seat {seat.SeatRow}{seat.SeatNumber} ({(seatType?.Name?.ToUpper() ?? "UNKNOWN")})";
+                                    <div class="seat-item @(isCoupleSeat ? "w-16" : "w-8") relative m-1 flex h-8 items-center justify-center rounded-md border border-gray-600 transition-all duration-150 ease-in-out @(isAvailable ? "cursor-pointer hover:scale-105" : "cursor-not-allowed opacity-50")"
+                                         style="background-color:@(isAvailable ? seatColor : SeatTypeConstants.UNAVAILABLE_COLOR);"
+                                         title="@seatTooltip"
+                                         tabindex="@(isAvailable ? "0" : "-1")"
+                                         data-seat-id="@seat.Id"
+                                         onclick="@(isAvailable ? "toggleSeatSelection(this)" : null)">
+                                        <span class="text-xs font-bold text-white text-shadow-sm">@seat.SeatNumber</span>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+                    }
+                }
+            </div>
+            <p class="mt-4 text-sm text-gray-400">
+                <i class="fas fa-mouse-pointer mr-1"></i> Click a seat to select. Gray seats are already booked.
+            </p>
+        </div>
+    </div>
+    <!-- Seat Type Legend -->
+    <div class="mt-8 rounded-lg bg-gray-800 p-6 shadow-lg">
+        <h2 class="mb-4 text-2xl font-semibold text-white">Seat type legend</h2>
+        <div id="seatTypeLegend" class="flex flex-wrap gap-4">
+            @foreach (var type in seatTypes)
+            {
+                <div class="flex items-center gap-2">
+                    <span class="h-4 w-4 rounded-full" style="background-color: @(type.ColorHex);"></span>
+                    <span class="text-gray-300">@type.Name.ToUpper() (@type.PriceMutiplier.ToString("0.##")x)</span>
+                </div>
+            }
+        </div>
+    </div>
+    <!-- Booking Summary Section -->
+    <div id="bookingSummary" class="mx-auto mt-8 flex max-w-3xl flex-col gap-6 rounded-lg bg-gray-800 p-6 shadow-lg md:flex-row md:items-center md:justify-between">
+        <div class="flex-1">
+            <h2 class="mb-4 text-2xl font-semibold text-white">Booking Summary</h2>
+            <div class="flex flex-col gap-2 text-lg text-gray-200">
+                <div>
+                    Tickets selected: <span id="selectedTicketCount" class="font-bold text-red-400">0</span>
+                </div>
+                <div id="selectedTypeBreakdown" class="mt-2">
+                    <!-- Per-type breakdown will be rendered here -->
+                </div>
+            </div>
+        </div>
+        <div class="flex min-w-[200px] flex-col items-end gap-4">
+            <div class="text-xl font-bold text-white">
+                Total:
+                <span id="selectedTotalAmount" class="ml-2 text-green-400">0</span>
+            </div>
+            <form id="bookingForm" method="post" action="/Tickets/BookTicket">
+                <button id="proceedBookingBtn" type="submit" class="rounded-full bg-red-600 px-6 py-2 font-bold text-white shadow transition-all duration-200 hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50" disabled>
+                    Proceed to Review Booking
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+         // Minimal JS for toggling seat selection
+         function toggleSeatSelection(el) {
+             el.classList.toggle('ring-2');
+             el.classList.toggle('ring-red-500');
+             el.classList.toggle('scale-110');
+             updateBookingSummary();
+         }
+
+         // Booking summary logic
+         const seatTypePriceMap = {};
+        @foreach (var type in seatTypes)
+        {
+            <text>seatTypePriceMap['@type.Name'] = @type.PriceMutiplier;</text>
+        }
+        // Mapping each seat with it's type
+         const seatTypeById = {};
+        @foreach (var row in seatsByRow)
+        {
+            foreach (var seat in row.Value)
+            {
+                var typeName = seat.SeatType?.Name ?? "Unknown";
+                <text>seatTypeById['@seat.Id'] = '@typeName';</text>
+            }
+        }
+         const ticketBasePrice = @ticketBasePrice;
+
+         // Get showtimeId from the page
+         const showtimeId = '@Model.ShowtimeId';
+         function updateBookingSummary() {
+             const selectedSeats = document.querySelectorAll('.seat-item.ring-2');
+             let count = selectedSeats.length;
+             let total = 0;
+             const typeCounts = {};
+             // Count per type
+             selectedSeats.forEach(seat => {
+                 const seatId = seat.getAttribute('data-seat-id');
+                 const typeName = seatTypeById[seatId] || 'Unknown';
+                 const priceMultiplier = seatTypePriceMap[typeName] || 1;
+                 const price = ticketBasePrice * priceMultiplier;
+                 if (!typeCounts[typeName]) typeCounts[typeName] = { count: 0, subtotal: 0, price: price };
+                 typeCounts[typeName].count++;
+                 typeCounts[typeName].subtotal += price;
+                 total += price;
+             });
+             document.getElementById('selectedTicketCount').textContent = count;
+
+             // Render booking summary (Prices and seats) breakdown
+             const breakdownDiv = document.getElementById('selectedTypeBreakdown');
+             breakdownDiv.innerHTML = '';
+             if (Object.keys(typeCounts).length > 0) {
+                 const table = document.createElement('table');
+                 table.className = 'w-full text-sm text-gray-200 mt-2';
+                 const tbody = document.createElement('tbody');
+                 Object.entries(typeCounts).forEach(([type, info]) => {
+                     const tr = document.createElement('tr');
+                     tr.innerHTML = `<td class='py-1 pr-4 font-semibold'>${type}</td><td class='py-1 pr-4'>x${info.count}</td><td class='py-1 pr-4 text-right'>${info.subtotal.toLocaleString('vi-VN')} ₫</td>`;
+                     tbody.appendChild(tr);
+                 });
+                 table.appendChild(tbody);
+                 breakdownDiv.appendChild(table);
+             } else {
+                 breakdownDiv.innerHTML = '<span class="text-gray-400">No tickets selected.</span>';
+             }
+             document.getElementById('selectedTotalAmount').textContent = total.toLocaleString('vi-VN') + ' ₫';
+             // Enable/disable button
+             const btn = document.getElementById('proceedBookingBtn');
+             btn.disabled = count === 0;
+         }
+        // On form submit, collect selected seat IDs and showtimeId, and submit as JSON
+        document.getElementById('bookingForm').addEventListener('submit', function(e) {
+            // Remove any previous hidden ChosenSeats inputs
+            Array.from(this.querySelectorAll('input[name^="ChosenSeats"]')).forEach(el => el.remove());
+            const selectedSeats = document.querySelectorAll('.seat-item.ring-2');
+            selectedSeats.forEach((seat, idx) => {
+                // ChosenSeats[i].ShowtimeId
+                const showtimeInput = document.createElement('input');
+                showtimeInput.type = 'hidden';
+                showtimeInput.name = `ChosenSeats[${idx}].ShowtimeId`;
+                showtimeInput.value = showtimeId;
+                this.appendChild(showtimeInput);
+                // ChosenSeats[i].SeatId
+                const seatInput = document.createElement('input');
+                seatInput.type = 'hidden';
+                seatInput.name = `ChosenSeats[${idx}].SeatId`;
+                seatInput.value = seat.getAttribute('data-seat-id');
+                this.appendChild(seatInput);
+            });
+        });
+    </script>
+}
+

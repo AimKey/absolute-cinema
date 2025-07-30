@@ -14,12 +14,15 @@ public class Review : IBaseModel
 
     [StringLength(1000, ErrorMessage = "Content cannot exceed 1000 characters.")]
     public string Content { get; set; }
+    public DateTime ReviewDate { get; set; } = DateTime.Now;
 
     // Foreign Key
     public Guid MovieId { get; set; }
+    public Guid UserId { get; set; }
 
     // Navigation Properties
     public virtual Movie Movie { get; set; } 
+    public virtual User User { get; set; }
 
     // Navigation Collections
 
