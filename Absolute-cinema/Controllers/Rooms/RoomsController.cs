@@ -4,9 +4,12 @@ using DataAccessObjects;
 using Common;
 using Services.Interfaces;
 using Common.DTOs.RoomDTOs;
+using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Absolute_cinema.Controllers.Rooms;
 
+[Authorize(Roles = RoleConstants.Admin)]
 public class RoomsController : Controller
 {
     private readonly IRoomService _roomService;

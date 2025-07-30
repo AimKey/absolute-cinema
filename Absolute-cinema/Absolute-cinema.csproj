@@ -33,6 +33,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Models\DTOs\" />
+		<Folder Include="wwwroot\avatars\" />
 	</ItemGroup>
 
 	<Target Name="Tailwind" BeforeTargets="Build">
