@@ -18,17 +18,35 @@
                         <th class="px-4 py-3 text-left">Total Price</th>
                         <th class="px-4 py-3 text-left">User</th>
                         <th class="px-4 py-3 text-left">Created At</th>
+                        <th class="px-4 py-3 text-center">Status</th>
                         <th class="px-4 py-3 text-center">View</th>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach (var item in Model) {
-                        <tr class="border-b border-gray-700 transition hover:bg-gray-800/60">
+                    @foreach (var item in Model)
+                    {
+                        bool isPaid = item.Payment != null;
+
+                        <tr class="border-b border-gray-700 transition hover:bg-gray-800/60 px-4 py-2">
                             <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.BookingDate)</td>
                             <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.NumberOfTickets)</td>
                             <td class="px-4 py-2">@item.TotalPrice.ToString("N0", System.Globalization.CultureInfo.GetCultureInfo("vi-VN")) ₫</td>
                             <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.User.Email)</td>
                             <td class="px-4 py-2">@Html.DisplayFor(modelItem => item.CreatedAt)</td>
+                            @{
+                                if (isPaid)
+                                {
+                                    <td class="flex justify-center items-center px-4 py-2">
+                                        <span class="rounded w-16 text-center py-2 bg-green-600 text-white-500 transition-all duration-150 hover:bg-green-700">Paid</span>
+                                    </td>
+                                } else
+                                {
+                                    <td class="flex justify-center items-center px-4 py-2">
+                                        <span class="rounded w-16 text-center py-2 bg-red-600 text-white-500 transition-all duration-150 hover:bg-red-700">Not paid</span>
+                                    </td>
+                                }
+                            }
+
                             <td class="px-4 py-2 text-center">
                                 <a asp-action="BookingDetails" asp-route-bookingId="@item.Id" class="rounded-full bg-blue-600 px-4 py-1 font-bold text-white shadow transition-all duration-200 hover:bg-blue-700">View</a>
                             </td>
@@ -37,7 +55,7 @@
                 </tbody>
             </table>
         </div>
-        
+
         <!-- Simple Pagination -->
         @if (ViewBag.TotalPages > 1)
         {
@@ -56,7 +74,7 @@
                         <i class="fas fa-chevron-left mr-1"></i>Previous
                     </span>
                 }
-                
+
                 <!-- Page Numbers -->
                 <div class="flex space-x-1">
                     @for (int i = 1; i <= ViewBag.TotalPages; i++)
@@ -72,7 +90,7 @@
                         }
                     }
                 </div>
-                
+
                 <!-- Next Button -->
                 @if (ViewBag.CurrentPage < ViewBag.TotalPages)
                 {
@@ -88,7 +106,7 @@
                     </span>
                 }
             </div>
-            
+
             <!-- Page Info -->
             <div class="mt-4 text-center text-gray-400 text-sm">
                 Showing @(((ViewBag.CurrentPage - 1) * ViewBag.PageSize) + 1) to @Math.Min(ViewBag.CurrentPage * ViewBag.PageSize, ViewBag.TotalItems) of @ViewBag.TotalItems bookings
