@@ -18,4 +18,5 @@ public interface IBookingService
     void BookingFinished(Guid bookingId, Guid paymentId);
     List<Booking> GetBookingsByUserId(Guid id);
     void CancelBooking(Guid bookingId);
+    bool IsUserHasUnpaidBooking(Guid userId);
 } 

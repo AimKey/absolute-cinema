@@ -18,18 +18,29 @@
             }
             else
             {
-                <div class="flex flex-column gap-6">
-                    <span class="rounded-full bg-yellow-500 px-6 py-2 text-lg font-bold text-gray-900 shadow">Payment Status: Pending</span>
-                    <form asp-action="CreatePaymentUrlVnpay" asp-controller="Payment" method="post">
-                        <input type="hidden" name="OrderType" value="@Model.PaymentInformationModel.OrderType" />
-                        <input type="hidden" name="Amount" value="@Model.PaymentInformationModel.Amount" />
-                        <input type="hidden" name="OrderDescription" value="@Model.PaymentInformationModel.OrderDescription" />
-                        <input type="hidden" name="Name" value="@Model.PaymentInformationModel.Name" />
-                        <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700" id="paymentBtn">
-                            Continue to Payment
-                        </button>
-                    </form>
+                <div class="flex flex-column gap-6 justify-center items-center">
+                    <div class="flex flex-column justify-center gap-2 items-center">
+                        <p class="rounded-full bg-yellow-500 px-6 py-2 text-lg font-bold text-gray-900 shadow">Payment Status: Pending</p>
+                        <span class="text-gray-300 text-xs">Please complete payment within 5 minutes or it will be automatically cancelled</span>
+                    </div>
+                    <div class="flex gap-4 justify-between">
+                        <form asp-action="CreatePaymentUrlVnpay" asp-controller="Payment" method="post">
+                            <input type="hidden" name="OrderType" value="@Model.PaymentInformationModel.OrderType" />
+                            <input type="hidden" name="Amount" value="@Model.PaymentInformationModel.Amount" />
+                            <input type="hidden" name="OrderDescription" value="@Model.PaymentInformationModel.OrderDescription" />
+                            <input type="hidden" name="Name" value="@Model.PaymentInformationModel.Name" />
+                            <button type="submit" class="rounded-full bg-green-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-green-700" id="paymentBtn">
+                                Continue to payment
+                            </button>
+                        </form>
+                        <form asp-action="CancelBooking" method="post">
+                            <input type="hidden" name="bookingId" value="@Model.BookingId" />
+                            <button type="submit" class="rounded-full bg-red-600 px-8 py-3 text-lg font-bold text-white shadow transition-all duration-200 hover:bg-red-700" id="paymentBtn">
+                                Cancel booking
+                            </button>
+                        </form>
 
+                    </div>
                 </div>
             }
         </div>

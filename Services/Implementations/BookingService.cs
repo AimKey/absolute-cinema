@@ -190,4 +190,11 @@ public class BookingService : IBookingService
         var bookings = _bookingRepository.Get(b => b.UserId == id).ToList();
         return bookings;
     }
+
+    public bool IsUserHasUnpaidBooking(Guid userId)
+    {
+        var bookings = GetBookingsByUserId(userId);
+        bool hasUnpaidBooking = bookings.Any(b => b.Payment == null);
+        return hasUnpaidBooking;
+    }
 }

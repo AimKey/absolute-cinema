@@ -41,41 +41,49 @@ namespace Absolute_cinema.Controllers
             decimal amount = Decimal.Parse(amountString);
 
             Booking booking = _bookingService.GetById(bookingId);
-            User u = booking.User;
-            int ticketsCount = booking.NumberOfTickets;
-            string movieTitle = booking.Tickets.FirstOrDefault().ShowtimeSeat.Showtime.Movie.Title;
-
-            var paymentDto = new VNPayPaymentDTO
+            if (booking != null)
             {
-                BookingId = bookingId,
-                UserId = u.Id,
-                TicketsCount = ticketsCount,
-                MovieTitle = movieTitle,
-                Amount = amount
-            };
+                User u = booking.User;
+                int ticketsCount = booking.NumberOfTickets;
+                string movieTitle = booking.Tickets.FirstOrDefault().ShowtimeSeat.Showtime.Movie.Title;
 
-            try
-            {
-                response.OrderDescription = $"{ticketsCount} for {movieTitle}. Total amount: {amount}";
-                if (response.VnPayResponseCode == "00")
+                var paymentDto = new VNPayPaymentDTO
                 {
-                    var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
-                    _bookingService.BookingFinished(bookingId, payment.Id);
-                    return View("~/Views/Payments/PaymentSuccess.cshtml", response);
+                    BookingId = bookingId,
+                    UserId = u.Id,
+                    TicketsCount = ticketsCount,
+                    MovieTitle = movieTitle,
+                    Amount = amount
+                };
+
+                try
+                {
+                    response.OrderDescription = $"{ticketsCount} for {movieTitle}. Total amount: {amount}";
+                    if (response.VnPayResponseCode == "00")
+                    {
+                        var payment = _paymentService.CreatePaymentFromDTO(paymentDto);
+                        _bookingService.BookingFinished(bookingId, payment.Id);
+                        return View("~/Views/Payments/PaymentSuccess.cshtml", response);
+                    }
+                    else
+                    {
+                        _bookingService.CancelBooking(bookingId);
+                        return View("~/Views/Payments/PaymentError.cshtml", response);
+                    }
+
                 }
-                else
+                catch (Exception e)
                 {
+                    TempData["msg"] = $"An error has occured: {e.Message}";
+                    TempData["msgType"] = StatusConstants.Error;
                     _bookingService.CancelBooking(bookingId);
                     return View("~/Views/Payments/PaymentError.cshtml", response);
                 }
-
-            }
-            catch (Exception e)
+            } else
             {
-                TempData["msg"] = $"An error has occured: {e.Message}";
+                TempData["msg"] = $"This booking is expired, please make another one";
                 TempData["msgType"] = StatusConstants.Error;
-                _bookingService.CancelBooking(bookingId);
-                return View("~/Views/Payments/PaymentError.cshtml", response);
+                return RedirectToAction("Index", "Bookings");
             }
         }
     }

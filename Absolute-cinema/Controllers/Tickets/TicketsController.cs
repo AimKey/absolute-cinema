@@ -48,6 +48,14 @@ namespace Absolute_cinema.Controllers.Tickets
                     return RedirectToAction("Login", "Account");
                 }
 
+                var userHasUnpaidBooking = _bookingService.IsUserHasUnpaidBooking(curUser.Id);
+                if (userHasUnpaidBooking)
+                {
+                    TempData[StatusConstants.Message] = "You have an unpaid booking. Please complete or cancel it before booking new tickets.";
+                    TempData[StatusConstants.MessageType] = StatusConstants.Error;
+                    return RedirectToAction("Index", "Bookings");
+                }
+
                 // First, create the showtime seat
                 _showtimeSeatService.InsertShowtimeSeatFromDTO(dto.ChosenSeats);
                 // Then create the booking
