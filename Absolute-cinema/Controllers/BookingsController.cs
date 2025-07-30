@@ -13,11 +13,13 @@ namespace Absolute_cinema.Controllers
     {
         private readonly IBookingService _bookingService;
         private readonly IUserService _userService;
+        private readonly IReviewService _reviewService;
 
-        public BookingsController(IUserService userService, IBookingService bookingService)
+        public BookingsController(IUserService userService, IBookingService bookingService, IReviewService reviewService)
         {
             _userService = userService;
             _bookingService = bookingService;
+            _reviewService = reviewService;
         }
 
         [HttpGet]
@@ -35,18 +37,33 @@ namespace Absolute_cinema.Controllers
                 TempData["MessageType"] = "error";
                 return RedirectToAction("Login", "Account");
             }
+            var bookings = _bookingService.GetBookingsByUserId(user.Id);
+            var allReviews = _reviewService.GetAll();
 
-            var allBookings = _bookingService.GetBookingsByUserId(user.Id);
-            allBookings = allBookings.OrderByDescending(b => b.BookingDate).ToList();
+            var bookingViewModels = bookings
+                .OrderByDescending(b => b.BookingDate)
+                .Select(b =>
+                {
+                    var movieId = b.Tickets.FirstOrDefault()?.ShowtimeSeat?.Showtime?.MovieId;
+                    var hasFeedback = allReviews.Any(r => r.UserId == GetCurrentUser().Id && r.MovieId == movieId);
+
+                    return new BookingViewModel
+                    {
+                        Booking = b,
+                        MovieId = movieId,
+                        HasFeedback = hasFeedback
+                    };
+                })
+                .ToList();
 
             // Simple pagination
-            var totalItems = allBookings.Count;
+            var totalItems = bookingViewModels.Count;
             var totalPages = (int)Math.Ceiling((double)totalItems / pageSize);
 
             // Ensure page is within valid range
             page = Math.Max(1, Math.Min(page, totalPages > 0 ? totalPages : 1));
 
-            var bookings = allBookings
+            bookingViewModels = bookingViewModels
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
                 .ToList();
@@ -56,7 +73,7 @@ namespace Absolute_cinema.Controllers
             ViewBag.PageSize = pageSize;
             ViewBag.TotalItems = totalItems;
 
-            return View(bookings);
+            return View(bookingViewModels);
         }
 
         [HttpGet]

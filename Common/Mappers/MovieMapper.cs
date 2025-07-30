@@ -149,6 +149,7 @@ public class MovieMapper
                 Rating = md.Rating,
                 Content = md.Content,
                 CreatedAt = md.CreatedAt,
+                ReviewDate = md.ReviewDate,
                 User = md.User
             }).ToList() ?? new List<ReviewVM>()
 

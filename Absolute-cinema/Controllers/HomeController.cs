@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using Absolute_cinema.Models;
 using Absolute_cinema.Models.ViewModels;
-using Common.Constants;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Services;
 using Services.Interfaces;
 using System.IO;
 using Microsoft.AspNetCore.Http;
@@ -12,9 +11,11 @@ using Microsoft.AspNet.Identity;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
+using Common.Constants;
 
 namespace Absolute_cinema.Controllers
 {
+    [AllowAnonymous]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
@@ -28,15 +29,7 @@ namespace Absolute_cinema.Controllers
 
         public IActionResult Index()
         {
-            var firstUser = _userService.GetAll().FirstOrDefault();
-            var userVM = new TestUserVM
-            {
-                Username = firstUser.Username,
-                Role = firstUser.Role,
-                Password = firstUser.Password,
-                UserDetail = firstUser.UserDetail,
-            };
-            return View(userVM);
+            return View();
         }
 
         public IActionResult Privacy()
@@ -83,7 +76,7 @@ namespace Absolute_cinema.Controllers
             if (user == null)
                 return NotFound();
             var userDetail = user.UserDetail;
-            // X? lý upload avatar n?u có
+            
             if (model.Avatar != null && model.Avatar.Length > 0)
             {
                 var fileName = $"avatar_{user.Id}_{DateTime.Now.Ticks}{Path.GetExtension(model.Avatar.FileName)}";
@@ -96,7 +89,7 @@ namespace Absolute_cinema.Controllers
                 }
                 userDetail.AvatarURL = $"/avatars/{fileName}";
             }
-            // C?p nh?t các tr??ng còn l?i
+            
             userDetail.FullName = model.FullName;
             userDetail.Gender = model.Gender;
             userDetail.Dob = model.Dob;

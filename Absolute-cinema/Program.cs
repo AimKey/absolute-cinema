@@ -12,6 +12,8 @@ using Microsoft.AspNetCore.Authentication.Cookies;
 using Services.VNPay;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Authorization;
+using Common.DTOs.Gemini;
+using Services.Gemini;
 using Microsoft.AspNetCore.Authentication.Google;
 
 
@@ -40,6 +42,9 @@ namespace Absolute_cinema
             builder.Services.Configure<CloudinarySettings>(
                 builder.Configuration.GetSection("Cloudinary"));
             builder.Services.AddScoped<ICloudinaryService, CloudinaryService>();
+
+            // Configure Gemini
+            builder.Services.Configure<GeminiAIConfig>(builder.Configuration.GetSection("GeminiAI"));
 
             // Configure the database to allow one request accessing the same context
             builder.Services.AddSqlServer<AbsoluteCinemaContext>(builder.Configuration.GetConnectionString("DefaultConnection"));
@@ -179,6 +184,11 @@ namespace Absolute_cinema
             //builder.Services.AddScoped<DbInitializer>();
             // Facade
             builder.Services.AddScoped<IDashboardFacade, DashboardFacade>();
+
+            // GeminiService
+            builder.Services.AddHttpClient<IAIAssistantService, AIAssistantService>();
+            builder.Services.AddScoped<IAIAssistantService, AIAssistantService>();
+
         }
 
         private static void SetupRepos(WebApplicationBuilder builder)
