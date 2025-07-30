@@ -10,7 +10,7 @@ namespace Common.ViewModels.ShowtimeVMs
         public string MovieName { get; set; }
 
         // Strategy pattern
-        public string SearchType { get; set; }
+        public string SearchType { get; set; } = "all";
         public string Query { get; set; }
 
         public bool OrderByDesc { get; set; } = true; // Default to get the newest first

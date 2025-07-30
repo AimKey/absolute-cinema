@@ -37,9 +37,9 @@
         <form asp-action="Index" method="get" class="mb-6 flex items-center space-x-4" id="searchForm">
             @* Search Type Dropdown *@
             <select name="SearchType" class="rounded-lg bg-gray-700 px-3 py-2 text-gray-200 focus:ring-2 focus:ring-blue-500 focus:outline-none">
+                <option value="all" selected="@(Model.SearchType == "all")">All</option>
                 <option value="roomName" selected="@(Model.SearchType == "roomName")">Room</option>
                 <option value="movieName" selected="@(Model.SearchType == "movieName")">Movie</option>
-                <option value="all" selected="@(Model.SearchType == "all")">All</option>
             </select>
 
             @* Query Input *@
