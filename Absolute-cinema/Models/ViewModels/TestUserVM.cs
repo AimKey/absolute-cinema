@@ -17,7 +17,7 @@ public class TestUserVM
 public class UpdateProfileVM
 {
     public string FullName { get; set; }
-    public string Gender { get; set; }
+    public string Gender { get; set; } = "Nam";
     public DateOnly? Dob { get; set; }
     public string Phone { get; set; }
     public IFormFile? Avatar { get; set; }
