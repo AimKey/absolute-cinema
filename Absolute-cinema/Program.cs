@@ -84,6 +84,10 @@ namespace Absolute_cinema
                     options.CallbackPath = "/Account/signin-google";
                 });
 
+            // Debug
+            Console.WriteLine($"WORKING ENVIRONMENT: {builder.Environment.EnvironmentName}");
+            Console.WriteLine($"SQL string: {builder.Configuration.GetConnectionString("DefaultConnection")}");
+
             var app = builder.Build();
 
             using (var scope = app.Services.CreateScope())
@@ -121,6 +125,7 @@ namespace Absolute_cinema
                 pattern: "{controller=Home}/{action=Index}/{id?}");
 
             app.Run();
+
         }
 
         private static void RunBackgroundJobs(WebApplication app)
@@ -180,7 +185,7 @@ namespace Absolute_cinema
             // Password services
             builder.Services.AddScoped<IHashPasswordService, HashPasswordService>();
             // Db init services
-            //builder.Services.AddScoped<DbInitializer>();
+            builder.Services.AddScoped<DbInitializer>();
             // Facade
             builder.Services.AddScoped<IDashboardFacade, DashboardFacade>();
 
