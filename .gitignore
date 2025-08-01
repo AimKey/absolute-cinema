@@ -67,7 +67,7 @@ style.css
 site.output.css
 
 # Hide the appsetting
-Absolute-cinema/appsettings.json
+# Absolute-cinema/appsettings.json
 
 # Hide the avatars folder
 Absolute-cinema/wwwroot/avatars/
