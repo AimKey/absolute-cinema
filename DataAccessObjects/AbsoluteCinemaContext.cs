@@ -17,9 +17,10 @@ namespace DataAccessObjects
         private string GetConnectionString()
         {
             IConfiguration configuration = new ConfigurationBuilder()
-                .SetBasePath(Path.Combine(Directory.GetCurrentDirectory(), "..", "Absolute-cinema"))
-                .AddJsonFile("appsettings.json")
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
                 .Build();
+
             return configuration.GetConnectionString("DefaultConnection");
         }
 

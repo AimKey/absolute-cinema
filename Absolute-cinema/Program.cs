@@ -90,6 +90,12 @@ namespace Absolute_cinema
 
             var app = builder.Build();
 
+            //using (var scope = app.Services.CreateScope())
+            //{
+            //    var initializer = scope.ServiceProvider.GetRequiredService<DbInitializer>();
+            //    initializer.Seed();
+            //}
+
             // Expose the Hangfire Dashboard at /hangfire (be sure to secure this in production).
             app.UseHangfireDashboard();
             RunBackgroundJobs(app);
