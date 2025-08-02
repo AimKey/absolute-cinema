@@ -34,6 +34,7 @@
 	</ItemGroup>
 	<ItemGroup>
 		<Folder Include="Models\DTOs\" />
+		<Folder Include="wwwroot\avatars\" />
 	</ItemGroup>
 	<ItemGroup>
 	  <Content Update="appsettings.json">
