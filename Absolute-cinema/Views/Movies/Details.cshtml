@@ -7,12 +7,18 @@
     string FormatTimeAgo(DateTime date)
     {
         TimeSpan diff = DateTime.Now - date;
-        if (diff.TotalDays >= 365) return $"{Math.Floor(diff.TotalDays / 365)} năm trước";
-        if (diff.TotalDays >= 30) return $"{Math.Floor(diff.TotalDays / 30)} tháng trước";
-        if (diff.TotalDays >= 7) return $"{Math.Floor(diff.TotalDays / 7)} tuần trước";
-        if (diff.TotalDays >= 1) return $"{Math.Floor(diff.TotalDays)} ngày trước";
-        if (diff.TotalHours >= 1) return $"{Math.Floor(diff.TotalHours)} giờ trước";
-        if (diff.TotalMinutes >= 1) return $"{Math.Floor(diff.TotalMinutes)} phút trước";
+        if (diff.TotalDays >= 365)
+            return $"{Math.Floor(diff.TotalDays / 365)} năm trước";
+        if (diff.TotalDays >= 30)
+            return $"{Math.Floor(diff.TotalDays / 30)} tháng trước";
+        if (diff.TotalDays >= 7)
+            return $"{Math.Floor(diff.TotalDays / 7)} tuần trước";
+        if (diff.TotalDays >= 1)
+            return $"{Math.Floor(diff.TotalDays)} ngày trước";
+        if (diff.TotalHours >= 1)
+            return $"{Math.Floor(diff.TotalHours)} giờ trước";
+        if (diff.TotalMinutes >= 1)
+            return $"{Math.Floor(diff.TotalMinutes)} phút trước";
         return "Vừa xong";
     }
 
@@ -34,7 +40,7 @@
     <!-- Background Image -->
     <div class="absolute inset-0">
         <img src="@Model.BackgroundURL" alt="@Model.Title"
-        class="h-full w-full object-cover opacity-30">
+             class="h-full w-full object-cover opacity-30">
         <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50"></div>
         <div class="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent"></div>
     </div>
@@ -47,7 +53,7 @@
                     <!-- Movie Poster -->
                     <div class="group relative">
                         <img src="@Model.PosterURL" alt="@Model.Title"
-                        class="w-full rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-105">
+                             class="w-full rounded-2xl shadow-2xl transition-transform duration-300 group-hover:scale-105">
                         <!-- Play Overlay -->
                         <div class="absolute inset-0 flex items-center justify-center rounded-2xl bg-black/50 opacity-0 transition-opacity duration-300 group-hover:opacity-100">
                             <button class="flex h-20 w-20 items-center justify-center rounded-full bg-red-500 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:bg-red-600">
@@ -121,7 +127,7 @@
                                     {
                                         <div class="flex items-center space-x-3 rounded-lg bg-gray-700/30 p-2 transition-colors duration-300 hover:bg-gray-700/50">
                                             <img src="@MovieDirectors.Director.AvatarURL" alt="@MovieDirectors.Director.Name"
-                                            class="h-10 w-10 rounded-full object-cover">
+                                                 class="h-10 w-10 rounded-full object-cover">
                                             <div>
                                                 <p class="text-sm font-medium text-white">@MovieDirectors.Director.Name</p>
                                                 <p class="text-xs text-gray-400">Đạo diễn</p>
@@ -141,7 +147,7 @@
                                     {
                                         <div class="flex items-center space-x-3 rounded-lg bg-gray-700/30 p-2 transition-colors duration-300 hover:bg-gray-700/50">
                                             <img src="@MovieActors.Actor.AvatarURL" alt="@MovieActors.Actor.Name"
-                                            class="h-10 w-10 rounded-full object-cover">
+                                                 class="h-10 w-10 rounded-full object-cover">
                                             <div>
                                                 <p class="text-sm font-medium text-white">@MovieActors.Actor.Name</p>
                                                 <p class="text-xs text-gray-400">Diễn viên</p>
@@ -204,7 +210,7 @@
                         if (tag != null)
                         {
                             <span class="rounded-full px-3 py-1 text-sm font-semibold text-white shadow-lg transition-transform duration-300 hover:scale-105"
-                            style="background-color: @tag.Color">
+                                  style="background-color: @tag.Color">
                                 @tag.Name
                             </span>
                         }
@@ -271,17 +277,8 @@
                                 <i class="fas fa-clock"></i> Upcoming showtimes
                             </h2>
                             <div>
-                                @{
-                                    bool showShowtime = (bool)ViewBag.showShowtime;
-                                    if (showShowtime)
-                                    {
-                                        await Component.InvokeAsync("FutureShowtimesOfMovie", new { movieId = Model.Id, date = DateTime.Today });
-                                    } else
-                                    {
-                                        <p>Comming soon!</p>
-                                    }
-                                }
-                        </div>
+                                @await Component.InvokeAsync("FutureShowtimesOfMovie", new { movieId = Model.Id, date = DateTime.Today });
+                            </div>
                         </section>
                     </div>
                     <!-- Gallery Tab -->
